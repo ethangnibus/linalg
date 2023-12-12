@@ -1,30 +1,44 @@
 // ui_plugin.rs
 use bevy::prelude::*;
-pub mod horizontal_split;
 pub mod navbar;
+pub mod navbar_frame;
 mod root;
 pub mod scrollable_page;
 pub mod sidebar;
+pub mod sidebar_frame;
 pub mod under_navbar;
-pub mod vertical_split;
 
-pub struct UiPlugin;
+pub struct SetupUiPlugin;
 
-impl Plugin for UiPlugin {
+impl Plugin for SetupUiPlugin {
     fn build(&self, app: &mut App) {
         // Add the setup_ui system as a startup system
-        app.add_systems(Startup, setup_ui)
-            .add_systems(Update, (button_system, temporary));
+        app.add_plugins(root::SystemsPlugin)
+            .add_systems(Startup, setup)
+            .add_systems(Update, button_system);
     }
 }
 
-// Define your setup_ui and toggle resolution systems here
-fn setup_ui(mut commands: Commands) {
-    let root = root::setup(&mut commands);
-}
+// #[derive(Component)]
+// struct SidebarUI;
 
-fn temporary() {
-    // temporary system added
+// fn sidebar_already_exists(q: Query<&SidebarUI>) -> bool {
+//     println!("Running sidebar_already exists");
+//     return q.get_single().is_ok();
+// }
+
+// fn spawn_button() {
+//     println!("Spawning button");
+// }
+
+// fn when_colony_exists(q: Query<&Colony>) -> bool {
+//     // q.get_single().is_ok()
+//     return true;
+// }
+
+// Define your setup_ui and toggle resolution systems here
+fn setup(mut commands: Commands) {
+    let _root = root::setup(&mut commands);
 }
 
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);

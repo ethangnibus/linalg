@@ -1,10 +1,24 @@
 use bevy::prelude::*;
+
+pub struct SystemsPlugin;
+
+impl Plugin for SystemsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, temp);
+    }
+}
+
+// pub fn setup(mut commands: Commands) {
+//     //
+//     println!("scrollable_page");
+// }
+
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
 pub fn setup(commands: &mut Commands) -> Entity {
     // let scrollable_page = new();
     // let scrollable_page = testing(&commands);
     // return commands.spawn(scrollable_page).id();
-
+    let _scrollable_page = new();
     let container_node = NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
@@ -62,3 +76,5 @@ pub fn new() -> NodeBundle {
         ..default()
     };
 }
+
+fn temp() {}

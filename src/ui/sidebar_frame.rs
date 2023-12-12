@@ -1,8 +1,21 @@
 use bevy::prelude::*;
 
+pub struct SystemsPlugin;
+
+impl Plugin for SystemsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, temp);
+    }
+}
+
+// pub fn setup(mut commands: Commands) {
+//     //
+//     println!("sidebar_frame.rs");
+// }
+
 pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
-    let horizontal_split = new(width, height);
-    return commands.spawn(horizontal_split).id();
+    let sidebar_frame = new(width, height);
+    return commands.spawn(sidebar_frame).id();
 }
 
 pub fn new(width: f32, height: f32) -> NodeBundle {
@@ -17,3 +30,5 @@ pub fn new(width: f32, height: f32) -> NodeBundle {
         ..default()
     };
 }
+
+fn temp() {}

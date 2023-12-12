@@ -1,5 +1,18 @@
 use bevy::prelude::*;
 
+pub struct SystemsPlugin;
+
+impl Plugin for SystemsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, temp);
+    }
+}
+
+// pub fn setup(mut commands: Commands) {
+//     //
+//     println!("vertical_split.rs");
+// }
+
 pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let vertical_split = new(width, height);
     return commands.spawn(vertical_split).id();
@@ -17,3 +30,5 @@ pub fn new(width: f32, height: f32) -> NodeBundle {
         ..default()
     };
 }
+
+pub fn temp() {}
