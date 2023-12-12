@@ -38,7 +38,7 @@ impl Plugin for SetupUiPlugin {
 
 // Define your setup_ui and toggle resolution systems here
 fn setup(mut commands: Commands) {
-    let _root = root::setup(&mut commands);
+    root::setup(&mut commands);
 }
 
 const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);

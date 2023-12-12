@@ -10,12 +10,12 @@ impl Plugin for SystemsPlugin {
 
 // pub fn setup(mut commands: Commands) {
 //     //
-//     println!("vertical_split.rs");
+//     println!("navbar_frame.rs");
 // }
 
 pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
-    let vertical_split = new(width, height);
-    return commands.spawn(vertical_split).id();
+    let navbar_frame = new(width, height);
+    return commands.spawn(navbar_frame).id();
 }
 
 pub fn new(width: f32, height: f32) -> NodeBundle {
