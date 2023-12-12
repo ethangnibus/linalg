@@ -3,6 +3,10 @@ use super::sidebar;
 use super::sidebar_frame;
 use bevy::prelude::*;
 
+// Marker for UI node
+#[derive(Component)]
+struct UnderNavbar;
+
 pub struct SystemsPlugin;
 
 impl Plugin for SystemsPlugin {

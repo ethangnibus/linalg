@@ -28,7 +28,6 @@ pub fn setup(commands: &mut Commands) {
     // Make ECS for root and navbar
     // return entities
     let navbar_frame = navbar_frame::setup(commands, 100.0, 100.0);
-
     let navbar_height: f32 = 10.0; // in percentage
     let navbar = navbar::setup(commands, navbar_height);
     let under_navbar = under_navbar::setup(commands, 100.0, 100.0 - navbar_height);

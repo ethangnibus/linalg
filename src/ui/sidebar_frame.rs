@@ -1,5 +1,9 @@
 use bevy::prelude::*;
 
+// Marker for UI node
+#[derive(Component)]
+struct SidebarFrame;
+
 pub struct SystemsPlugin;
 
 impl Plugin for SystemsPlugin {

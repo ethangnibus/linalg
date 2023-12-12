@@ -1,5 +1,9 @@
 use bevy::prelude::*;
 
+// Marker for UI node
+#[derive(Component)]
+struct ScrollablePage;
+
 pub struct SystemsPlugin;
 
 impl Plugin for SystemsPlugin {
