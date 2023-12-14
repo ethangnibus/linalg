@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 // Marker for UI node
 #[derive(Component)]
-struct Navbar;
+pub struct Navbar;
 
 pub struct SystemsPlugin;
 

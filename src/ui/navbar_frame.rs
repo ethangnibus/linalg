@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 // Marker for UI node
 #[derive(Component)]
-struct NavbarFrame;
+pub struct NavbarFrame;
 
 pub struct SystemsPlugin;
 
@@ -22,17 +22,20 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     return commands.spawn(navbar_frame).id();
 }
 
-pub fn new(width: f32, height: f32) -> NodeBundle {
-    return NodeBundle {
-        style: Style {
-            width: Val::Percent(width),
-            height: Val::Percent(height),
-            flex_direction: FlexDirection::Column,
+pub fn new(width: f32, height: f32) -> (NavbarFrame, NodeBundle) {
+    return (
+        NavbarFrame,
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(width),
+                height: Val::Percent(height),
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            // background_color: Color::rgb(0.0, 1.0, 0.0).into(),
             ..default()
         },
-        // background_color: Color::rgb(0.0, 1.0, 0.0).into(),
-        ..default()
-    };
+    );
 }
 
 pub fn temp() {}

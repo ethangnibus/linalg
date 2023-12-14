@@ -5,7 +5,7 @@ use bevy::prelude::*;
 
 // Marker for Root UI node
 #[derive(Component)]
-struct Root;
+pub struct Root;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -23,7 +23,7 @@ impl Plugin for SystemsPlugin {
 //     println!("root.rs");
 // }
 
-// // Returns root node
+// Returns root node
 pub fn setup(commands: &mut Commands) {
     // Make ECS for root and navbar
     // return entities
