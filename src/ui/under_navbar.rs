@@ -59,7 +59,7 @@ pub fn horizontal_swiper() -> ButtonBundle {
 
 
 // In your main.rs or lib.rs
-#[derive(Event)]
+#[derive(Event, Debug)]
 pub struct ChangeSidebarColorEvent(pub Color);
 
 // In your horizontal_swiper_resize_system function
@@ -81,7 +81,7 @@ fn horizontal_swiper_resize_system(
             }
             Interaction::None => {
                 *color = Color::GREEN.into();
-                events.send(ChangeSidebarColorEvent(Color::GREEN));
+                // events.send(ChangeSidebarColorEvent(Color::GREEN));
             }
         }
     }
@@ -92,9 +92,14 @@ fn sidebar_color_change_system(
     mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
     mut color_event_reader: EventReader<ChangeSidebarColorEvent>,
 ) {
-    println!("recieving event");
+    println!("printing sidebar_query");
+    println!("{:?}", sidebar_query);
+    println!("ending printing sidebar_query");
     for event in color_event_reader.read() {
-        for mut sidebar_color in &mut sidebar_query {
+        println!("Receiving event: {:?}", event);
+
+        for mut sidebar_color in &mut sidebar_query.iter_mut() {
+            println!("Modifying sidebar_color: {:?}", sidebar_color);
             *sidebar_color = event.0.into();
         }
     }

@@ -22,8 +22,9 @@ pub fn setup(commands: &mut Commands, width: f32) -> Entity {
     return commands.spawn(sidebar).id();
 }
 
-pub fn new(width: f32) -> NodeBundle {
-    return NodeBundle {
+pub fn new(width: f32) -> (Sidebar, NodeBundle) {
+    return (Sidebar,
+        NodeBundle {
         style: Style {
             height: Val::Percent(100.0),
             width: Val::Percent(width),
@@ -31,7 +32,7 @@ pub fn new(width: f32) -> NodeBundle {
         },
         background_color: Color::rgb(1.0, 0.0, 1.0).into(),
         ..default()
-    };
+    });
 }
 
 fn temp() {}
