@@ -2,9 +2,8 @@ use super::scrollable_page;
 use super::sidebar;
 use super::sidebar_frame;
 use bevy::prelude::*;
-use bevy::render::view::visibility;
 
-// Marker for UI node
+// Marker for Node
 #[derive(Component)]
 pub struct UnderNavbar;
 
@@ -12,8 +11,17 @@ pub struct UnderNavbar;
 #[derive(Component)]
 pub struct SidebarSwiper;
 
+// true iff the sidebar is shown and the swiper is to the right
 #[derive(Component)]
 pub struct ShowingSidebar(bool);
+
+// Events
+#[derive(Event, Debug)]
+pub struct SidebarColorEvent(pub Color);
+
+#[derive(Event)]
+pub struct SidebarVisibilityEvent(pub Visibility);
+
 
 pub struct SystemsPlugin;
 
@@ -22,9 +30,9 @@ impl Plugin for SystemsPlugin {
         app.add_plugins(sidebar_frame::SystemsPlugin)
             .add_plugins(sidebar::SystemsPlugin)
             .add_plugins(scrollable_page::SystemsPlugin)
-            .add_event::<ChangeSidebarColorEvent>()
+            .add_event::<SidebarColorEvent>()
             .add_event::<SidebarVisibilityEvent>()
-            .add_systems(Update, (horizontal_swiper_resize_system, sidebar_color_change_system, sidebar_visibility_system));
+            .add_systems(Update, (sidebar_swiper_interactions, sidebar_visibility_system));
     }
 }
 
@@ -36,20 +44,20 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let sidebar_width: f32 = 20.0; // in percentage
     let sidebar = sidebar::setup(commands, sidebar_width);
 
-    let horizontal_swiper = horizontal_swiper();
-    let horizontal_swiper = commands.spawn(horizontal_swiper).id();
+    let sidebar_swiper = sidebar_swiper();
+    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
 
     let scrollable_page = scrollable_page::setup(commands);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands
         .entity(under_navbar)
-        .push_children(&[sidebar, horizontal_swiper, scrollable_page]);
+        .push_children(&[sidebar, sidebar_swiper, scrollable_page]);
 
     return under_navbar;
 }
 
-pub fn horizontal_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
+pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
     return (
         SidebarSwiper,
         ButtonBundle {
@@ -66,29 +74,18 @@ pub fn horizontal_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
 );
 }
 
-
-// In your main.rs or lib.rs
-#[derive(Event, Debug)]
-pub struct ChangeSidebarColorEvent(pub Color);
-
-#[derive(Event)]
-pub struct SidebarVisibilityEvent(pub Visibility);
-
-// #[derive(Event, Debug)]
-// pub struct ResizeSidebarEvent(pub bevy::prelude::Val);
-
-// In your horizontal_swiper_resize_system function
-fn horizontal_swiper_resize_system(
+// In your sidebar_swiper_interactions function
+fn sidebar_swiper_interactions(
     mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &mut ShowingSidebar), (Changed<Interaction>, With<SidebarSwiper>)>,
     // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
-    mut sidebar_color_writer: EventWriter<ChangeSidebarColorEvent>,
+    mut sidebar_color_writer: EventWriter<SidebarColorEvent>,
     mut sidebar_visibility_writer: EventWriter<SidebarVisibilityEvent>,
 ) {
     for (interaction, mut color, mut showing_sidebar) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
                 *color = Color::RED.into();
-                sidebar_color_writer.send(ChangeSidebarColorEvent(Color::RED));
+                sidebar_color_writer.send(SidebarColorEvent(Color::RED));
                 
                 match showing_sidebar.0 {
                     true => {
@@ -105,33 +102,33 @@ fn horizontal_swiper_resize_system(
             Interaction::Hovered => {
                 *color = Color::BLUE.into();
                 // println!("Sending Event");
-                sidebar_color_writer.send(ChangeSidebarColorEvent(Color::BLUE));
+                sidebar_color_writer.send(SidebarColorEvent(Color::BLUE));
             }
             Interaction::None => {
                 *color = Color::GREEN.into();
-                sidebar_color_writer.send(ChangeSidebarColorEvent(Color::GREEN));
+                sidebar_color_writer.send(SidebarColorEvent(Color::GREEN));
             }
         }
     }
 }
 
 // In another system that handles the event
-fn sidebar_color_change_system(
-    mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
-    mut color_event_reader: EventReader<ChangeSidebarColorEvent>,
-) {
-    // println!("printing sidebar_query");
-    // println!("{:?}", sidebar_query);
-    // println!("ending printing sidebar_query");
-    for event in color_event_reader.read() {
-        // println!("Receiving event: {:?}", event);
+// fn sidebar_color_change_system(
+//     mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
+//     mut color_event_reader: EventReader<ChangeSidebarColorEvent>,
+// ) {
+//     // println!("printing sidebar_query");
+//     // println!("{:?}", sidebar_query);
+//     // println!("ending printing sidebar_query");
+//     for event in color_event_reader.read() {
+//         // println!("Receiving event: {:?}", event);
 
-        for mut sidebar_color in &mut sidebar_query.iter_mut() {
-            // println!("Modifying sidebar_color: {:?}", sidebar_color);
-            *sidebar_color = event.0.into();
-        }
-    }
-}
+//         for mut sidebar_color in &mut sidebar_query.iter_mut() {
+//             // println!("Modifying sidebar_color: {:?}", sidebar_color);
+//             *sidebar_color = event.0.into();
+//         }
+//     }
+// }
 
 
 fn sidebar_visibility_system(
