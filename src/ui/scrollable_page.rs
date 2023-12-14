@@ -67,17 +67,17 @@ pub fn setup(commands: &mut Commands) -> Entity {
     return container;
 }
 
-pub fn new() -> NodeBundle {
-    return NodeBundle {
+pub fn new() -> (ScrollablePage, NodeBundle) {
+    return (ScrollablePage, NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
-            flex_direction: FlexDirection::Column,
+            flex_direction : FlexDirection::Column,
             ..default()
         },
         background_color: Color::rgb(0.0, 1.0, 0.0).into(),
         ..default()
-    };
+    });
 }
 
 fn temp() {}
