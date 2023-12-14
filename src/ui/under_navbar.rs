@@ -17,7 +17,7 @@ pub struct ShowingSidebar(bool);
 
 // Events
 #[derive(Event, Debug)]
-pub struct SidebarColorEvent(pub Color);
+pub struct SidebarSwiperColorEvent(pub Color);
 
 #[derive(Event)]
 pub struct SidebarVisibilityEvent(pub Visibility);
@@ -30,9 +30,9 @@ impl Plugin for SystemsPlugin {
         app.add_plugins(sidebar_frame::SystemsPlugin)
             .add_plugins(sidebar::SystemsPlugin)
             .add_plugins(scrollable_page::SystemsPlugin)
-            .add_event::<SidebarColorEvent>()
+            .add_event::<SidebarSwiperColorEvent>()
             .add_event::<SidebarVisibilityEvent>()
-            .add_systems(Update, (sidebar_swiper_interactions, sidebar_visibility_system));
+            .add_systems(Update, (sidebar_swiper_interactions, sidebar_color_change_system, sidebar_visibility_system));
     }
 }
 
@@ -78,14 +78,13 @@ pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
 fn sidebar_swiper_interactions(
     mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &mut ShowingSidebar), (Changed<Interaction>, With<SidebarSwiper>)>,
     // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
-    mut sidebar_color_writer: EventWriter<SidebarColorEvent>,
+    mut sidebar_swiper_color_writer: EventWriter<SidebarSwiperColorEvent>,
     mut sidebar_visibility_writer: EventWriter<SidebarVisibilityEvent>,
 ) {
     for (interaction, mut color, mut showing_sidebar) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
-                *color = Color::RED.into();
-                sidebar_color_writer.send(SidebarColorEvent(Color::RED));
+                // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::RED));
                 
                 match showing_sidebar.0 {
                     true => {
@@ -100,35 +99,46 @@ fn sidebar_swiper_interactions(
                 showing_sidebar.0 = !showing_sidebar.0;
             }
             Interaction::Hovered => {
-                *color = Color::BLUE.into();
-                // println!("Sending Event");
-                sidebar_color_writer.send(SidebarColorEvent(Color::BLUE));
+                match showing_sidebar.0 {
+                    true => {
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
+                    }
+                    false => {
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(1.0, 1.0, 1.0)));
+                    }
+                }
             }
             Interaction::None => {
-                *color = Color::GREEN.into();
-                sidebar_color_writer.send(SidebarColorEvent(Color::GREEN));
+                match showing_sidebar.0 {
+                    true => {
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(1.0, 1.0, 1.0)));
+                    }
+                    false => {
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
+                    }
+                }
             }
         }
     }
 }
 
 // In another system that handles the event
-// fn sidebar_color_change_system(
-//     mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
-//     mut color_event_reader: EventReader<ChangeSidebarColorEvent>,
-// ) {
-//     // println!("printing sidebar_query");
-//     // println!("{:?}", sidebar_query);
-//     // println!("ending printing sidebar_query");
-//     for event in color_event_reader.read() {
-//         // println!("Receiving event: {:?}", event);
+fn sidebar_color_change_system(
+    mut sidebar_swiper_query: Query<&mut BackgroundColor, With<SidebarSwiper>>,
+    mut color_event_reader: EventReader<SidebarSwiperColorEvent>,
+) {
+    // println!("printing sidebar_query");
+    // println!("{:?}", sidebar_query);
+    // println!("ending printing sidebar_query");
+    for event in color_event_reader.read() {
+        // println!("Receiving event: {:?}", event);
 
-//         for mut sidebar_color in &mut sidebar_query.iter_mut() {
-//             // println!("Modifying sidebar_color: {:?}", sidebar_color);
-//             *sidebar_color = event.0.into();
-//         }
-//     }
-// }
+        for mut sidebar_swiper_color in &mut sidebar_swiper_query.iter_mut() {
+            // println!("Modifying sidebar_color: {:?}", sidebar_color);
+            *sidebar_swiper_color = event.0.into();
+        }
+    }
+}
 
 
 fn sidebar_visibility_system(
