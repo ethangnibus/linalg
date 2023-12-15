@@ -62,12 +62,12 @@ pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
         SidebarSwiper,
         ButtonBundle {
         style: Style {
-            width: Val::Px(15.0),
+            width: Val::Percent(1.0),
             height: Val::Percent(100.0),
             border: UiRect::all(Val::Px(0.0)),
             ..default()
         },
-        background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     },
     ShowingSidebar(true)
@@ -101,17 +101,17 @@ fn sidebar_swiper_interactions(
             Interaction::Hovered => {
                 match showing_sidebar.0 {
                     true => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.7, 0.45, 0.45)));
                     }
                     false => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(1.0, 1.0, 1.0)));
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
                     }
                 }
             }
             Interaction::None => {
                 match showing_sidebar.0 {
                     true => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(1.0, 1.0, 1.0)));
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
                     }
                     false => {
                         sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
