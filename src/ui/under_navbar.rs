@@ -62,7 +62,7 @@ pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
         SidebarSwiper,
         ButtonBundle {
         style: Style {
-            width: Val::Percent(1.0),
+            width: Val::Px(15.0),
             height: Val::Percent(100.0),
             border: UiRect::all(Val::Px(0.0)),
             ..default()
