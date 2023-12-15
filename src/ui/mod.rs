@@ -7,6 +7,7 @@ pub mod scrollable_page;
 pub mod sidebar;
 pub mod sidebar_frame;
 pub mod under_navbar;
+pub mod view;
 
 pub struct SetupUiPlugin;
 
@@ -14,6 +15,7 @@ impl Plugin for SetupUiPlugin {
     fn build(&self, app: &mut App) {
         // Add the setup_ui system as a startup system
         app.add_plugins(root::SystemsPlugin)
+            .add_plugins(scrollable_page::SystemsPlugin)
             .add_systems(Startup, setup)
             .add_systems(Update, temp);
     }

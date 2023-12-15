@@ -11,68 +11,55 @@ use super::scrollable_page;
 
 // Marker for UI node
 #[derive(Component)]
-pub struct Sidebar;
-
+pub struct View;
 
 #[derive(Component, Default)]
-struct SidebarList {
+struct ViewList {
     position: f32,
 }
 
 pub struct SystemsPlugin;
-
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, mouse_scroll);
     }
 }
 
-// pub fn setup(mut commands: Commands) {
-//     //
-//     println!("sidebar.rs");
-// }
-
-pub fn setup(commands: &mut Commands, width: f32) -> Entity {
-    let sidebar = new(width);
-    let sidebar = commands.spawn(sidebar).id();
-
+pub fn setup(commands: &mut Commands) -> Entity {
+    let view = new();
+    let view = commands.spawn(view).id();
+    
     let page_items = page_items(commands);
     let scrollable_page = scrollable_page::get_page();
-
-    let scrollable_page = commands.spawn((SidebarList::default(), scrollable_page)).id();
-
+    let scrollable_page = commands.spawn((ViewList::default(), scrollable_page)).id();
+    
     commands.entity(scrollable_page).push_children(&page_items);
-    commands.entity(sidebar).push_children(&[scrollable_page]);
+    commands.entity(view).push_children(&[scrollable_page]);
 
-    return sidebar;
+    return view;
 }
 
-pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
-    return (
-        Sidebar,
-        ButtonBundle {
+pub fn new() -> (View, ButtonBundle) {
+    return (View, ButtonBundle {
         style: Style {
             flex_direction: FlexDirection::Column,
             align_self: AlignSelf::Stretch,
+            width: Val::Percent(100.0),
             height: Val::Percent(100.0),
-            width: Val::Percent(width),
             overflow: Overflow::clip_y(),
             ..default()
         },
-        background_color: Color::rgb(1.0, 0.0, 1.0).into(),
+        background_color: Color::rgb(0.0, 1.0, 0.0).into(),
         ..default()
-    }
-    );
+    });
 }
-
-fn temp() {}
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let mut page_items = Vec::new();
     for i in 0..1000 {
         let page_item = (
             TextBundle::from_section(
-                format!("Item {i} - In sidebar"),
+                format!("Item {i} - In view"),
                 TextStyle {
                     font_size: 20.,
                     ..default()
@@ -87,21 +74,21 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     return page_items;
 }
 
-
-
+fn temp() {}
 
 fn mouse_scroll(
     mut interaction_query: Query<
         &Interaction,
-        With<Sidebar>
+        With<View>
     >,
     mut mouse_wheel_events: EventReader<MouseWheel>,
-    mut query_list: Query<(&mut SidebarList, &mut Style, &Parent, &Node)>,
+    mut query_list: Query<(&mut ViewList, &mut Style, &Parent, &Node)>,
     query_node: Query<&Node>,
 ) {
     for interaction in &mut interaction_query {
         match *interaction {
             Interaction::Hovered => {
+                println!("hovering over view");
                 for mouse_wheel_event in mouse_wheel_events.read() {
                     for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
                         let items_height = list_node.size().y;

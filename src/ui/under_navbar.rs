@@ -1,4 +1,4 @@
-use super::scrollable_page;
+use super::view;
 use super::sidebar;
 use super::sidebar_frame;
 use bevy::prelude::*;
@@ -29,7 +29,7 @@ impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(sidebar_frame::SystemsPlugin)
             .add_plugins(sidebar::SystemsPlugin)
-            .add_plugins(scrollable_page::SystemsPlugin)
+            .add_plugins(view::SystemsPlugin)
             .add_event::<SidebarSwiperColorEvent>()
             .add_event::<SidebarVisibilityEvent>()
             .add_systems(Update, (sidebar_swiper_interactions, sidebar_color_change_system, sidebar_visibility_system));
@@ -47,7 +47,7 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let sidebar_swiper = sidebar_swiper();
     let sidebar_swiper = commands.spawn(sidebar_swiper).id();
 
-    let scrollable_page = scrollable_page::setup(commands);
+    let scrollable_page = view::setup(commands);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands
