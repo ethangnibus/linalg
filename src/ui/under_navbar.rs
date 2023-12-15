@@ -47,12 +47,15 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let sidebar_swiper = sidebar_swiper();
     let sidebar_swiper = commands.spawn(sidebar_swiper).id();
 
+    let right_border = right_border();
+    let right_border = commands.spawn(right_border).id();
+
     let scrollable_page = view::setup(commands);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands
         .entity(under_navbar)
-        .push_children(&[sidebar, sidebar_swiper, scrollable_page]);
+        .push_children(&[sidebar, sidebar_swiper, scrollable_page, right_border]);
 
     return under_navbar;
 }
@@ -68,6 +71,22 @@ pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
             ..default()
         },
         background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        ..default()
+    },
+    ShowingSidebar(true)
+);
+}
+
+pub fn right_border() -> (NodeBundle, ShowingSidebar) {
+    return (
+        NodeBundle {
+        style: Style {
+            width: Val::Percent(1.0),
+            height: Val::Percent(100.0),
+            border: UiRect::all(Val::Px(0.0)),
+            ..default()
+        },
+        background_color: Color::rgb(0.3, 0.3, 0.3).into(),
         ..default()
     },
     ShowingSidebar(true)
@@ -111,10 +130,10 @@ fn sidebar_swiper_interactions(
             Interaction::None => {
                 match showing_sidebar.0 {
                     true => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
                     }
                     false => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.5, 0.5, 0.5)));
+                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
                     }
                 }
             }
