@@ -65,14 +65,12 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
     );
 }
 
-fn temp() {}
-
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let mut page_items = Vec::new();
     for i in 0..1000 {
-        let page_item = (
+        let text_item = (
             TextBundle::from_section(
-                format!("Item {i} - In sidebar"),
+                format!("Chapter: {i}"),
                 TextStyle {
                     font_size: 20.,
                     ..default()
@@ -81,7 +79,36 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
             Label,
             AccessibilityNode(NodeBuilder::new(Role::ListItem)),
         );
+        let page_item = NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(50.0),
+                padding: UiRect::axes(Val::Px(4.0), Val::Px(2.0)),
+                ..default()
+            },
+            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        };
+
+        let inner_item = NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                // justify_items: JustifyItems::Center,
+                ..default()
+            },
+            background_color: Color::rgb(0.5, 0.5, 0.5).into(),
+            ..default()
+        };
+
+        let text_item = commands.spawn(text_item).id();
+        let inner_item = commands.spawn(inner_item).id();
         let page_item = commands.spawn(page_item).id();
+
+        commands.entity(inner_item).push_children(&[text_item]);
+        commands.entity(page_item).push_children(&[inner_item]);
+
         page_items.push(page_item);
     }
     return page_items;

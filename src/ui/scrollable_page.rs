@@ -40,6 +40,8 @@ pub fn get_page() -> (ScrollablePage, NodeBundle, AccessibilityNode) {
             style: Style {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
+                justify_items: JustifyItems::Center, // maybe remove
+                // row_gap: Val::Percent(0.01),
                 ..default()
             },
             background_color: Color::rgb(0.0, 0.5, 0.5).into(),

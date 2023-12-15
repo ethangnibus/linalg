@@ -19,7 +19,10 @@ impl Plugin for SystemsPlugin {
 
 pub fn setup(commands: &mut Commands, height: f32) -> Entity {
     let navbar = new(height);
-    return commands.spawn(navbar).id();
+
+    let navbar = commands.spawn(navbar).id();
+
+    return navbar;
 }
 
 pub fn new(height: f32) -> NodeBundle {
@@ -27,11 +30,14 @@ pub fn new(height: f32) -> NodeBundle {
         style: Style {
             height: Val::Percent(height),
             width: Val::Percent(100.0),
+            align_items: AlignItems::Center,
+            justify_items: JustifyItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.15, 0.15, 0.15).into(),
+        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     };
 }
+
 
 fn temp() {}
