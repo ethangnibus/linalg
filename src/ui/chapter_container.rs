@@ -10,48 +10,67 @@ use bevy::{
 use super::sidebar;
 
 #[derive(Component)]
+pub struct ChapterContainer;
+
+#[derive(Component)]
 pub struct ChapterButton;
+
+#[derive(Component)]
+pub struct SectionsContainer;
+
+#[derive(Event, Debug)]
+pub struct SidebarSwiperColorEvent(pub Color);
+
+#[derive(Event)]
+pub struct SectionsContainerVisibilityEvent(pub Visibility, pub Entity);
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, chapter_button_mouse_scroll);
+        app.add_event::<SectionsContainerVisibilityEvent>()
+            .add_systems(Update, (chapter_button_mouse_scroll, sections_container_visibility_system));
     }
 }
 
 pub fn setup(commands: &mut Commands, chapter_name: String) -> Entity {
-    let chapter_container = NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            padding: UiRect {
-                left: Val::Px(4.0),
-                right: Val::Px(4.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+    let chapter_container = (
+        ChapterContainer,
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                padding: UiRect {
+                    left: Val::Px(4.0),
+                    right: Val::Px(4.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                },
+                flex_direction: FlexDirection::Column,
+                ..default()
             },
-            flex_direction: FlexDirection::Column,
+            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
-        },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    };
-    let sections_container = NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            padding: UiRect {
-                left: Val::Px(4.0),
-                right: Val::Px(0.0),
-                top: Val::Px(4.0),
-                bottom: Val::Px(0.0),
+        }
+    );
+    let sections_container = (
+        SectionsContainer,
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                padding: UiRect {
+                    left: Val::Px(4.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(4.0),
+                    bottom: Val::Px(0.0),
+                },
+                flex_direction: FlexDirection::Column,
+                ..default()
             },
-            flex_direction: FlexDirection::Column,
+            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
-        },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    };
+        }
+    );
 
     let section_button  = (
         ChapterButton,
@@ -118,21 +137,19 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: String) -> Entity {
 
 fn chapter_button_mouse_scroll(
     mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &Parent, &Node),
+        (&Interaction, &mut BackgroundColor, &Parent),
         With<ChapterButton>
     >,
     mut mouse_wheel_events: EventReader<MouseWheel>,
     mut query_list: Query<(&mut sidebar::SidebarList, &mut Style, &Parent, &Node)>,
     query_node: Query<&Node>,
+    mut sections_container_visibility_writer: EventWriter<SectionsContainerVisibilityEvent>,
 ) {
-    for (interaction, mut chapter_button_background_color, chapter_container, container_node) in &mut interaction_query {
+    for (interaction, mut chapter_button_background_color, chapter_container) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
                 *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
-                // let parent = parent.get();
-                // let children = Children(parent);
-                // let mut text = text_query.get_mut(children[0]).unwrap();
-                let chapter_container = query_node.get(chapter_container.get()).unwrap().size.y = 10;
+                sections_container_visibility_writer.send(SectionsContainerVisibilityEvent(Visibility::Hidden, chapter_container.get()));
             }
             Interaction::Hovered => {
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
@@ -157,6 +174,26 @@ fn chapter_button_mouse_scroll(
             }
             Interaction::None => {
                 *chapter_button_background_color = Color::rgb(0.5, 0.5, 0.5).into();
+            }
+        }
+    }
+}
+
+fn sections_container_visibility_system (
+    mut sections_container_query: Query<(&mut Visibility, &Parent), With<SectionsContainer>>,
+    mut sections_container_visibility_event: EventReader<SectionsContainerVisibilityEvent>,
+    mut chapter_container_query: Query<(&mut Style), With<ChapterContainer>>,
+) {
+    for event in sections_container_visibility_event.read() {
+
+        for (mut sections_container_visibility, parent) in &mut sections_container_query.iter_mut() {
+            let other_parent: Entity = event.1.into();
+            if other_parent == parent.get() {
+                *sections_container_visibility = Visibility::Hidden;
+            }
+
+            for mut style in &mut chapter_container_query.iter_mut() {
+                style.height = Val::Px(100.0);
             }
         }
     }
