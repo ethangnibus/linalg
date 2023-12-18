@@ -8,6 +8,7 @@ use bevy::{
     // winit::WinitSettings,
 };
 use super::scrollable_page;
+use super::chapter_container;
 
 // Marker for UI node
 #[derive(Component)]
@@ -15,15 +16,17 @@ pub struct Sidebar;
 
 
 #[derive(Component, Default)]
-struct SidebarList {
-    position: f32,
+pub struct SidebarList {
+    pub position: f32,
 }
 
 pub struct SystemsPlugin;
 
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, mouse_scroll);
+        app
+        .add_plugins(chapter_container::SystemsPlugin)
+        .add_systems(Update, sidebar_mouse_scroll);
     }
 }
 
@@ -51,65 +54,28 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
     return (
         Sidebar,
         ButtonBundle {
-        style: Style {
-            flex_direction: FlexDirection::Column,
-            align_self: AlignSelf::Stretch,
-            height: Val::Percent(100.0),
-            width: Val::Percent(width),
-            overflow: Overflow::clip_y(),
+            style: Style {
+                flex_direction: FlexDirection::Column,
+                align_self: AlignSelf::Stretch,
+                height: Val::Percent(100.0),
+                width: Val::Percent(width),
+                // width: Val::Px(100.0),
+                overflow: Overflow::clip_y(),
+                ..default()
+            },
+            background_color: Color::rgb(1.0, 0.0, 1.0).into(),
             ..default()
-        },
-        background_color: Color::rgb(1.0, 0.0, 1.0).into(),
-        ..default()
-    }
+        }
     );
 }
+
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let mut page_items = Vec::new();
     for i in 0..1000 {
-        let text_item = (
-            TextBundle::from_section(
-                format!("Chapter: {i}"),
-                TextStyle {
-                    font_size: 20.,
-                    ..default()
-                },
-            ),
-            Label,
-            AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-        );
-        let page_item = NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Px(50.0),
-                padding: UiRect::axes(Val::Px(4.0), Val::Px(2.0)),
-                ..default()
-            },
-            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-            ..default()
-        };
-
-        let inner_item = NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                // justify_items: JustifyItems::Center,
-                ..default()
-            },
-            background_color: Color::rgb(0.5, 0.5, 0.5).into(),
-            ..default()
-        };
-
-        let text_item = commands.spawn(text_item).id();
-        let inner_item = commands.spawn(inner_item).id();
-        let page_item = commands.spawn(page_item).id();
-
-        commands.entity(inner_item).push_children(&[text_item]);
-        commands.entity(page_item).push_children(&[inner_item]);
-
-        page_items.push(page_item);
+        let chapter_name = format!("Chapter {}", i);
+        let chapter_container = chapter_container::setup(commands, chapter_name);
+        page_items.push(chapter_container);
     }
     return page_items;
 }
@@ -117,7 +83,7 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
 
 
 
-fn mouse_scroll(
+fn sidebar_mouse_scroll(
     mut interaction_query: Query<
         &Interaction,
         With<Sidebar>
@@ -133,14 +99,14 @@ fn mouse_scroll(
                     for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
                         let items_height = list_node.size().y;
                         let container_height = query_node.get(parent.get()).unwrap().size().y;
-            
+                        
                         let max_scroll = (items_height - container_height).max(0.);
-            
+                        
                         let dy = match mouse_wheel_event.unit {
                             MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
                             MouseScrollUnit::Pixel => mouse_wheel_event.y,
                         };
-            
+                        
                         scrolling_list.position += dy;
                         scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
                         style.top = Val::Px(scrolling_list.position);
@@ -151,3 +117,4 @@ fn mouse_scroll(
         }
     }
 }
+

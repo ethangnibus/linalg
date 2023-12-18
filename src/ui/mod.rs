@@ -8,6 +8,7 @@ pub mod sidebar;
 pub mod sidebar_frame;
 pub mod under_navbar;
 pub mod view;
+pub mod chapter_container;
 
 pub struct SetupUiPlugin;
 

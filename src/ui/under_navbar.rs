@@ -120,20 +120,24 @@ fn sidebar_swiper_interactions(
             Interaction::Hovered => {
                 match showing_sidebar.0 {
                     true => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.7, 0.45, 0.45)));
+                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.7, 0.45, 0.45)));
+                        *color = Color::rgb(0.7, 0.45, 0.45).into();
                     }
                     false => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
+                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
+                        *color = Color::rgb(0.45, 0.45, 0.7).into();
                     }
                 }
             }
             Interaction::None => {
                 match showing_sidebar.0 {
                     true => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
+                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
+                        *color = Color::rgb(0.3, 0.3, 0.3).into();
                     }
                     false => {
-                        sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
+                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
+                        *color = Color::rgb(0.3, 0.3, 0.3).into();
                     }
                 }
             }
@@ -146,14 +150,8 @@ fn sidebar_color_change_system(
     mut sidebar_swiper_query: Query<&mut BackgroundColor, With<SidebarSwiper>>,
     mut color_event_reader: EventReader<SidebarSwiperColorEvent>,
 ) {
-    // println!("printing sidebar_query");
-    // println!("{:?}", sidebar_query);
-    // println!("ending printing sidebar_query");
     for event in color_event_reader.read() {
-        // println!("Receiving event: {:?}", event);
-
         for mut sidebar_swiper_color in &mut sidebar_swiper_query.iter_mut() {
-            // println!("Modifying sidebar_color: {:?}", sidebar_color);
             *sidebar_swiper_color = event.0.into();
         }
     }
