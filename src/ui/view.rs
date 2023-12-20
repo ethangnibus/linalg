@@ -72,7 +72,12 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
             style: Style {
                 width: Val::Percent(100.0),
                 height: Val::Px(200.0),
-                padding: UiRect::axes(Val::Px(4.0), Val::Px(2.0)),
+                padding: UiRect {
+                    left: Val::Px(4.0),
+                    right: Val::Px(4.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(4.0),
+                },
                 ..default()
             },
             background_color: Color::rgb(0.1, 0.1, 0.1).into(),
