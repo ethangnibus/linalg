@@ -9,11 +9,17 @@ use bevy::{
 };
 use super::sidebar;
 
-#[derive(Component)]
-pub struct ChapterContainer;
+#[derive(Component, Copy, Clone)]
+pub struct ChapterNumber(pub u32);
 
 #[derive(Component)]
-pub struct ChapterButton;
+pub struct SectionNumber(pub u32);
+
+#[derive(Component)]
+pub struct ChapterContainer();
+
+#[derive(Component)]
+pub struct ChapterButton();
 
 #[derive(Component)]
 pub struct SectionsContainer;
@@ -22,19 +28,26 @@ pub struct SectionsContainer;
 pub struct SidebarSwiperColorEvent(pub Color);
 
 #[derive(Event)]
-pub struct SectionsContainerVisibilityEvent(pub Visibility, pub Entity);
+pub struct SectionsContainerVisibilityEvent(pub Visibility);
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<SectionsContainerVisibilityEvent>()
-            .add_systems(Update, (chapter_button_mouse_scroll, sections_container_visibility_system));
+            .add_systems(Update, (
+                chapter_button_mouse_scroll,
+                sections_container_visibility_system,
+                chapter_container_mouse_scroll,
+                sections_container_mouse_scroll
+            ));
     }
 }
 
-pub fn setup(commands: &mut Commands, chapter_name: String) -> Entity {
+pub fn setup(commands: &mut Commands, chapter_name: String, chapter_number: u32) -> Entity {
+    let chapter_number = ChapterNumber(chapter_number);
     let chapter_container = (
-        ChapterContainer,
+        ChapterContainer(),
+        chapter_number,
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -73,7 +86,9 @@ pub fn setup(commands: &mut Commands, chapter_name: String) -> Entity {
     );
 
     let section_button  = (
-        ChapterButton,
+        SectionNumber(0),
+        ChapterButton(),
+        chapter_number,
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -90,7 +105,7 @@ pub fn setup(commands: &mut Commands, chapter_name: String) -> Entity {
 
     let chapter_container = commands.spawn(chapter_container).id();
     let sections_container = commands.spawn(sections_container).id();
-    let chapter_button = chapter_button(commands, chapter_name);
+    let chapter_button = chapter_button(commands, chapter_name, chapter_number);
     let section_button = commands.spawn(section_button).id();
 
     commands.entity(sections_container).push_children(&[section_button]);
@@ -100,10 +115,11 @@ pub fn setup(commands: &mut Commands, chapter_name: String) -> Entity {
 
 
 
-pub fn chapter_button(commands: &mut Commands, chapter_name: String) -> Entity {
+pub fn chapter_button(commands: &mut Commands, chapter_name: String, chapter_number: ChapterNumber) -> Entity {
     println!("spawning chapter button");
     let chapter_button  = (
-        ChapterButton,
+        ChapterButton(),
+        chapter_number,
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -137,7 +153,7 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: String) -> Entity {
 
 fn chapter_button_mouse_scroll(
     mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &Parent),
+        (&Interaction, &mut BackgroundColor),
         With<ChapterButton>
     >,
     mut mouse_wheel_events: EventReader<MouseWheel>,
@@ -145,13 +161,16 @@ fn chapter_button_mouse_scroll(
     query_node: Query<&Node>,
     mut sections_container_visibility_writer: EventWriter<SectionsContainerVisibilityEvent>,
 ) {
-    for (interaction, mut chapter_button_background_color, chapter_container) in &mut interaction_query {
+    for (interaction, mut chapter_button_background_color) in &mut interaction_query {
+        
         match *interaction {
             Interaction::Pressed => {
+                println!("  pressed");
                 *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
-                sections_container_visibility_writer.send(SectionsContainerVisibilityEvent(Visibility::Hidden, chapter_container.get()));
+                sections_container_visibility_writer.send(SectionsContainerVisibilityEvent(Visibility::Hidden));
             }
             Interaction::Hovered => {
+                println!("  hovered");
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
                 
                 for mouse_wheel_event in mouse_wheel_events.read() {
@@ -180,20 +199,102 @@ fn chapter_button_mouse_scroll(
 }
 
 fn sections_container_visibility_system (
-    mut sections_container_query: Query<(&mut Visibility, &Parent), With<SectionsContainer>>,
+    mut sections_container_query: Query<(&mut Visibility, &mut Style, &Parent), With<SectionsContainer>>,
     mut sections_container_visibility_event: EventReader<SectionsContainerVisibilityEvent>,
-    mut chapter_container_query: Query<(&mut Style), With<ChapterContainer>>,
+    // mut chapter_container_query: Query<(&mut Style), With<ChapterContainer>>,
 ) {
-    for event in sections_container_visibility_event.read() {
+    // for event in sections_container_visibility_event.read() {
+    //     for (mut sections_container_visibility, mut style, parent) in &mut sections_container_query.iter_mut() {
+    //         let other_parent: Entity = event.1.into();
+    //         if other_parent == parent.get() {
+    //             *sections_container_visibility = Visibility::Hidden;
+    //             style.height = Val::Percent(0.0);
+    //         }
 
-        for (mut sections_container_visibility, parent) in &mut sections_container_query.iter_mut() {
-            let other_parent: Entity = event.1.into();
-            if other_parent == parent.get() {
-                *sections_container_visibility = Visibility::Hidden;
+    //         // for mut style in &mut chapter_container_query.iter_mut() {
+    //         //     style.height = Val::Px(100.0);
+    //         // }
+    //     }
+    // }
+}
+
+
+
+fn chapter_container_mouse_scroll(
+    mut interaction_query: Query<
+        (&Interaction),
+        With<ChapterContainer>
+    >,
+    mut mouse_wheel_events: EventReader<MouseWheel>,
+    mut query_list: Query<(&mut sidebar::SidebarList, &mut Style, &Parent, &Node)>,
+    query_node: Query<&Node>,
+    // mut sections_container_visibility_writer: EventWriter<SectionsContainerVisibilityEvent>,
+) {
+    for (interaction) in &mut interaction_query {
+        
+        match *interaction {
+            Interaction::Pressed => {
             }
+            Interaction::Hovered => {
+                for mouse_wheel_event in mouse_wheel_events.read() {
+                    for (mut scrolling_list, mut style, sidebar_list_parent, list_node) in &mut query_list {
+                        let items_height = list_node.size().y;
+                        let container_height = query_node.get(sidebar_list_parent.get()).unwrap().size().y;
+            
+                        let max_scroll = (items_height - container_height).max(0.);
+            
+                        let dy = match mouse_wheel_event.unit {
+                            MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
+                            MouseScrollUnit::Pixel => mouse_wheel_event.y,
+                        };
+                        
+                        scrolling_list.position += dy;
+                        scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
+                        style.top = Val::Px(scrolling_list.position);
+                    }
+                }
+            }
+            Interaction::None => {
+            }
+        }
+    }
+}
 
-            for mut style in &mut chapter_container_query.iter_mut() {
-                style.height = Val::Px(100.0);
+fn sections_container_mouse_scroll(
+    mut interaction_query: Query<
+        (&Interaction),
+        With<SectionsContainer>
+    >,
+    mut mouse_wheel_events: EventReader<MouseWheel>,
+    mut query_list: Query<(&mut sidebar::SidebarList, &mut Style, &Parent, &Node)>,
+    query_node: Query<&Node>,
+    // mut sections_container_visibility_writer: EventWriter<SectionsContainerVisibilityEvent>,
+) {
+    for (interaction) in &mut interaction_query {
+        
+        match *interaction {
+            Interaction::Pressed => {
+            }
+            Interaction::Hovered => {
+                for mouse_wheel_event in mouse_wheel_events.read() {
+                    for (mut scrolling_list, mut style, sidebar_list_parent, list_node) in &mut query_list {
+                        let items_height = list_node.size().y;
+                        let container_height = query_node.get(sidebar_list_parent.get()).unwrap().size().y;
+            
+                        let max_scroll = (items_height - container_height).max(0.);
+            
+                        let dy = match mouse_wheel_event.unit {
+                            MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
+                            MouseScrollUnit::Pixel => mouse_wheel_event.y,
+                        };
+                        
+                        scrolling_list.position += dy;
+                        scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
+                        style.top = Val::Px(scrolling_list.position);
+                    }
+                }
+            }
+            Interaction::None => {
             }
         }
     }

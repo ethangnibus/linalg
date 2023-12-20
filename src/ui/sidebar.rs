@@ -72,9 +72,9 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let mut page_items = Vec::new();
-    for i in 0..1000 {
-        let chapter_name = format!("Chapter {}", i);
-        let chapter_container = chapter_container::setup(commands, chapter_name);
+    for chapter_number in 0..1000u32 {
+        let chapter_name = format!("Chapter {}", chapter_number);
+        let chapter_container = chapter_container::setup(commands, chapter_name, chapter_number);
         page_items.push(chapter_container);
     }
     return page_items;
