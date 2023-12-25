@@ -39,5 +39,4 @@ pub fn new(height: f32) -> NodeBundle {
     };
 }
 
-
 fn temp() {}

@@ -26,7 +26,8 @@ impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app
         .add_plugins(chapter_container::SystemsPlugin)
-        .add_systems(Update, sidebar_mouse_scroll);
+        .add_event::<SidebarScrollEvent>()
+        .add_systems(Update, (sidebar_mouse_scroll, sidebar_scroll_reciever));
     }
 }
 
@@ -118,3 +119,13 @@ fn sidebar_mouse_scroll(
     }
 }
 
+#[derive(Event)]
+pub struct SidebarScrollEvent();
+fn sidebar_scroll_reciever(
+    mut sidebar_visibility_event: EventReader<SidebarScrollEvent>,
+    mut mouse_wheel_events: EventReader<MouseWheel>,
+    mut query_list: Query<(&mut SidebarList, &mut Style, &Parent, &Node)>,
+    query_node: Query<&Node>,
+) {
+    
+}
