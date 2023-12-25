@@ -75,8 +75,15 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let mut page_items = Vec::new();
     for chapter_number in 0..1000u32 {
         let chapter_name = format!("Chapter {}", chapter_number);
-        let chapter_container = chapter_container::setup(commands, chapter_name, chapter_number);
+        let chapter_container = chapter_container::chapter_container(commands, &chapter_name, chapter_number);
+        
+        let section_name1 = format!("Section {}", 1);
+        let section_name2 = format!("Section {}", 2);
+        let section_button = chapter_container::section_container(commands, &section_name1, chapter_number);
+        let section_button2 = chapter_container::section_container(commands, &section_name2, chapter_number);
         page_items.push(chapter_container);
+        page_items.push(section_button);
+        page_items.push(section_button2);
     }
     return page_items;
 }
@@ -93,30 +100,30 @@ fn sidebar_mouse_scroll(
     mut query_list: Query<(&mut SidebarList, &mut Style, &Parent, &Node)>,
     query_node: Query<&Node>,
 ) {
-    for interaction in &mut interaction_query {
-        match *interaction {
-            Interaction::Hovered => {
-                for mouse_wheel_event in mouse_wheel_events.read() {
-                    for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
-                        let items_height = list_node.size().y;
-                        let container_height = query_node.get(parent.get()).unwrap().size().y;
+    // for interaction in &mut interaction_query {
+    //     match *interaction {
+    //         Interaction::Hovered => {
+    //             for mouse_wheel_event in mouse_wheel_events.read() {
+    //                 for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
+    //                     let items_height = list_node.size().y;
+    //                     let container_height = query_node.get(parent.get()).unwrap().size().y;
                         
-                        let max_scroll = (items_height - container_height).max(0.);
+    //                     let max_scroll = (items_height - container_height).max(0.);
                         
-                        let dy = match mouse_wheel_event.unit {
-                            MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
-                            MouseScrollUnit::Pixel => mouse_wheel_event.y,
-                        };
+    //                     let dy = match mouse_wheel_event.unit {
+    //                         MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
+    //                         MouseScrollUnit::Pixel => mouse_wheel_event.y,
+    //                     };
                         
-                        scrolling_list.position += dy;
-                        scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
-                        style.top = Val::Px(scrolling_list.position);
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
+    //                     scrolling_list.position += dy;
+    //                     scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
+    //                     style.top = Val::Px(scrolling_list.position);
+    //                 }
+    //             }
+    //         }
+    //         _ => {}
+    //     }
+    // }
 }
 
 #[derive(Event)]

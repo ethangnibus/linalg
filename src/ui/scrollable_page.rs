@@ -44,7 +44,7 @@ pub fn get_page() -> (ScrollablePage, NodeBundle, AccessibilityNode) {
                 // row_gap: Val::Percent(0.01),
                 ..default()
             },
-            background_color: Color::rgb(0.0, 0.5, 0.5).into(),
+            background_color: Color::rgb(0.5, 0.0, 0.0).into(),
             ..default()
         },
         AccessibilityNode(NodeBuilder::new(Role::List)),
