@@ -65,7 +65,7 @@ pub struct SectionVisibilityEvent {
 
 #[derive(Event)]
 pub struct SubsectionVisibilityEvent {
-    // pub chapter_number: u32,
+    pub chapter_number: u32,
     pub section_number: u32,
 }
 
@@ -305,7 +305,12 @@ fn section_button_interaction (
                 println!("Pressed Chapter {}, Section {}", chapter_number, section_number);
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
-                subsection_visibility_writer.send(SubsectionVisibilityEvent{section_number: section_number});
+                subsection_visibility_writer.send(
+                    SubsectionVisibilityEvent{
+                        chapter_number: chapter_number,
+                        section_number: section_number
+                    }
+                );
             }
             Interaction::Hovered => {
                 *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
@@ -405,7 +410,12 @@ fn subsection_button_visibility_system (
             let section_button_section_number: u32 = event.section_number;
             let subsection_button_section_number: u32 = subsection_button_section_number.0;
 
-            if section_button_section_number == subsection_button_section_number {
+            let section_button_chapter_number: u32 = event.chapter_number;
+            let subsection_button_chapter_number: u32 = subsection_button_chapter_number.0;
+
+            if section_button_section_number == subsection_button_section_number
+                && section_button_chapter_number == subsection_button_chapter_number
+            {
                 println!("Pressed Chapter number {}", section_button_section_number);
 
                 match showing_subsections.0 {
