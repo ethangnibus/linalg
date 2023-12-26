@@ -59,10 +59,15 @@ pub struct SubsectionButton();
 pub struct SidebarItem();
 
 #[derive(Event)]
-pub struct SectionVisibilityEvent(pub u32);
+pub struct SectionVisibilityEvent {
+    pub chapter_number: u32,
+}
 
 #[derive(Event)]
-pub struct SubsectionVisibilityEvent(pub u32);
+pub struct SubsectionVisibilityEvent {
+    // pub chapter_number: u32,
+    pub section_number: u32,
+}
 
 // true iff the chapter's sections are shown
 #[derive(Component)]
@@ -268,7 +273,7 @@ fn chapter_button_interaction (
             Interaction::Pressed => {
                 *chapter_button_background_color = pressed_color;
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
-                section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
+                section_visibility_writer.send(SectionVisibilityEvent{chapter_number: chapter_number.0});
                 showing_sections.0 = !showing_sections.0;
             }
             Interaction::Hovered => {
@@ -300,7 +305,7 @@ fn section_button_interaction (
                 println!("Pressed Chapter {}, Section {}", chapter_number, section_number);
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
-                subsection_visibility_writer.send(SubsectionVisibilityEvent(section_number));
+                subsection_visibility_writer.send(SubsectionVisibilityEvent{section_number: section_number});
             }
             Interaction::Hovered => {
                 *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
@@ -362,7 +367,7 @@ fn section_button_visibility_system (
 ) {
     for event in section_button_visibility_event.read() {
         for (mut section_button_visibility, mut style, mut showing_sections, section_button_chapter_number) in &mut section_button_query.iter_mut() {
-            let chapter_button_chapter_number: u32 = event.0;
+            let chapter_button_chapter_number: u32 = event.chapter_number;
             let section_button_chapter_number: u32 = section_button_chapter_number.0;
 
             if chapter_button_chapter_number == section_button_chapter_number {
@@ -396,14 +401,14 @@ fn subsection_button_visibility_system (
     mut subsection_button_visibility_event: EventReader<SubsectionVisibilityEvent>,
 ) {
     for event in subsection_button_visibility_event.read() {
-        for (mut subsection_button_visibility, mut style, mut showing_sections, showing_subsections, subsection_button_chapter_number, subsection_button_section_number, subsection_button_subsection_number) in &mut subsection_button_query.iter_mut() {
-            let chapter_button_chapter_number: u32 = event.0;
-            let subsection_button_chapter_number: u32 = subsection_button_chapter_number.0;
+        for (mut subsection_button_visibility, mut style, mut showing_sections, mut showing_subsections, subsection_button_chapter_number, subsection_button_section_number, subsection_button_subsection_number) in &mut subsection_button_query.iter_mut() {
+            let section_button_section_number: u32 = event.section_number;
+            let subsection_button_section_number: u32 = subsection_button_section_number.0;
 
-            if chapter_button_chapter_number == subsection_button_chapter_number {
-                println!("Pressed Chapter number {}", chapter_button_chapter_number);
+            if section_button_section_number == subsection_button_section_number {
+                println!("Pressed Chapter number {}", section_button_section_number);
 
-                match showing_sections.0 {
+                match showing_subsections.0 {
                     true => { // Hide section if it's currently shown
                         *subsection_button_visibility = Visibility::Hidden;
                         style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
@@ -417,7 +422,7 @@ fn subsection_button_visibility_system (
                         style.padding = SUBSECTION_BUTTON_BORDER;
                     }
                 }
-                showing_sections.0 = !showing_sections.0;
+                showing_subsections.0 = !showing_subsections.0;
             }
         }
     }
