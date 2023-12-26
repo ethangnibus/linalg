@@ -19,13 +19,13 @@ const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
     bottom: Val::Px(4.0),
 };
 const SECTION_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(8.0),
+    left: Val::Px(12.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
 };
 const SUBSECTION_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(12.0),
+    left: Val::Px(20.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
@@ -392,14 +392,15 @@ fn section_button_visibility_system (
 fn subsection_button_visibility_system (
     mut subsection_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &mut ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButton>>,
     // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionButton>>,
+    mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
     mut subsection_button_visibility_event: EventReader<SubsectionVisibilityEvent>,
 ) {
     for event in subsection_button_visibility_event.read() {
         for (mut subsection_button_visibility, mut style, mut showing_sections, showing_subsections, subsection_button_chapter_number, subsection_button_section_number, subsection_button_subsection_number) in &mut subsection_button_query.iter_mut() {
             let chapter_button_chapter_number: u32 = event.0;
-            let section_button_chapter_number: u32 = subsection_button_chapter_number.0;
+            let subsection_button_chapter_number: u32 = subsection_button_chapter_number.0;
 
-            if chapter_button_chapter_number == section_button_chapter_number {
+            if chapter_button_chapter_number == subsection_button_chapter_number {
                 println!("Pressed Chapter number {}", chapter_button_chapter_number);
 
                 match showing_sections.0 {
