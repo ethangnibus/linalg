@@ -10,6 +10,8 @@ use bevy::{
 use super::sidebar;
 
 const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
+const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
+
 const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
     right: Val::Px(4.0),
@@ -36,13 +38,10 @@ pub struct ChapterNumber(pub u32);
 pub struct SectionNumber(pub u32);
 
 #[derive(Component)]
-pub struct ChapterContainer();
-
-#[derive(Component)]
 pub struct ChapterButton();
 
 #[derive(Component)]
-pub struct SectionContainer();
+pub struct SectionButton();
 
 #[derive(Component)]
 pub struct SidebarItem();
@@ -64,7 +63,8 @@ impl Plugin for SystemsPlugin {
             .add_systems(Update, (
                 section_button_visibility_system,
                 sidebar_button_mouse_scroll,
-                chapter_button_interaction
+                chapter_button_interaction,
+                section_button_interaction
             ));
     }
 }
@@ -72,9 +72,10 @@ impl Plugin for SystemsPlugin {
 pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
     let chapter_button = (
-        ChapterContainer(),
+        ChapterButton(),
         SidebarItem(),
         chapter_number,
+        ShowingSectionsOfThisChapter(false),
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -86,7 +87,6 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(0.5, 0.5, 0.5).into(),
             ..default()
         }
     );
@@ -113,25 +113,27 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
     return chapter_button;
 }
 
-pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
+pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_number: u32, section_number: u32) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
+    let section_number = SectionNumber(section_number);
     let chapter_button = (
-        SectionContainer(),
+        SectionButton(),
         SidebarItem(),
+        section_number,
         chapter_number,
-        ShowingSectionsOfThisChapter(true),
+        ShowingSectionsOfThisChapter(false),
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: SIDEBAR_BUTTON_HEIGHT,
-                border: SECTION_BUTTON_BORDER,
-                padding: SECTION_BUTTON_BORDER,
+                height: HIDDEN_SIDEBAR_BUTTON_HEIGHT,
+                border: HIDDEN_BUTTON_BORDER,
+                padding: HIDDEN_BUTTON_BORDER,
                 justify_content: JustifyContent::Center,
                 align_content: AlignContent::Center,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            visibility: Visibility::Hidden,
             ..default()
         }
     );
@@ -156,8 +158,8 @@ pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_nu
 }
 
 fn section_button_visibility_system (
-    mut section_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &ChapterNumber), With<SectionContainer>>,
-    // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionContainer>>,
+    mut section_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &ChapterNumber), With<SectionButton>>,
+    // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionButton>>,
     mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
 ) {
     for event in section_button_visibility_event.read() {
@@ -171,7 +173,7 @@ fn section_button_visibility_system (
                 match showing_sections.0 {
                     true => { // Hide section if it's currently shown
                         *section_button_visibility = Visibility::Hidden;
-                        style.height = Val::Px(0.0);
+                        style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
                         style.border = HIDDEN_BUTTON_BORDER;
                         style.padding = HIDDEN_BUTTON_BORDER;
                     }
@@ -228,17 +230,68 @@ fn sidebar_button_mouse_scroll(
 
 fn chapter_button_interaction (
     mut interaction_query: Query<
-        (&Interaction, &ChapterNumber, &mut BackgroundColor, &mut BorderColor),
-        (Changed<Interaction>, With<SidebarItem>)
+        (&Interaction, &ChapterNumber, &mut BackgroundColor, &mut BorderColor, &mut ShowingSectionsOfThisChapter),
+        (Changed<Interaction>, With<ChapterButton>)
     >,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
 ) {
-    for (interaction, chapter_number, mut chapter_button_background_color, mut chapter_button_border_color ) in &mut interaction_query {
+    for (
+        interaction,
+        chapter_number,
+        mut chapter_button_background_color,
+        mut chapter_button_border_color ,
+        mut showing_sections
+    ) in &mut interaction_query {
+        
+        let mut pressed_color: BackgroundColor = Color::BLACK.into();
+        let mut hovered_color: BackgroundColor = Color::BLACK.into();
+        match showing_sections.0 {
+            false => {
+                pressed_color = Color::rgb(0.45, 0.45, 0.7).into();
+                hovered_color = Color::rgb(0.6, 0.6, 0.9).into();
+            }
+            true => {
+                pressed_color = Color::rgb(0.7, 0.45, 0.45).into();
+                hovered_color = Color::rgb(0.9, 0.6, 0.6).into();
+            }
+        }
+
         match *interaction {
             Interaction::Pressed => {
-                *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
+                *chapter_button_background_color = pressed_color;
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
+                showing_sections.0 = !showing_sections.0;
+            }
+            Interaction::Hovered => {
+                *chapter_button_background_color = hovered_color;
+                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+            }
+            Interaction::None => {
+                *chapter_button_background_color = Color::rgb(0.5, 0.5, 0.5).into();
+                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+            }
+        }
+    }
+}
+
+fn section_button_interaction (
+    mut interaction_query: Query<
+        (&Interaction, &ChapterNumber, &SectionNumber, &mut BackgroundColor, &mut BorderColor),
+        (Changed<Interaction>, With<SectionButton>)
+    >,
+    // mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
+) {
+    for (interaction, chapter_number, section_number, mut chapter_button_background_color, mut chapter_button_border_color ) in &mut interaction_query {
+        let chapter_number: u32 = chapter_number.0;
+        let section_number: u32 = section_number.0;
+
+        match *interaction {
+            Interaction::Pressed => {
+                println!("Pressed Chapter {}, Section {}", chapter_number, section_number);
+                *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
+                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
             }
             Interaction::Hovered => {
                 *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();

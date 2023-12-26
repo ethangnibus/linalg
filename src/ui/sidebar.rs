@@ -74,8 +74,8 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
         
         let section_name1 = format!("Section {}", 1);
         let section_name2 = format!("Section {}", 2);
-        let section_button = chapter_container::section_button(commands, &section_name1, chapter_number);
-        let section_button2 = chapter_container::section_button(commands, &section_name2, chapter_number);
+        let section_button = chapter_container::section_button(commands, &section_name1, chapter_number, 1);
+        let section_button2 = chapter_container::section_button(commands, &section_name2, chapter_number, 2);
         page_items.push(chapter_container);
         page_items.push(section_button);
         page_items.push(section_button2);
