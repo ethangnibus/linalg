@@ -405,34 +405,93 @@ fn subsection_button_visibility_system (
     mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
     mut subsection_button_visibility_event: EventReader<SubsectionVisibilityEvent>,
 ) {
-    for event in subsection_button_visibility_event.read() {
-        for (mut subsection_button_visibility, mut style, mut showing_sections, mut showing_subsections, subsection_button_chapter_number, subsection_button_section_number, subsection_button_subsection_number) in &mut subsection_button_query.iter_mut() {
-            let section_button_section_number: u32 = event.section_number;
-            let subsection_button_section_number: u32 = subsection_button_section_number.0;
 
-            let section_button_chapter_number: u32 = event.chapter_number;
-            let subsection_button_chapter_number: u32 = subsection_button_chapter_number.0;
+    // // event where chapter hides subsections
+    // for event in section_button_visibility_event.read() {
+    //     for (mut subsection_button_visibility, mut style, mut showing_sections, mut showing_subsections, subsection_button_chapter_number, subsection_button_section_number, subsection_button_subsection_number) in &mut subsection_button_query.iter_mut() {
+    //         let chapter_button_chapter_number: u32 = event.chapter_number;
+    //         let section_button_chapter_number: u32 = subsection_button_chapter_number.0;
 
-            if section_button_section_number == subsection_button_section_number
-                && section_button_chapter_number == subsection_button_chapter_number
-            {
-                println!("Pressed Chapter number {}", section_button_section_number);
+    //         if chapter_button_chapter_number == section_button_chapter_number {
+    //             println!("Pressed Chapter number {}", chapter_button_chapter_number);
 
-                match showing_subsections.0 {
-                    true => { // Hide section if it's currently shown
-                        *subsection_button_visibility = Visibility::Hidden;
-                        style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
-                        style.border = HIDDEN_BUTTON_BORDER;
-                        style.padding = HIDDEN_BUTTON_BORDER;
+    //             match showing_sections.0 {
+    //                 true => { // Hide section if it's currently shown
+    //                     *subsection_button_visibility = Visibility::Hidden;
+    //                     style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
+    //                     style.border = HIDDEN_BUTTON_BORDER;
+    //                     style.padding = HIDDEN_BUTTON_BORDER;
+    //                 }
+    //                 false => { // show section if it's currently hidden
+    //                     *subsection_button_visibility = Visibility::Inherited;
+    //                     style.height = SIDEBAR_BUTTON_HEIGHT;
+    //                     style.border = SUBSECTION_BUTTON_BORDER;
+    //                     style.padding = SUBSECTION_BUTTON_BORDER;
+    //                 }
+    //             }
+    //             showing_sections.0 = !showing_sections.0;
+    //         }
+    //     }
+    // }
+
+    // event where section buttons open and close subsection buttons
+    for section_event in section_button_visibility_event.read() {
+        for subsection_event in subsection_button_visibility_event.read() {
+            for (mut subsection_button_visibility, mut style, mut showing_sections, mut showing_subsections, subsection_button_chapter_number, subsection_button_section_number, subsection_button_subsection_number) in &mut subsection_button_query.iter_mut() {
+                println!("heyoo");
+                let section_button_section_number: u32 = subsection_event.section_number;
+                let subsection_button_section_number: u32 = subsection_button_section_number.0;
+
+                let section_button_chapter_number: u32 = section_event.chapter_number;
+                let subsection_button_chapter_number: u32 = subsection_button_chapter_number.0;
+
+                if section_button_section_number == subsection_button_section_number
+                    && section_button_chapter_number == subsection_button_chapter_number
+                {
+                    println!("Pressed Chapter number {}", section_button_section_number);
+
+                    match showing_sections.0 {
+                        true => { // Hide section if it's currently shown
+                            match showing_subsections.0 {
+                                true => { // hide subsection if it's currently shown
+                                    println!("1");
+                                    *subsection_button_visibility = Visibility::Hidden;
+                                    style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
+                                    style.border = HIDDEN_BUTTON_BORDER;
+                                    style.padding = HIDDEN_BUTTON_BORDER;
+                                }
+                                false => { // keep it hidden bc outer is not shown
+                                    println!("2");
+                                    *subsection_button_visibility = Visibility::Hidden;
+                                    style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
+                                    style.border = HIDDEN_BUTTON_BORDER;
+                                    style.padding = HIDDEN_BUTTON_BORDER;
+                                }
+                            }
+                            showing_subsections.0 = !showing_subsections.0;
+                        }
+                        false => { // show section if it's currently hidden
+                            match showing_subsections.0 {
+                                true => { // hide subsection if it's currently shown
+                                    println!("3");
+                                    *subsection_button_visibility = Visibility::Hidden;
+                                    style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
+                                    style.border = HIDDEN_BUTTON_BORDER;
+                                    style.padding = HIDDEN_BUTTON_BORDER;
+                                }
+                                false => { // show subsection if it's currently hidden
+                                    println!("4");
+                                    *subsection_button_visibility = Visibility::Inherited;
+                                    style.height = SIDEBAR_BUTTON_HEIGHT;
+                                    style.border = SUBSECTION_BUTTON_BORDER;
+                                    style.padding = SUBSECTION_BUTTON_BORDER;
+                                }
+                            }
+                            showing_subsections.0 = !showing_subsections.0;
+                        }
                     }
-                    false => { // show section if it's currently hidden
-                        *subsection_button_visibility = Visibility::Inherited;
-                        style.height = SIDEBAR_BUTTON_HEIGHT;
-                        style.border = SUBSECTION_BUTTON_BORDER;
-                        style.padding = SUBSECTION_BUTTON_BORDER;
-                    }
+                    showing_sections.0 = !showing_sections.0;
                 }
-                showing_subsections.0 = !showing_subsections.0;
             }
         }
     }

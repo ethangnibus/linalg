@@ -96,6 +96,13 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     //     page_items.push(section_button2);
     // }
     
+
+    // SMALL but important FIXME:
+    // split this chapter, section, subsection adding code
+    // into functions, but still add them individually here
+    // they should be 1 line each instead of 4 bc it would just
+    // be a function call :)
+
     // ============================= //
     // **** PART 1 ***************** //
     // ============================= //
