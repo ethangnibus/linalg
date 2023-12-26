@@ -9,6 +9,26 @@ use bevy::{
 };
 use super::sidebar;
 
+const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
+const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
+    left: Val::Px(4.0),
+    right: Val::Px(4.0),
+    top: Val::Px(0.0),
+    bottom: Val::Px(4.0),
+};
+const SECTION_BUTTON_BORDER: UiRect = UiRect {
+    left: Val::Px(16.0),
+    right: Val::Px(4.0),
+    top: Val::Px(0.0),
+    bottom: Val::Px(4.0),
+};
+const HIDDEN_BUTTON_BORDER: UiRect = UiRect {
+    left: Val::Px(0.0),
+    right: Val::Px(0.0),
+    top: Val::Px(0.0),
+    bottom: Val::Px(0.0),
+};
+
 #[derive(Component, Copy, Clone)]
 pub struct ChapterNumber(pub u32);
 
@@ -31,41 +51,36 @@ pub struct SidebarItem();
 pub struct SidebarSwiperColorEvent(pub Color);
 
 #[derive(Event)]
-pub struct SectionsContainerVisibilityEvent(pub Visibility);
+pub struct SectionVisibilityEvent(pub u32);
+
+// true iff the chapter's sections are shown
+#[derive(Component)]
+pub struct ShowingSectionsOfThisChapter(bool);
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<SectionsContainerVisibilityEvent>()
+        app.add_event::<SectionVisibilityEvent>()
             .add_systems(Update, (
-                section_container_visibility_system,
-                sidebar_item_mouse_scroll
+                section_button_visibility_system,
+                sidebar_button_mouse_scroll,
+                chapter_button_interaction
             ));
     }
 }
 
-pub fn chapter_container(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
+pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
-    let chapter_container = (
+    let chapter_button = (
         ChapterContainer(),
         SidebarItem(),
         chapter_number,
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: Val::Px(50.0),
-                border: UiRect {
-                    left: Val::Px(4.0),
-                    right: Val::Px(4.0),
-                    top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
-                },
-                padding: UiRect {
-                    left: Val::Px(4.0),
-                    right: Val::Px(4.0),
-                    top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
-                },
+                height: SIDEBAR_BUTTON_HEIGHT,
+                border: CHAPTER_BUTTON_BORDER,
+                padding: CHAPTER_BUTTON_BORDER,
                 justify_content: JustifyContent::Center,
                 align_content: AlignContent::Center,
                 flex_direction: FlexDirection::Column,
@@ -76,7 +91,7 @@ pub fn chapter_container(commands: &mut Commands, chapter_name: &String, chapter
         }
     );
 
-    let chapter_container = commands.spawn(chapter_container).id();
+    let chapter_button = commands.spawn(chapter_button).id();
     // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
 
     let text_item = (
@@ -92,34 +107,25 @@ pub fn chapter_container(commands: &mut Commands, chapter_name: &String, chapter
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
     let text_item = commands.spawn(text_item).id();
-    commands.entity(chapter_container).push_children(&[text_item]);
+    commands.entity(chapter_button).push_children(&[text_item]);
 
-    // commands.entity(chapter_container).push_children(&[chapter_button]);
-    return chapter_container;
+    // commands.entity(chapter_button).push_children(&[chapter_button]);
+    return chapter_button;
 }
 
-pub fn section_container(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
+pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
-    let chapter_container = (
+    let chapter_button = (
         SectionContainer(),
         SidebarItem(),
         chapter_number,
+        ShowingSectionsOfThisChapter(true),
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: Val::Px(50.0),
-                border: UiRect {
-                    left: Val::Px(8.0),
-                    right: Val::Px(4.0),
-                    top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
-                },
-                padding: UiRect {
-                    left: Val::Px(8.0),
-                    right: Val::Px(4.0),
-                    top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
-                },
+                height: SIDEBAR_BUTTON_HEIGHT,
+                border: SECTION_BUTTON_BORDER,
+                padding: SECTION_BUTTON_BORDER,
                 justify_content: JustifyContent::Center,
                 align_content: AlignContent::Center,
                 flex_direction: FlexDirection::Column,
@@ -130,8 +136,7 @@ pub fn section_container(commands: &mut Commands, chapter_name: &String, chapter
         }
     );
 
-    let chapter_container = commands.spawn(chapter_container).id();
-    // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
+    let chapter_button = commands.spawn(chapter_button).id();
 
     let text_item = (
         TextBundle::from_section(
@@ -145,75 +150,58 @@ pub fn section_container(commands: &mut Commands, chapter_name: &String, chapter
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
     let text_item = commands.spawn(text_item).id();
-    commands.entity(chapter_container).push_children(&[text_item]);
+    commands.entity(chapter_button).push_children(&[text_item]);
 
-    // commands.entity(chapter_container).push_children(&[chapter_button]);
-    return chapter_container;
+    return chapter_button;
 }
 
-fn section_container_visibility_system (
-    mut section_container_query: Query<(&mut Visibility, &mut Style), With<SectionContainer>>,
+fn section_button_visibility_system (
+    mut section_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &ChapterNumber), With<SectionContainer>>,
     // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionContainer>>,
-    mut section_container_visibility_event: EventReader<SectionsContainerVisibilityEvent>,
-    // mut chapter_container_query: Query<(&mut Style), With<ChapterContainer>>,
+    mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
 ) {
-    for event in section_container_visibility_event.read() {
-        for (mut section_container_visibility, mut style) in &mut section_container_query.iter_mut() {
-            let event_visibility: Visibility = event.0.into();
+    for event in section_button_visibility_event.read() {
+        for (mut section_button_visibility, mut style, mut showing_sections, section_button_chapter_number) in &mut section_button_query.iter_mut() {
+            let chapter_button_chapter_number: u32 = event.0;
+            let section_button_chapter_number: u32 = section_button_chapter_number.0;
 
-            match event_visibility {
-                Visibility::Hidden => {
-                    *section_container_visibility = Visibility::Hidden;
-                    style.height = Val::Px(0.0);
-                    style.border = UiRect {
-                        left: Val::Px(0.0),
-                        right: Val::Px(0.0),
-                        top: Val::Px(0.0),
-                        bottom: Val::Px(0.0),
-                    };
-                    style.padding = UiRect {
-                        left: Val::Px(0.0),
-                        right: Val::Px(0.0),
-                        top: Val::Px(0.0),
-                        bottom: Val::Px(0.0),
-                    };
+            if chapter_button_chapter_number == section_button_chapter_number {
+                println!("Pressed Chapter number {}", chapter_button_chapter_number);
+
+                match showing_sections.0 {
+                    true => { // Hide section if it's currently shown
+                        *section_button_visibility = Visibility::Hidden;
+                        style.height = Val::Px(0.0);
+                        style.border = HIDDEN_BUTTON_BORDER;
+                        style.padding = HIDDEN_BUTTON_BORDER;
+                    }
+                    false => { // show section if it's currently hidden
+                    *section_button_visibility = Visibility::Inherited;
+                    style.height = SIDEBAR_BUTTON_HEIGHT;
+                    style.border = SECTION_BUTTON_BORDER;
+                    style.padding = SECTION_BUTTON_BORDER;
+                    }
                 }
-                Visibility::Inherited => {
-                    
-                }
-                Visibility::Visible => {
-                    
-                }
+                showing_sections.0 = !showing_sections.0;
             }
-            // for mut style in &mut chapter_container_query.iter_mut() {
-            //     style.height = Val::Px(100.0);
-            // }
         }
     }
 }
 
-fn sidebar_item_mouse_scroll(
+fn sidebar_button_mouse_scroll(
     mut interaction_query: Query<
-        (&Interaction, &mut BackgroundColor, &mut BorderColor),
+        &Interaction,
         With<SidebarItem>
     >,
     mut mouse_wheel_events: EventReader<MouseWheel>,
     mut query_list: Query<(&mut sidebar::SidebarList, &mut Style, &Parent, &Node)>,
     query_node: Query<&Node>,
-    mut section_container_visibility_writer: EventWriter<SectionsContainerVisibilityEvent>,
-    // mut section_container_visibility_writer: EventWriter<SectionsContainerVisibilityEvent>,
 ) {
-    for (interaction, mut chapter_container_background_color, mut chapter_container_border_color ) in &mut interaction_query {
+    for interaction in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
-                *chapter_container_background_color = Color::rgb(0.45, 0.45, 0.7).into();
-                *chapter_container_border_color = Color::rgb(0.1, 0.1, 0.1).into();
-                section_container_visibility_writer.send(SectionsContainerVisibilityEvent(Visibility::Hidden));
             }
             Interaction::Hovered => {
-                *chapter_container_background_color = Color::rgb(0.6, 0.6, 0.9).into();
-                *chapter_container_border_color = Color::rgb(0.1, 0.1, 0.1).into();
-
                 for mouse_wheel_event in mouse_wheel_events.read() {
                     for (mut scrolling_list, mut style, sidebar_list_parent, list_node) in &mut query_list {
                         let items_height = list_node.size().y;
@@ -233,8 +221,32 @@ fn sidebar_item_mouse_scroll(
                 }
             }
             Interaction::None => {
-                *chapter_container_background_color = Color::rgb(0.5, 0.5, 0.5).into();
-                *chapter_container_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+            }
+        }
+    }
+}
+
+fn chapter_button_interaction (
+    mut interaction_query: Query<
+        (&Interaction, &ChapterNumber, &mut BackgroundColor, &mut BorderColor),
+        (Changed<Interaction>, With<SidebarItem>)
+    >,
+    mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
+) {
+    for (interaction, chapter_number, mut chapter_button_background_color, mut chapter_button_border_color ) in &mut interaction_query {
+        match *interaction {
+            Interaction::Pressed => {
+                *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
+                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
+            }
+            Interaction::Hovered => {
+                *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
+                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+            }
+            Interaction::None => {
+                *chapter_button_background_color = Color::rgb(0.5, 0.5, 0.5).into();
+                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
         }
     }
