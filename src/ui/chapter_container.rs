@@ -7,10 +7,36 @@ use bevy::{
     prelude::*,
     // winit::WinitSettings,
 };
+use std::collections::HashMap;
 use super::sidebar;
 
-const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(90.0);
+const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
+const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
+const SECTION_BUTTON_FONT_SIZE: f32 = 16.0;
+const SUBSECTION_BUTTON_FONT_SIZE: f32 = 14.0;
+
+// i-th index gets the number of sections in the i-th chapter. For example
+// NUMBER_OF_SECTIONS_IN_CHAPTER[3] gets the number of sections in chapter 3
+const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [0,
+    4, // Chapter 1
+    4, // Chapter 2
+    4, // Chapter 3
+    4, // Chapter 4
+    3, // Chapter 5
+    3, // Chapter 6
+    4, // Chapter 7
+    3, // Chapter 8
+    2, // Chapter 9
+    3, // Chapter 10
+    3, // Chapter 11
+    3, // Chapter 12
+    3, // Chapter 13
+    3, // Chapter 14
+    0, // Bibliography
+];
+
+
 
 const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
@@ -67,6 +93,7 @@ pub struct SectionVisibilityEvent {
 pub struct SubsectionVisibilityEvent {
     pub chapter_number: u32,
     pub section_number: u32,
+    pub showing_sections: bool,
 }
 
 // true iff the chapter's sections are shown
@@ -127,7 +154,7 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         TextBundle::from_section(
             chapter_name,
             TextStyle {
-                font_size: 20.,
+                font_size: CHAPTER_BUTTON_FONT_SIZE,
                 
                 ..default()
             },
@@ -174,7 +201,7 @@ pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         TextBundle::from_section(
             chapter_name,
             TextStyle {
-                font_size: 20.,
+                font_size: SECTION_BUTTON_FONT_SIZE,
                 ..default()
             },
         ),
@@ -223,7 +250,7 @@ pub fn subsection_button(commands: &mut Commands, chapter_name: &String, chapter
         TextBundle::from_section(
             chapter_name,
             TextStyle {
-                font_size: 20.,
+                font_size: SUBSECTION_BUTTON_FONT_SIZE,
                 ..default()
             },
         ),
@@ -308,7 +335,8 @@ fn section_button_interaction (
                 subsection_visibility_writer.send(
                     SubsectionVisibilityEvent{
                         chapter_number: chapter_number,
-                        section_number: section_number
+                        section_number: section_number,
+                        showing_sections: true,
                     }
                 );
             }
@@ -369,6 +397,7 @@ fn section_button_visibility_system (
     mut section_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &ChapterNumber), With<SectionButton>>,
     // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionButton>>,
     mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
+    mut subsection_visibility_writer: EventWriter<SubsectionVisibilityEvent>,
 ) {
     for event in section_button_visibility_event.read() {
         for (mut section_button_visibility, mut style, mut showing_sections, section_button_chapter_number) in &mut section_button_query.iter_mut() {
@@ -384,6 +413,22 @@ fn section_button_visibility_system (
                         style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
                         style.border = HIDDEN_BUTTON_BORDER;
                         style.padding = HIDDEN_BUTTON_BORDER;
+
+
+                        println!("Sending event!! from Chapter {}, to Section {}", chapter_button_chapter_number, 1);
+
+                        let num_sections_in_chapter: u32 = NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_button_chapter_number as usize];
+                        for section_number in 1..num_sections_in_chapter {
+                            subsection_visibility_writer.send(
+                                SubsectionVisibilityEvent{
+                                    chapter_number: chapter_button_chapter_number,
+                                    section_number: section_number,
+                                    showing_sections: false,
+                                }
+                            );
+                        }
+                        
+
                     }
                     false => { // show section if it's currently hidden
                         *section_button_visibility = Visibility::Inherited;
@@ -400,7 +445,7 @@ fn section_button_visibility_system (
 
 // ---------- Subsection Button Visibility ----------
 fn subsection_button_visibility_system (
-    mut subsection_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &mut ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButton>>,
+    mut subsection_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButton>>,
     // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionButton>>,
     mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
     mut subsection_button_visibility_event: EventReader<SubsectionVisibilityEvent>,
@@ -409,38 +454,59 @@ fn subsection_button_visibility_system (
         for (
             mut subsection_button_visibility,
             mut style,
-            mut showing_sections,
             mut showing_subsections,
             subsection_button_chapter_number,
             subsection_button_section_number,
-            subsection_button_subsection_number
+            subsection_button_subsection_number,
         ) in &mut subsection_button_query.iter_mut() {
-        // event where chapter hides subsections
-        
-            let section_button_section_number: u32 = event.section_number;
-            let section_button_chapter_number: u32 = event.chapter_number;
+            // event where chapter hides subsections
+            let event_section_number: u32 = event.section_number;
+            let event_chapter_number: u32 = event.chapter_number;
+            let event_showing_sections = event.showing_sections;
+
             let subsection_button_section_number: u32 = subsection_button_section_number.0;
             let subsection_button_chapter_number: u32 = subsection_button_chapter_number.0;
             
-            if section_button_section_number == subsection_button_section_number
-                && section_button_chapter_number == subsection_button_chapter_number
+            if event_section_number == subsection_button_section_number
+                && event_chapter_number == subsection_button_chapter_number
                 {
-                // println!("Pressed Chapter number {}", chapter_button_chapter_number);
-                match showing_sections.0 {
+                match showing_subsections.0 {
                     true => { // Hide subsection if it's currently shown
-                        *subsection_button_visibility = Visibility::Hidden;
-                        style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
-                        style.border = HIDDEN_BUTTON_BORDER;
-                        style.padding = HIDDEN_BUTTON_BORDER;
+                        match event_showing_sections {
+                            true => { // section is currently shown
+                                println!("1");
+                                *subsection_button_visibility = Visibility::Hidden;
+                                style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
+                                style.border = HIDDEN_BUTTON_BORDER;
+                                style.padding = HIDDEN_BUTTON_BORDER;
+                                showing_subsections.0 = false // make it so subsection is hidden
+                            }
+                            false => { // section is currently hidden
+                                println!("2");
+                                showing_subsections.0 = false // make it so subsection is visible
+                            }
+                        }
                     }
                     false => { // show subsection if it's currently hidden
-                        *subsection_button_visibility = Visibility::Inherited;
-                        style.height = SIDEBAR_BUTTON_HEIGHT;
-                        style.border = SUBSECTION_BUTTON_BORDER;
-                        style.padding = SUBSECTION_BUTTON_BORDER;
+                    match event_showing_sections { // section is currently shown
+                        true => {
+                            println!("3");
+                            *subsection_button_visibility = Visibility::Inherited;
+                            style.height = SIDEBAR_BUTTON_HEIGHT;
+                            style.border = SUBSECTION_BUTTON_BORDER;
+                            style.padding = SUBSECTION_BUTTON_BORDER;
+                            showing_subsections.0 = true // make it so subsection is visible
+                        }
+                        false => { // section is currently hidden
+                            println!("4");
+                            *subsection_button_visibility = Visibility::Hidden;
+                            style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
+                            style.border = HIDDEN_BUTTON_BORDER;
+                            style.padding = HIDDEN_BUTTON_BORDER;
+                        }
+                    }
                     }
                 }
-                showing_sections.0 = !showing_sections.0;
             }
         }
     }
