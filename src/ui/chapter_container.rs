@@ -424,7 +424,7 @@ fn section_button_visibility_system (
                         style.padding = HIDDEN_BUTTON_BORDER;
 
                         let num_sections_in_chapter: u32 = NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_button_chapter_number as usize];
-                        for section_number in 1..num_sections_in_chapter {
+                        for section_number in 1..num_sections_in_chapter + 1 {
                             subsection_visibility_writer.send(
                                 SubsectionVisibilityEvent{
                                     chapter_number: chapter_button_chapter_number,

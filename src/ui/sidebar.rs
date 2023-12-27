@@ -206,6 +206,11 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
     page_items.push(section_button);
 
+    let subsection_number: u32 = 1;
+    let subsection_name: String = "1.4.1 Exercises".into();
+    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
+    page_items.push(subsection_button);
+
 
     // ********* Chapter 2 ********* //
     let chapter_number: u32 = 2;
@@ -301,6 +306,11 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let section_name: String = "2.4 Challenge problems".into();
     let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
     page_items.push(section_button);
+
+    let subsection_number: u32 = 1;
+    let subsection_name: String = "2.4.1 Exercises".into();
+    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
+    page_items.push(subsection_button);
 
     // ********* Chapter 3 ********* //
 
