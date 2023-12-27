@@ -179,6 +179,7 @@ pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         section_number,
         chapter_number,
         ShowingSectionsOfThisChapter(false),
+        ShowingSubsectionsOfThisSection(false),
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -283,8 +284,8 @@ fn chapter_button_interaction (
         mut showing_sections
     ) in &mut interaction_query {
         
-        let mut pressed_color: BackgroundColor = Color::BLACK.into();
-        let mut hovered_color: BackgroundColor = Color::BLACK.into();
+        let mut pressed_color: BackgroundColor = Color::default().into();
+        let mut hovered_color: BackgroundColor = Color::default().into();
         match showing_sections.0 {
             false => {
                 pressed_color = Color::rgb(0.45, 0.45, 0.7).into();
@@ -318,18 +319,32 @@ fn chapter_button_interaction (
 // ---------- Section Interaction ----------
 fn section_button_interaction (
     mut interaction_query: Query<
-        (&Interaction, &ChapterNumber, &SectionNumber, &mut BackgroundColor, &mut BorderColor),
+        (&Interaction, &ChapterNumber, &SectionNumber, &mut BackgroundColor, &mut BorderColor, &mut ShowingSubsectionsOfThisSection),
         (Changed<Interaction>, With<SectionButton>)
     >,
     mut subsection_visibility_writer: EventWriter<SubsectionVisibilityEvent>,
 ) {
-    for (interaction, chapter_number, section_number, mut chapter_button_background_color, mut chapter_button_border_color ) in &mut interaction_query {
+    for (interaction, chapter_number, section_number, mut chapter_button_background_color, mut chapter_button_border_color, mut showing_subsections) in &mut interaction_query {
         let chapter_number: u32 = chapter_number.0;
         let section_number: u32 = section_number.0;
 
+        let mut pressed_color: BackgroundColor = Color::default().into();
+        let mut hovered_color: BackgroundColor = Color::default().into();
+        
+        match showing_subsections.0 {
+            false => {
+                pressed_color = Color::rgb(0.45, 0.45, 0.7).into();
+                hovered_color = Color::rgb(0.6, 0.6, 0.9).into();
+            }
+            true => {
+                pressed_color = Color::rgb(0.7, 0.45, 0.45).into();
+                hovered_color = Color::rgb(0.9, 0.6, 0.6).into();
+            }
+        }
+
         match *interaction {
             Interaction::Pressed => {
-                *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
+                *chapter_button_background_color = pressed_color;
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 subsection_visibility_writer.send(
                     SubsectionVisibilityEvent{
@@ -338,9 +353,10 @@ fn section_button_interaction (
                         showing_sections: true,
                     }
                 );
+                showing_subsections.0 = !showing_subsections.0;
             }
             Interaction::Hovered => {
-                *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
+                *chapter_button_background_color = hovered_color;
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
             Interaction::None => {
@@ -388,13 +404,13 @@ fn subsection_button_interaction (
 
 // ---------- Section Button Visibility ----------
 fn section_button_visibility_system (
-    mut section_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &ChapterNumber), With<SectionButton>>,
+    mut section_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSectionsOfThisChapter, &ChapterNumber, &mut ShowingSubsectionsOfThisSection), With<SectionButton>>,
     // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionButton>>,
     mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
     mut subsection_visibility_writer: EventWriter<SubsectionVisibilityEvent>,
 ) {
     for event in section_button_visibility_event.read() {
-        for (mut section_button_visibility, mut style, mut showing_sections, section_button_chapter_number) in &mut section_button_query.iter_mut() {
+        for (mut section_button_visibility, mut style, mut showing_sections, section_button_chapter_number, mut showing_subsections) in &mut section_button_query.iter_mut() {
             let chapter_button_chapter_number: u32 = event.chapter_number;
             let section_button_chapter_number: u32 = section_button_chapter_number.0;
 
@@ -417,6 +433,7 @@ fn section_button_visibility_system (
                                 }
                             );
                         }
+                        showing_subsections.0 = false;
                         
 
                     }
