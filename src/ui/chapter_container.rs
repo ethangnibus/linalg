@@ -329,7 +329,6 @@ fn section_button_interaction (
 
         match *interaction {
             Interaction::Pressed => {
-                println!("Pressed Chapter {}, Section {}", chapter_number, section_number);
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 subsection_visibility_writer.send(
@@ -367,11 +366,6 @@ fn subsection_button_interaction (
 
         match *interaction {
             Interaction::Pressed => {
-                println!("Pressed Chapter {}, Section {}, Subsection {}",
-                    chapter_number,
-                    section_number,
-                    subsection_number
-                );
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 // section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
@@ -405,7 +399,6 @@ fn section_button_visibility_system (
             let section_button_chapter_number: u32 = section_button_chapter_number.0;
 
             if chapter_button_chapter_number == section_button_chapter_number {
-                println!("Pressed Chapter number {}", chapter_button_chapter_number);
 
                 match showing_sections.0 {
                     true => { // Hide section if it's currently shown
@@ -413,9 +406,6 @@ fn section_button_visibility_system (
                         style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
                         style.border = HIDDEN_BUTTON_BORDER;
                         style.padding = HIDDEN_BUTTON_BORDER;
-
-
-                        println!("Sending event!! from Chapter {}, to Section {}", chapter_button_chapter_number, 1);
 
                         let num_sections_in_chapter: u32 = NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_button_chapter_number as usize];
                         for section_number in 1..num_sections_in_chapter {
@@ -474,7 +464,6 @@ fn subsection_button_visibility_system (
                     true => { // Hide subsection if it's currently shown
                         match event_showing_sections {
                             true => { // section is currently shown
-                                println!("1");
                                 *subsection_button_visibility = Visibility::Hidden;
                                 style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
                                 style.border = HIDDEN_BUTTON_BORDER;
@@ -482,7 +471,6 @@ fn subsection_button_visibility_system (
                                 showing_subsections.0 = false // make it so subsection is hidden
                             }
                             false => { // section is currently hidden
-                                println!("2");
                                 showing_subsections.0 = false // make it so subsection is visible
                             }
                         }
@@ -490,7 +478,6 @@ fn subsection_button_visibility_system (
                     false => { // show subsection if it's currently hidden
                     match event_showing_sections { // section is currently shown
                         true => {
-                            println!("3");
                             *subsection_button_visibility = Visibility::Inherited;
                             style.height = SIDEBAR_BUTTON_HEIGHT;
                             style.border = SUBSECTION_BUTTON_BORDER;
@@ -498,7 +485,6 @@ fn subsection_button_visibility_system (
                             showing_subsections.0 = true // make it so subsection is visible
                         }
                         false => { // section is currently hidden
-                            println!("4");
                             *subsection_button_visibility = Visibility::Hidden;
                             style.height = HIDDEN_SIDEBAR_BUTTON_HEIGHT;
                             style.border = HIDDEN_BUTTON_BORDER;
