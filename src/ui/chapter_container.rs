@@ -194,7 +194,24 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
     );
 
     let chapter_button = commands.spawn(chapter_button).id();
-    // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
+
+    // let part_flag = (
+    //     SidebarItem(),
+    //     ButtonBundle {
+    //         style: Style {
+    //             width: Val::Px(4.0),
+    //             height: Val::Percent(100.0),
+    //             // border: HIDDEN_BUTTON_BORDER,
+    //             // padding: CHAPTER_BUTTON_BORDER,
+    //             justify_content: JustifyContent::Start,
+    //             align_content: AlignContent::Start,
+    //             ..default()
+    //         },
+    //         background_color: Color::rgb(1.0, 0.0, 0.0).into(),
+    //         ..default()
+    //     }
+    // );
+    // let part_flag = commands.spawn(part_flag).id();
 
     let text_item = (
         TextBundle::from_section(
@@ -209,9 +226,10 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
     let text_item = commands.spawn(text_item).id();
+
+    // commands.entity(chapter_button).push_children(&[part_flag, text_item]);
     commands.entity(chapter_button).push_children(&[text_item]);
 
-    // commands.entity(chapter_button).push_children(&[chapter_button]);
     return chapter_button;
 }
 

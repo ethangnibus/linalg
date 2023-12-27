@@ -4,6 +4,9 @@ use super::sidebar_frame;
 use bevy::prelude::*;
 
 const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
+const SWIPERS_WIDTH: Val = Val::Px(12.0);
+const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.3, 0.3, 0.3));
+
 
 // Marker for Node
 #[derive(Component)]
@@ -48,7 +51,7 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let sidebar_swiper = sidebar_swiper();
     let sidebar_swiper = commands.spawn(sidebar_swiper).id();
 
-    let right_border = right_border();
+    let right_border = right_swiper();
     let right_border = commands.spawn(right_border).id();
 
     let scrollable_page = view::setup(commands);
@@ -66,28 +69,29 @@ pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
         SidebarSwiper,
         ButtonBundle {
         style: Style {
-            width: Val::Percent(1.0),
+            // width: Val::Percent(1.0),
+            width: SWIPERS_WIDTH,
             height: Val::Percent(100.0),
             border: UiRect::all(Val::Px(0.0)),
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     },
     ShowingSidebar(true)
 );
 }
 
-pub fn right_border() -> (NodeBundle, ShowingSidebar) {
+pub fn right_swiper() -> (NodeBundle, ShowingSidebar) {
     return (
         NodeBundle {
         style: Style {
-            width: Val::Percent(1.0),
+            // width: Val::Percent(1.0),
+            width: SWIPERS_WIDTH,
             height: Val::Percent(100.0),
             border: UiRect::all(Val::Px(0.0)),
             ..default()
         },
-        background_color: Color::rgb(0.3, 0.3, 0.3).into(),
+        background_color: SWIPERS_COLOR_DEFAULT,
         ..default()
     },
     ShowingSidebar(true)
@@ -134,11 +138,11 @@ fn sidebar_swiper_interactions(
                 match showing_sidebar.0 {
                     true => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = Color::rgb(0.3, 0.3, 0.3).into();
+                        *color = SWIPERS_COLOR_DEFAULT;
                     }
                     false => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = Color::rgb(0.3, 0.3, 0.3).into();
+                        *color = SWIPERS_COLOR_DEFAULT;
                     }
                 }
             }
