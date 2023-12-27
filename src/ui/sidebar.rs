@@ -107,109 +107,61 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     // **** PART 1 ***************** //
     // ============================= //
     // ********* Chapter 1 ********* //
-    let chapter_number: u32 = 1;
-    let chapter_name: String = "Chapter 1. Vectors".into();
-    let chapter_button: Entity = chapter_container::chapter_button(commands, &chapter_name, chapter_number);
-    page_items.push(chapter_button);
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 1. Vectors".into(), 1));
     
     // 1.1
-    let section_number: u32 = 1;
-    let section_name: String = "1.1 What is a Vector".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
-
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "1.1.1 Lists of components".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "1.1.2 Visualizing vectors".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 3;
-    let subsection_name: String = "1.1.3 Beyond three dimensions".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 4;
-    let subsection_name: String = "1.1.4 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"1.1 What is a Vector".into(), 1, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.1.1 Lists of components".into(), 1, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.1.2 Visualizing vectors".into(), 1, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.1.3 Beyond three dimensions".into(), 1, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.1.4 Exercises".into(), 1, 1, 4));
+
     // 1.2
-    let section_number: u32 = 2;
-    let section_name: String = "1.2 Algebra of vectors".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"1.2 Algebra of vectors".into(), 1, 2));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.2.1 Adding vectors".into(), 1, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.2.2 Scaling vectors".into(), 1, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.2.3 Linear combinations".into(), 1, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.2.4 Spans".into(), 1, 2, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.2.5 Exercises".into(), 1, 2, 5));
 
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "1.2.1 Adding vectors".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
 
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "1.2.2 Scaling vectors".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 3;
-    let subsection_name: String = "1.2.3 Linear combinations".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 4;
-    let subsection_name: String = "1.2.4 Spans".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 5;
-    let subsection_name: String = "1.2.5 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
     
     // 1.3
-    let section_number: u32 = 3;
-    let section_name: String = "1.3 Geometry of vectors".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"1.3 Geometry of vectors".into(), 1, 3));
     
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "1.3.1 Geometry in R, R^2, and R^3".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "1.3.2 Dot Product".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 3;
-    let subsection_name: String = "1.3.3 Length in R^n".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 4;
-    let subsection_name: String = "1.3.4 Angle in R^n".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 5;
-    let subsection_name: String = "1.3.5 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.3.1 Geometry in R, R^2, and R^3".into(), 1, 3, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.3.2 Dot Product".into(), 1, 3, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.3.3 Length in R^n".into(), 1, 3, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.3.4 Angle in R^n".into(), 1, 3, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.3.5 Exercises".into(), 1, 3, 5));
+    
     // 1.4
-    let section_number: u32 = 4;
-    let section_name: String = "1.4 Challenge Problems".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"1.4 Challenge Problems".into(), 1, 4));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"1.4.1 Exercises".into(), 1, 4, 1));
 
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "1.4.1 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
 
 
     // ********* Chapter 2 ********* //
