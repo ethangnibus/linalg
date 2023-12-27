@@ -55,7 +55,7 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
                 align_self: AlignSelf::Stretch,
                 height: Val::Percent(100.0),
                 width: Val::Percent(width),
-                // width: Val::Px(100.0),
+                // width: Val::Px(500.0),
                 overflow: Overflow::clip_y(),
                 ..default()
             },
@@ -106,6 +106,9 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     // ============================= //
     // **** PART 1 ***************** //
     // ============================= //
+    page_items.push(chapter_container::title_button(
+        commands, &"Part 1. Euclidean space R^n (FIXME)".into()));
+        
     // ********* Chapter 1 ********* //
     page_items.push(chapter_container::chapter_button(
         commands, &"Chapter 1. Vectors".into(), 1));
@@ -165,137 +168,138 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
 
 
     // ********* Chapter 2 ********* //
-    let chapter_number: u32 = 2;
-    let chapter_name: String = "Chapter 2. Subspaces".into();
-    let chapter_button: Entity = chapter_container::chapter_button(commands, &chapter_name, chapter_number);
-    page_items.push(chapter_button);
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 2. Subspaces".into(), 2));
     
     // 2.1
-    let section_number: u32 = 1;
-    let section_name: String = "2.1 Working with subsets".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"2.1 Working with subsets".into(), 2, 1));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.1.1 Intersections and unions of subsets".into(), 2, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.1.2 Sums and translations in R^n (FIXME)".into(), 2, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.1.3 Exercises".into(), 2, 1, 3));
 
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "2.1.1 Intersections and unions of subsets".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "2.1.2 Sums and translations in R^n (FIXME)".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "2.1.3 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
     
     // 2.2
-    let section_number: u32 = 2;
-    let section_name: String = "2.2 What is a subspace?".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
-
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "2.2.1 Characterizing subspaces".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "2.2.2 Affine subspaces".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 3;
-    let subsection_name: String = "2.2.3 Orthogonal compliments".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 4;
-    let subsection_name: String = "2.2.4 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"2.2 What is a subspace?".into(), 2, 2));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.2.1 Characterizing subspaces".into(), 2, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.2.2 Affine subspaces".into(), 2, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.2.3 Orthogonal compliments".into(), 2, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.2.4 Exercises".into(), 2, 2, 4));
 
     // 2.3
-    let section_number: u32 = 3;
-    let section_name: String = "2.3 Efficiently encoding vectors".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
-
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "2.3.1 Dimension".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 2;
-    let subsection_name: String = "2.3.2 Bases".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 3;
-    let subsection_name: String = "2.3.3 Encoding vectors".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 4;
-    let subsection_name: String = "2.3.4 Linear independence".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 5;
-    let subsection_name: String = "2.3.5 Characterizing bases".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
-
-    let subsection_number: u32 = 6;
-    let subsection_name: String = "2.3.6 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"2.3 Efficiently encoding vectors".into(), 2, 3));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.3.1 Dimension".into(), 2, 3, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.3.2 Bases Affine subspaces".into(), 2, 3, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.3.3 Encoding vectors".into(), 2, 3, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.3.4 Linear independence".into(), 2, 3, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.3.5 Characterizing bases".into(), 2, 3, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.3.6 Exercises".into(), 2, 3, 6));
 
     // 2.4
-    let section_number: u32 = 4;
-    let section_name: String = "2.4 Challenge problems".into();
-    let section_button: Entity = chapter_container::section_button(commands, &section_name, chapter_number, section_number);
-    page_items.push(section_button);
+    page_items.push(chapter_container::section_button(
+        commands, &"2.4 Challenge problems".into(), 2, 4));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"2.4.1 Exercises".into(), 2, 4, 1));
+    
 
-    let subsection_number: u32 = 1;
-    let subsection_name: String = "2.4.1 Exercises".into();
-    let subsection_button: Entity = chapter_container::subsection_button(commands, &subsection_name, chapter_number, section_number, subsection_number);
-    page_items.push(subsection_button);
+
 
     // ********* Chapter 3 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 3. Linear functions and transformations".into(), 3));
 
     // ============================= //
     // **** PART 2 ***************** //
     // ============================= //
+    page_items.push(chapter_container::title_button(
+        commands, &"Part 2. Systems of linear equations".into()));
+
     // ********* Chapter 4 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 4. Systems of linear equations and their solutions".into(), 4));
+
     // ********* Chapter 5 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 5. Gaussian elimination to the rescue".into(), 5));
 
     // ============================= //
     // **** PART 3 ***************** //
     // ============================= //
+    page_items.push(chapter_container::title_button(
+        commands, &"Part 3. Matrix algebra".into()));
+
     // ********* Chapter 6 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 6. Operations on matrices".into(), 6));
+
     // ********* Chapter 7 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 7. Operations on matrices".into(), 7));
+        
     // ********* Chapter 8 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 8. Determinants".into(), 8));
 
     // ============================= //
     // **** PART 4 ***************** //
     // ============================= //
+    page_items.push(chapter_container::title_button(
+        commands, &"Part 4. Coordinates and Geometry".into()));
+
     // ********* Chapter 9 ********* //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 9. Coordinates with respect to a basis".into(), 9));
+
     // ********* Chapter 10 ******** //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 10. Orthogonal bases".into(), 10));
+
     // ********* Chapter 11 ******** //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 11. Orthogonal projections".into(), 11));
 
     // ============================= //
     // **** PART 5 ***************** //
     // ============================= //
+    page_items.push(chapter_container::title_button(
+        commands, &"Part 5. Choose your friends and your bases wisely".into()));
+
     // ********* Chapter 12 ******** //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 12. Linear transformations and coordinates".into(), 12));
+
     // ********* Chapter 13 ******** //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 13. Eigenvalues and eigenvectors".into(), 13));
+
     // ********* Chapter 14 ******** //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Chapter 14. The Spectral Theorem".into(), 14));
 
     // ============================= //
     // **** BIBLIOGRAPHY *********** //
     // ============================= //
+    page_items.push(chapter_container::chapter_button(
+        commands, &"Bibliography".into(), 15));
 
 
 

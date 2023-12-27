@@ -3,6 +3,8 @@ use super::sidebar;
 use super::sidebar_frame;
 use bevy::prelude::*;
 
+const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
+
 // Marker for Node
 #[derive(Component)]
 pub struct UnderNavbar;
@@ -41,8 +43,7 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     // Make ECS for root and navbar
     // return entities
     let under_navbar = sidebar_frame::setup(commands, width, height);
-    let sidebar_width: f32 = 20.0; // in percentage
-    let sidebar = sidebar::setup(commands, sidebar_width);
+    let sidebar = sidebar::setup(commands, SIDEBAR_WIDTH);
 
     let sidebar_swiper = sidebar_swiper();
     let sidebar_swiper = commands.spawn(sidebar_swiper).id();
@@ -179,12 +180,12 @@ fn sidebar_visibility_system(
                 Visibility::Visible => {
                     println!("setting width to 20 in Visible");
                     *sidebar_visibility = Visibility::Visible;
-                    sidebar_style.width = bevy::prelude::Val::Vw(20.0);
+                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
                 }
                 Visibility::Inherited => {
                     println!("setting width to 20 in Inherited");
                     *sidebar_visibility = Visibility::Inherited;
-                    sidebar_style.width = bevy::prelude::Val::Vw(20.0);
+                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
                 }
             }
             println!("Visiblity is now {:?}", *sidebar_visibility);

@@ -7,10 +7,10 @@ use bevy::{
     prelude::*,
     // winit::WinitSettings,
 };
-use std::collections::HashMap;
 use super::sidebar;
 
-const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
+const TITLE_BUTTON_HEIGHT: Val = Val::Px(70.0);
+const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(80.0);
 const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
 const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
 const SECTION_BUTTON_FONT_SIZE: f32 = 16.0;
@@ -37,9 +37,14 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [0,
 ];
 
 
-
-const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
+const TITLE_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
+    right: Val::Px(4.0),
+    top: Val::Px(12.0),
+    bottom: Val::Px(4.0),
+};
+const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
+    left: Val::Px(8.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
@@ -51,7 +56,7 @@ const SECTION_BUTTON_BORDER: UiRect = UiRect {
     bottom: Val::Px(4.0),
 };
 const SUBSECTION_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(20.0),
+    left: Val::Px(16.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
@@ -123,6 +128,47 @@ impl Plugin for SystemsPlugin {
 // ================================
 // ========== UI Buttons ==========
 // ================================
+pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
+    let title_button = (
+        SidebarItem(),
+        ButtonBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: TITLE_BUTTON_HEIGHT,
+                border: TITLE_BUTTON_BORDER,
+                padding: TITLE_BUTTON_BORDER,
+                justify_content: JustifyContent::Center,
+                align_content: AlignContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::rgb(0.7, 0.7, 0.7).into(),
+            border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        }
+    );
+
+    let title_button = commands.spawn(title_button).id();
+    // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
+
+    let text_item = (
+        TextBundle::from_section(
+            text,
+            TextStyle {
+                font_size: CHAPTER_BUTTON_FONT_SIZE,
+                color: Color::rgb(0.0, 0.0, 0.0).into(),
+                ..default()
+            },
+        ),
+        Label,
+        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+    );
+    let text_item = commands.spawn(text_item).id();
+    commands.entity(title_button).push_children(&[text_item]);
+
+    // commands.entity(chapter_button).push_children(&[chapter_button]);
+    return title_button;
+}
 
 // ---------- Chapter UI Button ----------
 pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_number: u32) -> Entity {
@@ -360,7 +406,7 @@ fn section_button_interaction (
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.5, 0.5, 0.5).into();
+                *chapter_button_background_color = Color::rgb(0.35, 0.35, 0.35).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
         }
@@ -391,7 +437,7 @@ fn subsection_button_interaction (
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.5, 0.5, 0.5).into();
+                *chapter_button_background_color = Color::rgb(0.2, 0.2, 0.2).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
         }
