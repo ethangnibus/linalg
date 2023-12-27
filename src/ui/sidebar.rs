@@ -221,7 +221,7 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
         commands, &"2.4.1 Exercises".into(), 2, 4, 1));
     
 
-
+    // FIXME: Tomorrow add all sections and subsections
 
     // ********* Chapter 3 ********* //
     page_items.push(chapter_container::chapter_button(
