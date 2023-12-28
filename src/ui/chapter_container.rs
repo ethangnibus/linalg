@@ -4,12 +4,13 @@ use bevy::{
         AccessibilityNode,
     },
     input::mouse::{MouseScrollUnit, MouseWheel},
-    prelude::*,
+    prelude::*, ui::FocusPolicy,
     // winit::WinitSettings,
 };
 use super::sidebar;
 
-const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
+const HEADER_BUTTON_HEIGHT: Val = Val::Px(50.0);
+const TITLE_BUTTON_HEIGHT: Val = Val::Px(100.0);
 const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
 const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
@@ -139,7 +140,8 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: TITLE_BUTTON_HEIGHT,
+                height: HEADER_BUTTON_HEIGHT,
+                // height: Val::Percent(100.0),
                 border: HEADER_BUTTON_BORDER,
                 padding: HEADER_BUTTON_BORDER,
                 justify_content: JustifyContent::Center,
@@ -205,12 +207,12 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
                 height: TITLE_BUTTON_HEIGHT,
                 border: TITLE_BUTTON_BORDER,
                 padding: TITLE_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                justify_content: JustifyContent::End,
+                align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(0.5, 0.5, 0.5).into(),
+            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
             border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         }
@@ -224,7 +226,7 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
             text,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: Color::rgb(0.0, 0.0, 0.0).into(),
+                color: Color::rgb(1.0, 0.7, 0.1).into(),
                 ..default()
             },
         ),
@@ -241,20 +243,20 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
                 height: Val::Px(1.0),
                 border: HIDDEN_BUTTON_BORDER,
                 padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                justify_content: JustifyContent::End,
+                align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            background_color: Color::rgb(1.0, 0.7, 0.1).into(),
             // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         }
     );
     let bottom_line = commands.spawn(bottom_line).id();
 
+    // commands.entity(title_button).push_children(&[text_item, bottom_line]);
     commands.entity(title_button).push_children(&[text_item, bottom_line]);
-
     // commands.entity(chapter_button).push_children(&[chapter_button]);
     return title_button;
 }
@@ -273,11 +275,12 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
                 height: SIDEBAR_BUTTON_HEIGHT,
                 border: CHAPTER_BUTTON_BORDER,
                 padding: CHAPTER_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                justify_content: JustifyContent::End,
+                align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            focus_policy: FocusPolicy::Block,
             ..default()
         }
     );
@@ -324,8 +327,8 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
                 height: Val::Px(1.0),
                 border: HIDDEN_BUTTON_BORDER,
                 padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                justify_content: JustifyContent::End,
+                align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
@@ -359,12 +362,13 @@ pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_nu
                 height: HIDDEN_SIDEBAR_BUTTON_HEIGHT,
                 border: HIDDEN_BUTTON_BORDER,
                 padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                justify_content: JustifyContent::End,
+                align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
             visibility: Visibility::Hidden,
+            focus_policy: FocusPolicy::Block,
             ..default()
         }
     );
@@ -429,11 +433,12 @@ pub fn subsection_button(commands: &mut Commands, chapter_name: &String, chapter
                 height: HIDDEN_SIDEBAR_BUTTON_HEIGHT,
                 border: HIDDEN_BUTTON_BORDER,
                 padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                justify_content: JustifyContent::End,
+                align_items: AlignItems::Start,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            focus_policy: FocusPolicy::Block,
             visibility: Visibility::Hidden,
             ..default()
         }
@@ -453,7 +458,28 @@ pub fn subsection_button(commands: &mut Commands, chapter_name: &String, chapter
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
     let text_item = commands.spawn(text_item).id();
-    commands.entity(subsection_button).push_children(&[text_item]);
+
+    let bottom_line = (
+        SidebarItem(),
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(1.0),
+                border: HIDDEN_BUTTON_BORDER,
+                padding: HIDDEN_BUTTON_BORDER,
+                justify_content: JustifyContent::Center,
+                align_content: AlignContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        }
+    );
+    let bottom_line = commands.spawn(bottom_line).id();
+
+    commands.entity(subsection_button).push_children(&[text_item, bottom_line]);
 
     return subsection_button;
 }
