@@ -168,6 +168,27 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
         Label,
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
+
+    // let bottom_line = (
+    //     SidebarItem(),
+    //     ButtonBundle {
+    //         style: Style {
+    //             width: Val::Percent(100.0),
+    //             height: Val::Px(1.0),
+    //             border: HIDDEN_BUTTON_BORDER,
+    //             padding: HIDDEN_BUTTON_BORDER,
+    //             justify_content: JustifyContent::Center,
+    //             align_content: AlignContent::Center,
+    //             flex_direction: FlexDirection::Column,
+    //             ..default()
+    //         },
+    //         background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+    //         // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+    //         ..default()
+    //     }
+    // );
+    // let bottom_line = commands.spawn(bottom_line).id();
+
     let text_item = commands.spawn(text_item).id();
     commands.entity(title_button).push_children(&[text_item]);
 
@@ -189,7 +210,7 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(0.7, 0.7, 0.7).into(),
+            background_color: Color::rgb(0.5, 0.5, 0.5).into(),
             border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         }
@@ -211,7 +232,28 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
     let text_item = commands.spawn(text_item).id();
-    commands.entity(title_button).push_children(&[text_item]);
+
+    let bottom_line = (
+        SidebarItem(),
+        ButtonBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(1.0),
+                border: HIDDEN_BUTTON_BORDER,
+                padding: HIDDEN_BUTTON_BORDER,
+                justify_content: JustifyContent::Center,
+                align_content: AlignContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        }
+    );
+    let bottom_line = commands.spawn(bottom_line).id();
+
+    commands.entity(title_button).push_children(&[text_item, bottom_line]);
 
     // commands.entity(chapter_button).push_children(&[chapter_button]);
     return title_button;
@@ -274,8 +316,28 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
     );
     let text_item = commands.spawn(text_item).id();
 
+    let bottom_line = (
+        SidebarItem(),
+        ButtonBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(1.0),
+                border: HIDDEN_BUTTON_BORDER,
+                padding: HIDDEN_BUTTON_BORDER,
+                justify_content: JustifyContent::Center,
+                align_content: AlignContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        }
+    );
+    let bottom_line = commands.spawn(bottom_line).id();
+
     // commands.entity(chapter_button).push_children(&[part_flag, text_item]);
-    commands.entity(chapter_button).push_children(&[text_item]);
+    commands.entity(chapter_button).push_children(&[text_item, bottom_line]);
 
     return chapter_button;
 }
@@ -321,7 +383,28 @@ pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     );
     let text_item = commands.spawn(text_item).id();
-    commands.entity(section_button).push_children(&[text_item]);
+
+    let bottom_line = (
+        SidebarItem(),
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(1.0),
+                border: HIDDEN_BUTTON_BORDER,
+                padding: HIDDEN_BUTTON_BORDER,
+                justify_content: JustifyContent::Center,
+                align_content: AlignContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        }
+    );
+    let bottom_line = commands.spawn(bottom_line).id();
+
+    commands.entity(section_button).push_children(&[text_item, bottom_line]);
 
     return section_button;
 }
@@ -420,7 +503,7 @@ fn chapter_button_interaction (
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.5, 0.5, 0.5).into();
+                *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
         }
@@ -471,7 +554,7 @@ fn section_button_interaction (
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.35, 0.35, 0.35).into();
+                *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
         }
@@ -502,7 +585,7 @@ fn subsection_button_interaction (
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.2, 0.2, 0.2).into();
+                *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
             }
         }
