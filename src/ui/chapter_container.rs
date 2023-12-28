@@ -36,7 +36,12 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [0,
     0, // Bibliography
 ];
 
-
+const HEADER_BUTTON_BORDER: UiRect = UiRect {
+    left: Val::Px(4.0),
+    right: Val::Px(4.0),
+    top: Val::Px(0.0),
+    bottom: Val::Px(0.0),
+};
 const TITLE_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
     right: Val::Px(4.0),
@@ -128,6 +133,48 @@ impl Plugin for SystemsPlugin {
 // ================================
 // ========== UI Buttons ==========
 // ================================
+pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
+    let header_button = (
+        SidebarItem(),
+        ButtonBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: TITLE_BUTTON_HEIGHT,
+                border: HEADER_BUTTON_BORDER,
+                padding: HEADER_BUTTON_BORDER,
+                justify_content: JustifyContent::Center,
+                align_content: AlignContent::Center,
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            background_color: Color::rgb(1.0, 0.7, 0.1).into(),
+            border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        }
+    );
+
+    let title_button = commands.spawn(header_button).id();
+    // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
+
+    let text_item = (
+        TextBundle::from_section(
+            text,
+            TextStyle {
+                font_size: CHAPTER_BUTTON_FONT_SIZE,
+                color: Color::rgb(0.0, 0.0, 0.0).into(),
+                ..default()
+            },
+        ),
+        Label,
+        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+    );
+    let text_item = commands.spawn(text_item).id();
+    commands.entity(title_button).push_children(&[text_item]);
+
+    // commands.entity(chapter_button).push_children(&[chapter_button]);
+    return title_button;
+}
+
 pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
     let title_button = (
         SidebarItem(),
@@ -609,7 +656,7 @@ fn sidebar_button_mouse_scroll(
                             MouseScrollUnit::Pixel => mouse_wheel_event.y,
                         };
                         
-                        scrolling_list.position += dy;
+                        scrolling_list.position += dy * 0.8; // change the constant to change scroll speed
                         scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
                         style.top = Val::Px(scrolling_list.position);
                     }

@@ -102,7 +102,10 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     // into functions, but still add them individually here
     // they should be 1 line each instead of 4 bc it would just
     // be a function call :)
-
+    
+    page_items.push(chapter_container::header_button(
+        commands, &"Chapters".into()));
+    
     // ============================= //
     // **** PART 1 ***************** //
     // ============================= //
