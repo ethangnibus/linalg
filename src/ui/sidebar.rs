@@ -302,18 +302,46 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"4.1 What is a system of linear equations?".into(), 4, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.1.1 Solving a single linear equation".into(), 4, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.1.2 Augmented matrix of a system".into(), 4, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.1.3 Exercises".into(), 4, 1, 3));
+    
     // 4.2
     page_items.push(chapter_container::section_button(
         commands, &"4.2 Row echelon form and reduced row echelon form".into(), 4, 2));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.2.1 What is reduced row echelon form?".into(), 4, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.2.2 Solving systems in reduced row echelon form".into(), 4, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.2.3 Exercises".into(), 4, 2, 3));
+
     // 4.3
     page_items.push(chapter_container::section_button(
         commands, &"4.3 Simplifying systems of linear equations".into(), 4, 3));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.3.1 Row operations".into(), 4, 3, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.3.2 Gaussian Elimination".into(), 4, 3, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.3.3 Solving general systems".into(), 4, 3, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.3.4 Equivalence of systems".into(), 4, 3, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.3.5 Exercises".into(), 4, 3, 5));
     
     // 4.4
     page_items.push(chapter_container::section_button(
         commands, &"4.4 Challenge Problems".into(), 4, 4));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"4.4.1 Exercises".into(), 4, 4, 1));
+            
 
 
     // ********* Chapter 5 ********* //
@@ -324,13 +352,42 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"5.1 Existence and uniqueness properties?".into(), 5, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.1.1 Is a vector in a subspace?".into(), 5, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.1.2 Does a collection of vectors span in R^m?".into(), 5, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.1.3 Is a collection of vectors linearly independent?".into(), 5, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.1.4 Goldilocks Principle".into(), 5, 1, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.1.5 Exercises".into(), 5, 1, 5));
+    
+
+            
     // 5.2
     page_items.push(chapter_container::section_button(
         commands, &"5.2 Basis and dimension computations".into(), 5, 2));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.2.1 Transpose of a matrix".into(), 5, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.2.2 Bases for column and row spaces".into(), 5, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.2.3 Bases for null spaces and orthogonal complements".into(), 5, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.2.4 Rank theorem".into(), 5, 2, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.2.5 Exercises".into(), 5, 2, 5));
+    
+    
     // 5.3
     page_items.push(chapter_container::section_button(
         commands, &"5.3 Challenge problems".into(), 5, 3));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"5.3.1 Exercises".into(), 5, 3, 1));
+                
     
 
     // ============================= //

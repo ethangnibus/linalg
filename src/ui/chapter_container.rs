@@ -9,8 +9,8 @@ use bevy::{
 };
 use super::sidebar;
 
-const TITLE_BUTTON_HEIGHT: Val = Val::Px(70.0);
-const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(80.0);
+const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
+const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
 const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
 const SECTION_BUTTON_FONT_SIZE: f32 = 16.0;
