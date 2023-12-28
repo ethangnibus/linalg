@@ -234,17 +234,59 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"3.1 Linear functions f : R^n → R (FIXME) ".into(), 3, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.1.1 Multivariable functions".into(), 3, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.1.2 What is a linear function?".into(), 3, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.1.3 Linear functions as networks".into(), 3, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.1.4 \"Dotless\" product with row vector".into(), 3, 1, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.1.5 Exercises".into(), 3, 1, 5));
+
+            
     // 3.2
     page_items.push(chapter_container::section_button(
         commands, &"3.2 Linear transformations T: R^n → R^m (FIXME)".into(), 3, 2));
+
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.2.1 What is a transformation".into(), 3, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.2.2 What is a linear transformation?".into(), 3, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.2.3 Linear transformations as networks".into(), 3, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.2.4 Visualizing linear transformations".into(), 3, 2, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.2.5 Characterizing linear transformations".into(), 3, 2, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.2.6 Exercises".into(), 3, 2, 6));
 
     // 3.3
     page_items.push(chapter_container::section_button(
         commands, &"3.3 Subspaces associated to a linear transformation".into(), 3, 3));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.3.1 Image of a linear transformation".into(), 3, 3, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.3.2 Surjectivity".into(), 3, 3, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.3.3 Null space of a linear transformation".into(), 3, 3, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.3.4 Pre-image of a general vector".into(), 3, 3, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.3.5 Injectivity".into(), 3, 3, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.3.6 Exercises".into(), 3, 3, 6));
+    
     // 3.4
     page_items.push(chapter_container::section_button(
         commands, &"3.4 Challenge Problems".into(), 3, 4));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"3.4.1 Exercises".into(), 3, 4, 1));
+        
     
     // ============================= //
     // **** PART 2 ***************** //
