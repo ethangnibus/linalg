@@ -39,7 +39,7 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [0,
 
 const HEADER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
-    right: Val::Px(4.0),
+    right: Val::Px(2.0),
     top: Val::Px(0.0),
     bottom: Val::Px(0.0),
 };
@@ -50,19 +50,19 @@ const TITLE_BUTTON_BORDER: UiRect = UiRect {
     bottom: Val::Px(4.0),
 };
 const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(8.0),
-    right: Val::Px(4.0),
-    top: Val::Px(0.0),
-    bottom: Val::Px(4.0),
-};
-const SECTION_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(12.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
 };
+const SECTION_BUTTON_BORDER: UiRect = UiRect {
+    left: Val::Px(20.0),
+    right: Val::Px(4.0),
+    top: Val::Px(0.0),
+    bottom: Val::Px(4.0),
+};
 const SUBSECTION_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(16.0),
+    left: Val::Px(28.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
