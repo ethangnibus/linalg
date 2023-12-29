@@ -404,15 +404,42 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"6.1 Adding, scaling, and multiplying matrices".into(), 6, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.1 Generalizing vector addition and scaling".into(), 6, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.2 Adding and scaling linear transformations".into(), 6, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.3 Matrix multiplication".into(), 6, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.4 Composing linear transformations".into(), 6, 1, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.5 Matrix multiplications and networks".into(), 6, 1, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.6 Row operations via matrix multiplication".into(), 6, 1, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.1.7 Exercises".into(), 6, 1, 5));
+    
     // 6.2
     page_items.push(chapter_container::section_button(
         commands, &"6.2 Matrix transpose".into(), 6, 2));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.2.1 Algebra of matrix transposition".into(), 6, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.2.2 Transpose on networks".into(), 6, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.2.3 Transpose and the dot product".into(), 6, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.2.4 Exercises".into(), 6, 2, 4));
+        
+
     // 6.3
     page_items.push(chapter_container::section_button(
         commands, &"6.3 Challenge problems".into(), 6, 3));
     
-
+    page_items.push(chapter_container::subsection_button(
+        commands, &"6.3.1 Exercises".into(), 6, 3, 1));
+    
     // ********* Chapter 7 ********* //
     page_items.push(chapter_container::chapter_button(
         commands, &"Chapter 7. Operations on matrices".into(), 7));
@@ -421,18 +448,46 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"7.1 Invertible Matrices".into(), 7, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.1.1 What is the inverse of a matrix?".into(), 7, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.1.2 Finding matrix inverses".into(), 7, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.1.3 Invertible linear transformations".into(), 7, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.1.4 Characterizing invertible matrices".into(), 7, 1, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.1.5 Exercises".into(), 7, 1, 5));
+
     // 7.2
     page_items.push(chapter_container::section_button(
         commands, &"7.2 Triangular matrices".into(), 7, 2));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.2.1 What is a triangular matrix?".into(), 7, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.2.2 Characterizing upper triangular matrices".into(), 7, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.2.3 Exercises".into(), 7, 2, 3));
+
     // 7.3
     page_items.push(chapter_container::section_button(
         commands, &"7.3 Orthogonal matrices".into(), 7, 3));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.3.1 What is an orthogonal matrix?".into(), 7, 3, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.3.2 Characterizing orthogonal matrices".into(), 7, 3, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.3.3 Exercises".into(), 7, 3, 3));
+
     // 7.4
     page_items.push(chapter_container::section_button(
         commands, &"7.4 Challenge Problems".into(), 7, 4));
-        
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"7.4.1 Exercises".into(), 7, 4, 1));
+    
     // ********* Chapter 8 ********* //
     page_items.push(chapter_container::chapter_button(
         commands, &"Chapter 8. Determinants".into(), 8));
@@ -441,13 +496,37 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"8.1 Determinants of 2 x 2 matrices".into(), 8, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.1.1 Determinants and parallelograms".into(), 8, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.1.2 Areas and linear transformations".into(), 8, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.1.3 Exercises".into(), 8, 1, 3));
+
+            
     // 8.2
     page_items.push(chapter_container::section_button(
         commands, &"8.2 Determinants of general square matrices".into(), 8, 2));
-
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.2.1 Permutations and general determinants".into(), 8, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.2.2 Characterizing determinants".into(), 8, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.2.3 Determinants and Gaussian elimination".into(), 8, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.2.4 Algebra of determinants".into(), 8, 2, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.2.5 Reducing determinants to smaller matrices".into(), 8, 2, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.2.6 Exercises".into(), 8, 2, 6));
+            
     // 8.3
     page_items.push(chapter_container::section_button(
         commands, &"8.3 Challenge problems".into(), 8, 3));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"8.3.1 Exercises".into(), 8, 3, 1));
     
 
     // ============================= //
