@@ -1,11 +1,11 @@
 use super::view;
 use super::sidebar;
 use super::sidebar_frame;
-use bevy::prelude::*;
+use bevy::{prelude::*, ui::FocusPolicy};
 
 const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
 const SWIPERS_WIDTH: Val = Val::Px(12.0);
-const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.3, 0.3, 0.3));
+const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.1, 0.1, 0.1));
 
 
 // Marker for Node
@@ -48,8 +48,7 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let under_navbar = sidebar_frame::setup(commands, width, height);
     let sidebar = sidebar::setup(commands, SIDEBAR_WIDTH);
 
-    let sidebar_swiper = sidebar_swiper();
-    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
+    let sidebar_swiper = sidebar_swiper(commands);
 
     let right_border = right_swiper();
     let right_border = commands.spawn(right_border).id();
@@ -64,21 +63,42 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     return under_navbar;
 }
 
-pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
-    return (
+pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
+    let sidebar_swiper = (
         SidebarSwiper,
         ButtonBundle {
-        style: Style {
-            // width: Val::Percent(1.0),
-            width: SWIPERS_WIDTH,
-            height: Val::Percent(100.0),
-            border: UiRect::all(Val::Px(0.0)),
+            style: Style {
+                // width: Val::Percent(1.0),
+                width: SWIPERS_WIDTH,
+                height: Val::Percent(100.0),
+                border: UiRect::all(Val::Px(0.0)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            focus_policy: FocusPolicy::Block,
             ..default()
         },
-        ..default()
-    },
-    ShowingSidebar(true)
-);
+        ShowingSidebar(true)
+    );
+    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
+
+    let right_line =
+        NodeBundle {
+            style: Style {
+                width: Val::Px(2.0),
+                height: Val::Percent(100.0),
+                ..default()
+            },
+            // background_color: Color::rgb(1.0, 0.7, 0.1).into(),
+            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        };
+    let right_line = commands.spawn(right_line).id();
+    
+    commands.entity(sidebar_swiper).push_children(&[right_line]);
+    return sidebar_swiper;
 }
 
 pub fn right_swiper() -> (NodeBundle, ShowingSidebar) {
