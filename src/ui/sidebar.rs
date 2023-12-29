@@ -543,10 +543,27 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"9.1 Linear coordinate systems".into(), 9, 1));
     
+        page_items.push(chapter_container::subsection_button(
+            commands, &"9.1.1 Coordinates on a subspace".into(), 9, 1, 1));
+        page_items.push(chapter_container::subsection_button(
+            commands, &"9.1.2 Coordinates in R^n (FIXME)".into(), 9, 1, 2));
+        page_items.push(chapter_container::subsection_button(
+            commands, &"9.1.3 Exercises".into(), 9, 1, 3));
+
+
     // 9.2
     page_items.push(chapter_container::section_button(
         commands, &"9.2 Changing bases".into(), 9, 2));
-
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"9.2.1 Changing coordinates".into(), 9, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"9.2.2 Changing coordinates in R^n (FIXME)".into(), 9, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"9.2.3 Matrix algebra of coordinate changes".into(), 9, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"9.2.4 Exercises".into(), 9, 2, 4));
+    
     
 
     // ********* Chapter 10 ******** //
@@ -557,14 +574,31 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"10.1 Coordinates with respect to orthogonal bases".into(), 10, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.1.1 A formula for coordinates".into(), 10, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.1.2 Orthonormal change of bases".into(), 10, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.1.3 Exercises".into(), 10, 1, 3));
+
     // 10.2
     page_items.push(chapter_container::section_button(
         commands, &"10.2 Constructing orthogonal bases".into(), 10, 2));
 
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.2.1 Gram-Schmidt process".into(), 10, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.2.2 QR factorization (FIXME)".into(), 10, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.2.3 Exercises".into(), 10, 2, 3));
+    
     // 10.3
     page_items.push(chapter_container::section_button(
         commands, &"10.3 Challenge problems".into(), 10, 3));
-
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"10.3.1 Exercises".into(), 10, 3, 1));
+    
     // ********* Chapter 11 ******** //
     page_items.push(chapter_container::chapter_button(
         commands, &"Chapter 11. Orthogonal projections".into(), 11));
@@ -573,14 +607,40 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"11.1 What is a projection?".into(), 11, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.1.1 Complementary subspaces".into(), 11, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.1.2 Projections and orthogonal projections".into(), 11, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.1.3 Characterizing projections".into(), 11, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.1.4 Exercises".into(), 11, 1, 4));
+    
     // 11.2
     page_items.push(chapter_container::section_button(
         commands, &"11.2 Geometry of orthogonal projections".into(), 11, 2));
+
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.2.1 Minimal distance to a subspace".into(), 11, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.2.2 Geometry of Gram-Schmidt".into(), 11, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.2.3 Inconsistent systems and least-squares solutions".into(), 11, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.2.4 Least-square solutions and normal equations".into(), 11, 2, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.2.5 Unique least-squares solutions".into(), 11, 2, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"11.2.6 Exercises".into(), 11, 2, 6));
+
 
     // 11.3
     page_items.push(chapter_container::section_button(
         commands, &"11.3 Challenge problems".into(), 11, 3));
 
+        page_items.push(chapter_container::subsection_button(
+            commands, &"11.3.1 Exercises".into(), 11, 3, 1));
+    
     // ============================= //
     // **** PART 5 ***************** //
     // ============================= //
@@ -595,14 +655,31 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"12.1 Linear transformations and coordinates".into(), 12, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.1.1 Turning linear transformations into matrices".into(), 12, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.1.2 Exercises".into(), 12, 1, 2));
+    
     // 12.2
     page_items.push(chapter_container::section_button(
         commands, &"12.2 Simplifying linear transformations".into(), 12, 2));
 
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.2.1 Rank is everything".into(), 12, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.2.2 Similar matrices".into(), 12, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.2.3 Diagonalizability".into(), 12, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.2.4 Exercises".into(), 12, 2, 4));
+    
     // 12.3
     page_items.push(chapter_container::section_button(
         commands, &"12.3 Problems".into(), 12, 3));
-
+    
+    page_items.push(chapter_container::subsection_button(
+        commands, &"12.3.1 Exercises".into(), 12, 3, 1));
+        
     // ********* Chapter 13 ******** //
     page_items.push(chapter_container::chapter_button(
         commands, &"Chapter 13. Eigenvalues and eigenvectors".into(), 13));
