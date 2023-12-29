@@ -18,10 +18,19 @@ struct ViewList {
     position: f32,
 }
 
+#[derive(Event)]
+pub struct RoutingEvent {
+    pub chapter_number: u32,
+    pub section_number: u32,
+    pub subsection_number: u32,
+}
+
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, mouse_scroll);
+        app
+        .add_event::<RoutingEvent>()
+        .add_systems(Update, (mouse_scroll, routing_system));
     }
 }
 
@@ -30,11 +39,11 @@ pub fn setup(commands: &mut Commands) -> Entity {
     let view = commands.spawn(view).id();
     
     let page_items = page_items(commands);
-    let scrollable_page = scrollable_page::get_page();
-    let scrollable_page = commands.spawn((ViewList::default(), scrollable_page)).id();
+    let view_list = scrollable_page::get_page();
+    let view_list = commands.spawn((ViewList::default(), view_list)).id();
     
-    commands.entity(scrollable_page).push_children(&page_items);
-    commands.entity(view).push_children(&[scrollable_page]);
+    commands.entity(view_list).push_children(&page_items);
+    commands.entity(view).push_children(&[view_list]);
 
     return view;
 }
@@ -52,6 +61,76 @@ pub fn new() -> (View, ButtonBundle) {
         background_color: Color::rgb(0.0, 1.0, 0.0).into(),
         ..default()
     });
+}
+
+fn routing_system(
+    mut commands: Commands,
+    mut view_list_query: Query<(Entity, &Children), With<ViewList>>,
+    mut routing_event_reader: EventReader<RoutingEvent>,
+) {
+    for event in routing_event_reader.read() {
+        for (view_list, view_list_children) in view_list_query.iter() {
+            // remove all current page stuff
+            for &child in view_list_children.iter() {
+                commands.entity(view_list).remove_children(&[child]);
+                commands.entity(child).despawn_recursive();
+            }
+
+            // Add new page stuff
+            for i in 0..100 {let text_item = (
+                TextBundle::from_section(
+                    format!("Chapter {}, Section {}, Subsection {}",
+                        event.chapter_number,
+                        event.section_number,
+                        event.subsection_number,
+                    ),
+                    TextStyle {
+                        font_size: 20.,
+                        ..default()
+                    },
+                ),
+                Label,
+                AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+            );
+            let page_item = NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Px(200.0),
+                    padding: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(4.0),
+                        top: Val::Px(0.0),
+                        bottom: Val::Px(4.0),
+                    },
+                    ..default()
+                },
+                background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+                ..default()
+            };
+
+            let inner_item = NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    align_items: AlignItems::Center,
+                    // justify_items: JustifyItems::Center,
+                    ..default()
+                },
+                background_color: Color::rgb(0.4, 0.4, 0.4).into(),
+                ..default()
+            };
+
+            let text_item = commands.spawn(text_item).id();
+            let inner_item = commands.spawn(inner_item).id();
+            let page_item = commands.spawn(page_item).id();
+
+            commands.entity(inner_item).push_children(&[text_item]);
+            commands.entity(page_item).push_children(&[inner_item]);
+
+            commands.entity(view_list).push_children(&[page_item]);}
+        }
+    }
+    // add new page
 }
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
