@@ -56,7 +56,7 @@ pub fn new() -> (View, ButtonBundle) {
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     let mut page_items = Vec::new();
-    for i in 0..1000 {
+    for i in 0..3 {
         let text_item = (
             TextBundle::from_section(
                 format!("Page Item: {i}"),
@@ -73,7 +73,7 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
                 width: Val::Percent(100.0),
                 height: Val::Px(200.0),
                 padding: UiRect {
-                    left: Val::Px(4.0),
+                    left: Val::Px(2.0),
                     right: Val::Px(4.0),
                     top: Val::Px(0.0),
                     bottom: Val::Px(4.0),
