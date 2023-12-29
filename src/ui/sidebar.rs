@@ -688,13 +688,39 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"13.1 Eigenvalues, eigenvectors, and eigenspaces".into(), 13, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.1.1 What are eigenvalues and eigenvectors?".into(), 13, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.1.2 Finding eigenvalues".into(), 13, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.1.3 Finding eigenvectors".into(), 13, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.1.4 Interlude on complex numbers".into(), 13, 1, 4));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.1.5 Complex eigenvalues, eigenvectors, and diagonalizability".into(), 13, 1, 5));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.1.6 Exercises".into(), 13, 1, 6));
+        
+
     // 13.2
     page_items.push(chapter_container::section_button(
         commands, &"13.2 Diagonalizing Matrices".into(), 13, 2));
 
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.2.1 Dimension of Eigenspaces".into(), 13, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.2.2 Different eigenspaces".into(), 13, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.2.3 When is a matrix diagonalizable?".into(), 13, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.2.4 Exercises".into(), 13, 2, 4));
+    
     // 13.3
     page_items.push(chapter_container::section_button(
         commands, &"13.3 Challenge Problems".into(), 13, 3));
+
+    page_items.push(chapter_container::subsection_button(
+        commands, &"13.3.1 Exercises".into(), 13, 3, 1));
 
     // ********* Chapter 14 ******** //
     page_items.push(chapter_container::chapter_button(
@@ -704,14 +730,37 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     page_items.push(chapter_container::section_button(
         commands, &"14.1 Symmetric Matrices".into(), 14, 1));
     
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.1.1 What is a symmetric matrix".into(), 14, 1, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.1.2 Characterizing symmetric matrices".into(), 14, 1, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.1.3 Orthogonal diagonalizability".into(), 14, 1, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.1.4 Exercises".into(), 14, 1, 4));
+        
     // 14.2
     page_items.push(chapter_container::section_button(
         commands, &"14.2 Singular Value Decompositions".into(), 14, 2));
 
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.2.1 What is a singular value decomposition?".into(), 14, 2, 1));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.2.2 Geometry of a singular value decomposition".into(), 14, 2, 2));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.2.3 Low rank approximations".into(), 14, 2, 3));
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.2.4 Exercises".into(), 14, 2, 4));
+    // page_items.push(chapter_container::subsection_button(
+    //     commands, &"14.2.5 Exercises".into(), 14, 2, 5));        
+    
     // 14.3
     page_items.push(chapter_container::section_button(
         commands, &"14.3 Challenge Problems".into(), 14, 3));
 
+    page_items.push(chapter_container::subsection_button(
+        commands, &"14.3.1 Exercises".into(), 14, 3, 1));
+    
     // ============================= //
     // **** BIBLIOGRAPHY *********** //
     // ============================= //
