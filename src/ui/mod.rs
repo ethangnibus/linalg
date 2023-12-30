@@ -10,7 +10,7 @@ pub mod under_navbar;
 pub mod view;
 pub mod chapter_container;
 pub mod chapter1section1subsection1;
-// pub mod chapter1section1subsection2;
+pub mod chapter1section1subsection2;
 
 pub struct SetupUiPlugin;
 
