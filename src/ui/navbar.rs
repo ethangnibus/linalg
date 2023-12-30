@@ -32,9 +32,16 @@ pub fn new(height: f32) -> NodeBundle {
             width: Val::Percent(100.0),
             align_items: AlignItems::Center,
             justify_items: JustifyItems::Center,
+            border: UiRect {
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(4.0),
+            },
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        background_color: Color::rgb(0.5, 0.5, 0.5).into(),
+        border_color: Color:: rgb(0.1, 0.1, 0.1).into(),
         ..default()
     };
 }

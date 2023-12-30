@@ -1,7 +1,12 @@
 use super::view;
 use super::sidebar;
 use super::sidebar_frame;
-use bevy::prelude::*;
+use bevy::{prelude::*, ui::FocusPolicy};
+
+const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
+const SWIPERS_WIDTH: Val = Val::Px(12.0);
+const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.1, 0.1, 0.1));
+
 
 // Marker for Node
 #[derive(Component)]
@@ -41,13 +46,11 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     // Make ECS for root and navbar
     // return entities
     let under_navbar = sidebar_frame::setup(commands, width, height);
-    let sidebar_width: f32 = 20.0; // in percentage
-    let sidebar = sidebar::setup(commands, sidebar_width);
+    let sidebar = sidebar::setup(commands, SIDEBAR_WIDTH);
 
-    let sidebar_swiper = sidebar_swiper();
-    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
+    let sidebar_swiper = sidebar_swiper(commands);
 
-    let right_border = right_border();
+    let right_border = right_swiper();
     let right_border = commands.spawn(right_border).id();
 
     let scrollable_page = view::setup(commands);
@@ -60,33 +63,55 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     return under_navbar;
 }
 
-pub fn sidebar_swiper() -> (SidebarSwiper, ButtonBundle, ShowingSidebar) {
-    return (
+pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
+    let sidebar_swiper = (
         SidebarSwiper,
         ButtonBundle {
-        style: Style {
-            width: Val::Percent(1.0),
-            height: Val::Percent(100.0),
-            border: UiRect::all(Val::Px(0.0)),
+            style: Style {
+                // width: Val::Percent(1.0),
+                width: SWIPERS_WIDTH,
+                height: Val::Percent(100.0),
+                border: UiRect::all(Val::Px(0.0)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            focus_policy: FocusPolicy::Block,
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    },
-    ShowingSidebar(true)
-);
+        ShowingSidebar(true)
+    );
+    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
+
+    let right_line =
+        NodeBundle {
+            style: Style {
+                width: Val::Px(2.0),
+                height: Val::Percent(100.0),
+                ..default()
+            },
+            // background_color: Color::rgb(1.0, 0.7, 0.1).into(),
+            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        };
+    let right_line = commands.spawn(right_line).id();
+    
+    commands.entity(sidebar_swiper).push_children(&[right_line]);
+    return sidebar_swiper;
 }
 
-pub fn right_border() -> (NodeBundle, ShowingSidebar) {
+pub fn right_swiper() -> (NodeBundle, ShowingSidebar) {
     return (
         NodeBundle {
         style: Style {
-            width: Val::Percent(1.0),
+            // width: Val::Percent(1.0),
+            width: SWIPERS_WIDTH,
             height: Val::Percent(100.0),
             border: UiRect::all(Val::Px(0.0)),
             ..default()
         },
-        background_color: Color::rgb(0.3, 0.3, 0.3).into(),
+        background_color: SWIPERS_COLOR_DEFAULT,
         ..default()
     },
     ShowingSidebar(true)
@@ -133,11 +158,11 @@ fn sidebar_swiper_interactions(
                 match showing_sidebar.0 {
                     true => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = Color::rgb(0.3, 0.3, 0.3).into();
+                        *color = SWIPERS_COLOR_DEFAULT;
                     }
                     false => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = Color::rgb(0.3, 0.3, 0.3).into();
+                        *color = SWIPERS_COLOR_DEFAULT;
                     }
                 }
             }
@@ -179,12 +204,12 @@ fn sidebar_visibility_system(
                 Visibility::Visible => {
                     println!("setting width to 20 in Visible");
                     *sidebar_visibility = Visibility::Visible;
-                    sidebar_style.width = bevy::prelude::Val::Vw(20.0);
+                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
                 }
                 Visibility::Inherited => {
                     println!("setting width to 20 in Inherited");
                     *sidebar_visibility = Visibility::Inherited;
-                    sidebar_style.width = bevy::prelude::Val::Vw(20.0);
+                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
                 }
             }
             println!("Visiblity is now {:?}", *sidebar_visibility);
