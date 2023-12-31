@@ -11,7 +11,7 @@ use super::sidebar;
 use super::view;
 
 const HEADER_BUTTON_HEIGHT: Val = Val::Px(50.0);
-const TITLE_BUTTON_HEIGHT: Val = Val::Px(100.0);
+const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
 const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
@@ -47,7 +47,7 @@ const HEADER_BUTTON_BORDER: UiRect = UiRect {
 const TITLE_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
     right: Val::Px(4.0),
-    top: Val::Px(12.0),
+    top: Val::Px(20.0),
     bottom: Val::Px(4.0),
 };
 const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
