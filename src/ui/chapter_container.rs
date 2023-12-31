@@ -311,7 +311,7 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
             chapter_name,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                
+                color: Color::rgb(1.0, 1.0, 1.0),
                 ..default()
             },
         ),
@@ -381,6 +381,7 @@ pub fn section_button(commands: &mut Commands, chapter_name: &String, chapter_nu
             chapter_name,
             TextStyle {
                 font_size: SECTION_BUTTON_FONT_SIZE,
+                
                 ..default()
             },
         ),

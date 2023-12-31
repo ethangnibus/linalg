@@ -199,12 +199,12 @@ fn sidebar_visibility_system(
                 Visibility::Hidden => {
                     println!("setting width to 0 in Hidden");
                     *sidebar_visibility = Visibility::Hidden;
-                    sidebar_style.width = bevy::prelude::Val::Vw(0.0);
+                    sidebar_style.width = Val::Percent(0.0);
                 }
                 Visibility::Visible => {
                     println!("setting width to 20 in Visible");
                     *sidebar_visibility = Visibility::Visible;
-                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
+                    sidebar_style.width = Val::Percent(SIDEBAR_WIDTH);
                 }
                 Visibility::Inherited => {
                     println!("setting width to 20 in Inherited");

@@ -8,8 +8,7 @@ use bevy::{
     // winit::WinitSettings,
 };
 use super::scrollable_page;
-use super::chapter1section1subsection1;
-use super::chapter1section1subsection2;
+use super::pages::*;
 
 // Marker for UI node
 #[derive(Component)]
@@ -187,7 +186,7 @@ fn routing_system(
                                 1 => {page_item = page_not_found(&mut commands)}, // FIXME
                                 2 => {page_item = page_not_found(&mut commands)}, // FIXME
                                 3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
+                                4 => {page_item = chapter1section2subsection4::get_page(&mut commands);}, // FIXME
                                 5 => {page_item = page_not_found(&mut commands)}, // FIXME
                                 6 => {page_item = page_not_found(&mut commands)}, // FIXME
                                 7 => {page_item = page_not_found(&mut commands)}, // FIXME
