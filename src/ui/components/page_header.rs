@@ -44,7 +44,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             // format!(text),
             text,
             TextStyle {
-                font_size: 20.,
+                font_size: 24.,
                 ..default()
             },
         ),

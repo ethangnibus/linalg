@@ -19,14 +19,14 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             padding: UiRect {
                 left: Val::Px(4.0),
                 right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
+                top: Val::Px(14.0),
+                bottom: Val::Px(14.0),
             },
             border: UiRect {
                 left: Val::Px(4.0),
                 right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
+                top: Val::Px(14.0),
+                bottom: Val::Px(14.0),
             },
             justify_items: JustifyItems::Start,
             align_items: AlignItems::Center,
@@ -43,7 +43,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             // format!(text),
             text,
             TextStyle {
-                font_size: 14.,
+                font_size: 20.,
                 ..default()
             },
         ),
