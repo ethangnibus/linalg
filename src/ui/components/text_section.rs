@@ -16,7 +16,6 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Auto,
-            min_height: Val::Px(54.0),
             padding: UiRect {
                 left: Val::Px(4.0),
                 right: Val::Px(0.0),
@@ -33,7 +32,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.2, 0.2, 0.2).into(),
+        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
         border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     }).id();
@@ -44,7 +43,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             // format!(text),
             text,
             TextStyle {
-                font_size: 20.,
+                font_size: 14.,
                 ..default()
             },
         ),

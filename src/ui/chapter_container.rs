@@ -141,7 +141,8 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: HEADER_BUTTON_HEIGHT,
+                height: Val::Auto,
+                min_height: HEADER_BUTTON_HEIGHT,
                 // height: Val::Percent(100.0),
                 border: HEADER_BUTTON_BORDER,
                 padding: HEADER_BUTTON_BORDER,
@@ -205,7 +206,8 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: TITLE_BUTTON_HEIGHT,
+                height: Val::Auto,
+                min_height: TITLE_BUTTON_HEIGHT,
                 border: TITLE_BUTTON_BORDER,
                 padding: TITLE_BUTTON_BORDER,
                 justify_content: JustifyContent::End,
@@ -273,7 +275,8 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: SIDEBAR_BUTTON_HEIGHT,
+                height: Val::Auto,
+                min_height: SIDEBAR_BUTTON_HEIGHT,
                 border: CHAPTER_BUTTON_BORDER,
                 padding: CHAPTER_BUTTON_BORDER,
                 justify_content: JustifyContent::End,

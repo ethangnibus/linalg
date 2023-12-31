@@ -223,6 +223,12 @@ mod pages {
     pub mod chapter15section0subsection0;
 }
 
+mod components{
+    pub mod page_header;
+    pub mod text_section;
+    pub mod definition_block;
+}
+
 pub struct SetupUiPlugin;
 
 impl Plugin for SetupUiPlugin {
