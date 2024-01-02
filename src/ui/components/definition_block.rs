@@ -8,63 +8,33 @@ use bevy::{
     // winit::WinitSettings,
 };
 
-pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
-    let title_text = "Span of vectors";
+pub fn spawn(commands: &mut Commands, text: &str, body_left: Entity, body_right: Entity) -> Entity {
 
-    // make banner behind the definition node
-    let background_banner = commands.spawn(
+
+    let definition_block = commands.spawn(
         NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
-            height: Val::Px(200.0),
+            height: Val::Auto,
             padding: UiRect {
                 left: Val::Px(4.0),
-                right: Val::Px(4.0),
+                right: Val::Px(0.0),
                 top: Val::Px(4.0),
                 bottom: Val::Px(4.0),
             },
             border: UiRect {
                 left: Val::Px(4.0),
-                right: Val::Px(4.0),
-                top: Val::Px(4.0),
-                bottom: Val::Px(4.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
             },
             flex_direction: FlexDirection::Column,
             justify_items: JustifyItems::Start,
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.2, 0.2, 0.0).into(),
+        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
         border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    }).id();
-
-    // definition flag
-    let definition_flag = commands.spawn(
-        NodeBundle {
-        style: Style {
-            width: Val::Px(200.0),
-            height: Val::Px(100.0),
-            // min_height: Val::Px(100.0),
-            padding: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
-            },
-            border: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
-            },
-            flex_direction: FlexDirection::Row,
-            justify_items: JustifyItems::Start,
-            align_items: AlignItems::Center,
-            ..default()
-        },
-        background_color: Color::rgb(5.0, 0.1, 0.1).into(),
-        // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     }).id();
 
@@ -92,8 +62,8 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.3, 0.1).into(),
-        // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     }).id();
 
@@ -105,8 +75,8 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             height: Val::Auto,
             // min_height: Val::Px(100.0),
             padding: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
+                left: Val::Px(4.0),
+                right: Val::Px(4.0),
                 top: Val::Px(12.0),
                 bottom: Val::Px(12.0),
             },
@@ -121,8 +91,8 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.1, 1.0).into(),
-        // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        background_color: Color::rgb(1.0 / 3.0, 0.7 / 3.0, 0.1 / 3.0).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     }).id();
 
@@ -140,8 +110,86 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     )).id();
 
-    commands.entity(definition_banner).push_children(&[text_bundle]);
-    commands.entity(background_banner).push_children(&[fake_background, definition_banner, definition_flag]);
+
+    // definition flag
+    let definition_flag = commands.spawn(
+        NodeBundle {
+        style: Style {
+            position_type: PositionType::Absolute,
+            width: Val::Auto,
+            height: Val::Auto,
+            min_height: Val::Px(50.0),
+            right: Val::Percent(10.0),
+            // min_height: Val::Px(100.0),
+            padding: UiRect {
+                left: Val::Px(4.0),
+                right: Val::Px(4.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+            },
+            border: UiRect {
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+            },
+            flex_direction: FlexDirection::Row,
+            justify_items: JustifyItems::Start,
+            align_items: AlignItems::Center,
+            ..default()
+        },
+        z_index: ZIndex::Local(1),
+        background_color: Color::rgb(1.0, 0.7, 0.1).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        ..default()
+    }).id();
     
-    return background_banner;
+    // make the text that appears on the flag
+    let definition_text = commands.spawn((
+        TextBundle::from_section(
+            // format!(text),
+            "Definition",
+            TextStyle {
+                font_size: 24.,
+                ..default()
+            },
+        ),
+        Label,
+        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+    )).id();
+
+    // make body under definition header
+    let definition_body = commands.spawn(
+        NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Auto,
+            padding: UiRect {
+                left: Val::Px(4.0),
+                right: Val::Px(4.0),
+                top: Val::Px(4.0),
+                bottom: Val::Px(4.0),
+            },
+            border: UiRect {
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+            },
+            flex_direction: FlexDirection::Row,
+            justify_items: JustifyItems::Start,
+            align_items: AlignItems::Center,
+            ..default()
+        },
+        background_color: Color::rgb(1.0 / 3.0, 0.7 / 3.0, 0.1 / 3.0).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        ..default()
+    }).id();
+
+    commands.entity(definition_banner).push_children(&[text_bundle]);
+    commands.entity(definition_flag).push_children(&[definition_text]);
+    commands.entity(definition_body).push_children(&[body_left, body_right]);
+    commands.entity(definition_block).push_children(&[fake_background, definition_banner, definition_flag, definition_body]);
+    
+    return definition_block;
 }

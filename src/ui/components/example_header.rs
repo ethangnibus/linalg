@@ -33,7 +33,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.0, 0.196, 0.384).into(),
+        background_color: Color::rgb(0.2, 0.2, 0.2).into(),
         border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     }).id();
@@ -44,7 +44,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             // format!(text),
             text,
             TextStyle {
-                font_size: 30.,
+                font_size: 24.,
                 ..default()
             },
         ),

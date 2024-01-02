@@ -23,10 +23,10 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
                 bottom: Val::Px(14.0),
             },
             border: UiRect {
-                left: Val::Px(4.0),
+                left: Val::Px(0.0),
                 right: Val::Px(0.0),
-                top: Val::Px(14.0),
-                bottom: Val::Px(14.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
             },
             justify_items: JustifyItems::Start,
             align_items: AlignItems::Center,

@@ -29,11 +29,12 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
                 top: Val::Px(0.0),
                 bottom: Val::Px(4.0),
             },
+            flex_direction: FlexDirection::Column,
             justify_items: JustifyItems::Start,
-            align_items: AlignItems::Center,
+            align_items: AlignItems::Start,
             ..default()
         },
-        background_color: Color::rgb(0.0, 0.196, 0.384).into(),
+        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
         border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     }).id();
@@ -44,7 +45,8 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             // format!(text),
             text,
             TextStyle {
-                font_size: 30.,
+                font_size: 24.,
+                color: Color::rgb(1.0, 0.7, 0.1).into(),
                 ..default()
             },
         ),
@@ -52,7 +54,33 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     )).id();
 
-    commands.entity(background_banner).push_children(&[text_bundle]);
+    let horizontal_bar = commands.spawn(
+        NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Px(1.0),
+            padding: UiRect {
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+            },
+            border: UiRect {
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+            },
+            justify_items: JustifyItems::Start,
+            align_items: AlignItems::Center,
+            ..default()
+        },
+        background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        ..default()
+    }).id();
+
+    commands.entity(background_banner).push_children(&[horizontal_bar, text_bundle]);
     
     return background_banner;
 }
