@@ -12,6 +12,7 @@ fn main() {
             }),
             ..default()
         }))
+        .add_plugins(bevy_svg::prelude::SvgPlugin)
         .add_plugins(ui::SetupUiPlugin)
         .add_systems(Startup, setup_camera)
         // .add_systems(Update, (on_resize_system, toggle_resolution))

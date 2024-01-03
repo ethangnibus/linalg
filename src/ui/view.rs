@@ -7,6 +7,7 @@ use bevy::{
     prelude::*,
     // winit::WinitSettings,
 };
+use bevy_svg::prelude::*;
 use super::scrollable_page;
 use super::pages::*;
 
@@ -18,6 +19,9 @@ pub struct View;
 struct ViewList {
     position: f32,
 }
+
+#[derive(Component)]
+struct SvgStruct;
 
 #[derive(Event)]
 pub struct RoutingEvent {
@@ -31,6 +35,7 @@ impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app
         .add_event::<RoutingEvent>()
+        .add_systems(Startup, spawn_svg)
         .add_systems(Update, (mouse_scroll, routing_system));
     }
 }
@@ -63,6 +68,156 @@ pub fn new() -> (View, ButtonBundle) {
         ..default()
     });
 }
+
+pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
+    let mut page_items = Vec::new();
+    for i in 0..3 {
+        let text_item = (
+            TextBundle::from_section(
+                format!("Page Item: {i}"),
+                TextStyle {
+                    font_size: 20.,
+                    ..default()
+                },
+            ),
+            Label,
+            AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+        );
+        let page_item = NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(200.0),
+                padding: UiRect {
+                    left: Val::Px(2.0),
+                    right: Val::Px(4.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(4.0),
+                },
+                ..default()
+            },
+            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            ..default()
+        };
+
+        let inner_item = NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                // justify_items: JustifyItems::Center,
+                ..default()
+            },
+            background_color: Color::rgb(0.4, 0.4, 0.4).into(),
+            ..default()
+        };
+
+        let text_item = commands.spawn(text_item).id();
+        let inner_item = commands.spawn(inner_item).id();
+        let page_item = commands.spawn(page_item).id();
+
+        commands.entity(inner_item).push_children(&[text_item]);
+        commands.entity(page_item).push_children(&[inner_item]);
+
+        page_items.push(page_item);
+    }
+    // let svg_window = get_svg(commands);
+    // page_items.push(svg_window);
+
+    return page_items;
+}
+
+fn spawn_svg (
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    let svg = asset_server.load("./result.svg");
+    commands.spawn((SvgStruct, Svg2dBundle {
+        svg,
+        origin: Origin::Center, // Origin::TopLeft is the default
+        ..Default::default()
+    }));
+}
+
+fn page_not_found(commands: &mut Commands, page_entities: &mut Vec<Entity>) {
+    let text_item = (
+        TextBundle::from_section(
+            format!("TODO: Remember to implement this page!"),
+            TextStyle {
+                font_size: 20.,
+                ..default()
+            },
+        ),
+        Label,
+        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+    );
+    let page_item = NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Px(200.0),
+            padding: UiRect {
+                left: Val::Px(2.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(4.0),
+            },
+            border: UiRect {
+                left: Val::Px(2.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
+                bottom: Val::Px(4.0),
+            },
+            ..default()
+        },
+        background_color: Color::rgb(0.3, 0.1, 0.1).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+
+        ..default()
+    };
+
+    let text_item = commands.spawn(text_item).id();
+    let page_item = commands.spawn(page_item).id();
+
+    commands.entity(page_item).push_children(&[text_item]);
+
+    page_entities.push(page_item);
+}
+
+fn mouse_scroll(
+    mut interaction_query: Query<
+        &Interaction,
+        With<View>
+    >,
+    mut mouse_wheel_events: EventReader<MouseWheel>,
+    mut query_list: Query<(&mut ViewList, &mut Style, &Parent, &Node)>,
+    query_node: Query<&Node>,
+) {
+    for interaction in &mut interaction_query {
+        match *interaction {
+            Interaction::Hovered => {
+                for mouse_wheel_event in mouse_wheel_events.read() {
+                    for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
+                        let items_height = list_node.size().y;
+                        let container_height = query_node.get(parent.get()).unwrap().size().y;
+            
+                        let max_scroll = (items_height - container_height).max(0.);
+            
+                        let dy = match mouse_wheel_event.unit {
+                            MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
+                            MouseScrollUnit::Pixel => mouse_wheel_event.y,
+                        };
+            
+                        scrolling_list.position += dy;
+                        scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
+                        style.top = Val::Px(scrolling_list.position);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+
 
 fn routing_system(
     mut commands: Commands,
@@ -1225,137 +1380,4 @@ fn routing_system(
         }
     }
     // add new page
-}
-
-pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
-    let mut page_items = Vec::new();
-    for i in 0..3 {
-        let text_item = (
-            TextBundle::from_section(
-                format!("Page Item: {i}"),
-                TextStyle {
-                    font_size: 20.,
-                    ..default()
-                },
-            ),
-            Label,
-            AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-        );
-        let page_item = NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Px(200.0),
-                padding: UiRect {
-                    left: Val::Px(2.0),
-                    right: Val::Px(4.0),
-                    top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
-                },
-                ..default()
-            },
-            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-            ..default()
-        };
-
-        let inner_item = NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                // justify_items: JustifyItems::Center,
-                ..default()
-            },
-            background_color: Color::rgb(0.4, 0.4, 0.4).into(),
-            ..default()
-        };
-
-        let text_item = commands.spawn(text_item).id();
-        let inner_item = commands.spawn(inner_item).id();
-        let page_item = commands.spawn(page_item).id();
-
-        commands.entity(inner_item).push_children(&[text_item]);
-        commands.entity(page_item).push_children(&[inner_item]);
-
-        page_items.push(page_item);
-    }
-    return page_items;
-}
-
-fn page_not_found(commands: &mut Commands, page_entities: &mut Vec<Entity>) {
-    let text_item = (
-        TextBundle::from_section(
-            format!("TODO: Remember to implement this page!"),
-            TextStyle {
-                font_size: 20.,
-                ..default()
-            },
-        ),
-        Label,
-        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    );
-    let page_item = NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Px(200.0),
-            padding: UiRect {
-                left: Val::Px(2.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
-            },
-            border: UiRect {
-                left: Val::Px(2.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
-            },
-            ..default()
-        },
-        background_color: Color::rgb(0.3, 0.1, 0.1).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-
-        ..default()
-    };
-
-    let text_item = commands.spawn(text_item).id();
-    let page_item = commands.spawn(page_item).id();
-
-    commands.entity(page_item).push_children(&[text_item]);
-
-    page_entities.push(page_item);
-}
-
-fn mouse_scroll(
-    mut interaction_query: Query<
-        &Interaction,
-        With<View>
-    >,
-    mut mouse_wheel_events: EventReader<MouseWheel>,
-    mut query_list: Query<(&mut ViewList, &mut Style, &Parent, &Node)>,
-    query_node: Query<&Node>,
-) {
-    for interaction in &mut interaction_query {
-        match *interaction {
-            Interaction::Hovered => {
-                for mouse_wheel_event in mouse_wheel_events.read() {
-                    for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
-                        let items_height = list_node.size().y;
-                        let container_height = query_node.get(parent.get()).unwrap().size().y;
-            
-                        let max_scroll = (items_height - container_height).max(0.);
-            
-                        let dy = match mouse_wheel_event.unit {
-                            MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
-                            MouseScrollUnit::Pixel => mouse_wheel_event.y,
-                        };
-            
-                        scrolling_list.position += dy;
-                        scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
-                        style.top = Val::Px(scrolling_list.position);
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
 }
