@@ -128,3 +128,12 @@ pub fn get(commands: &mut Commands, page_entities: &mut Vec<Entity>) {
     
     
 }
+
+// add a system to look at all svg_text blocks above
+// make a thing called an svg_text block that will hold the math text svg's we use for
+// everything
+// in the update system, when this page is loaded, send an event to load the svgs and put them in
+// the svg blocks.
+// we know the page is loaded when the title block appears. Query the title block and get
+// the resources based on it's name (or make a struct that tells us which chapter this is)
+// use that name to get the svgs.

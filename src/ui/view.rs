@@ -20,8 +20,8 @@ struct ViewList {
     position: f32,
 }
 
-#[derive(Component)]
-struct SvgStruct;
+// #[derive(Component)]
+// struct SvgStruct;
 
 #[derive(Event)]
 pub struct RoutingEvent {
@@ -131,7 +131,9 @@ fn spawn_svg (
     asset_server: Res<AssetServer>,
 ) {
     let svg = asset_server.load("./result.svg");
-    commands.spawn((SvgStruct, Svg2dBundle {
+    commands.spawn((
+        // SvgStruct, 
+        Svg2dBundle {
         svg,
         origin: Origin::Center, // Origin::TopLeft is the default
         ..Default::default()
