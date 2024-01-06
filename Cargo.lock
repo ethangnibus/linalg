@@ -769,6 +769,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_prototype_lyon"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1fc916d5bbde0109007068727331c154eeea0d06ac38a44747e430f6e72370fc"
+dependencies = [
+ "bevy",
+ "lyon_algorithms",
+ "lyon_tessellation",
+ "svgtypes 0.12.0",
+]
+
+[[package]]
 name = "bevy_ptr"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2273,7 +2285,11 @@ name = "linalg"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_prototype_lyon",
  "bevy_svg",
+ "lyon_algorithms",
+ "lyon_tessellation",
+ "svgtypes 0.13.0",
 ]
 
 [[package]]
@@ -2291,6 +2307,16 @@ name = "log"
 version = "0.4.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
+
+[[package]]
+name = "lyon_algorithms"
+version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3bca95f9a4955b3e4a821fbbcd5edfbd9be2a9a50bb5758173e5358bfb4c623"
+dependencies = [
+ "lyon_path",
+ "num-traits",
+]
 
 [[package]]
 name = "lyon_geom"
@@ -3230,6 +3256,26 @@ name = "svgtypes"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed4b0611e7f3277f68c0fa18e385d9e2d26923691379690039548f867cef02a7"
+dependencies = [
+ "kurbo 0.9.5",
+ "siphasher",
+]
+
+[[package]]
+name = "svgtypes"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d71499ff2d42f59d26edb21369a308ede691421f79ebc0f001e2b1fd3a7c9e52"
+dependencies = [
+ "kurbo 0.9.5",
+ "siphasher",
+]
+
+[[package]]
+name = "svgtypes"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e44e288cd960318917cbd540340968b90becc8bc81f171345d706e7a89d9d70"
 dependencies = [
  "kurbo 0.9.5",
  "siphasher",

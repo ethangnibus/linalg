@@ -4,6 +4,7 @@ mod ui;
 
 fn main() {
     App::new()
+        .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 fit_canvas_to_parent: true,
