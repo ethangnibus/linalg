@@ -27,7 +27,7 @@ pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_w
     );
 
     page_entities.push(
-        text_section::svg(commands, asset_server, svg_load_writer, "1_black.png".into(), 8.0)
+        text_section::image(commands, asset_server, svg_load_writer, "1_black.png".into(), 8.0)
     );
 
     let span_of_vectors_left = definition_text_section::spawn(commands, "Given a collection of vectors v1, . . . , vk ∈ Rn, their span\nSpan {v1,...,vk} ⊂ Rn\nis the set of all their linear combinations. In other words, Span {v1,...,vk} consists of all v ∈ Rn that can be expressed in the form\nv=a1v1 +···+akvk\nfor some weights a1,...,ak ∈ R.\nGeometrically, the span of a collection of vectors is the set of all vectors that can be reached by trav- eling along scales of each of the individual vectors in turn.");
@@ -37,7 +37,7 @@ pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_w
     );
 
     page_entities.push(
-        text_section::svg(commands, asset_server, svg_load_writer, "3.png".into(), 5.5)
+        text_section::camera(commands, asset_server, svg_load_writer, &"3.png".into(), 5.5)
     );
 
     page_entities.push(

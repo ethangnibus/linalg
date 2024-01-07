@@ -1,4 +1,13 @@
 use bevy::{
+    core_pipeline::clear_color::ClearColorConfig,
+    render::{
+        camera::RenderTarget,
+        render_resource::{
+            Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
+        },
+        view::RenderLayers,
+    },
+
     a11y::{
         accesskit::{NodeBuilder, Role},
         AccessibilityNode,
@@ -213,6 +222,7 @@ struct ViewList {
     position: f32,
 }
 
+
 // #[derive(Component)]
 // struct SvgStruct;
 
@@ -222,6 +232,10 @@ pub struct RoutingEvent {
     pub section_number: u32,
     pub subsection_number: u32,
 }
+
+
+#[derive(Component)]
+pub struct MyMinimapCamera;
 
 #[derive(Event)]
 pub struct SvgLoadEvent{
@@ -240,7 +254,7 @@ impl Plugin for SystemsPlugin {
         .add_event::<SvgLoadEvent>()
         // .add_systems(Startup, spawn_svg)
         .add_plugins(ShapePlugin)
-        .add_systems(Update, (mouse_scroll, svg_load, routing_system));
+        .add_systems(Update, (mouse_scroll, routing_system, setup_new_camera, debug_minimap));
     }
 }
 
@@ -386,69 +400,218 @@ struct BlacksmithMarker;
 #[derive(Component)]
 struct ToolShackMarker;
 
-fn svg_load (
+// Marks the first pass cube (rendered to a texture.)
+#[derive(Component)]
+struct FirstPassCube;
+
+// Marks the main pass cube, to which the texture is applied.
+#[derive(Component)]
+struct MainPassCube;
+
+use std::f32::consts::PI;
+
+fn setup_new_camera (
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut svg_load_reader: EventReader<SvgLoadEvent>,
-    holder_entity_query: Query<Entity, With<SvgHolder>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut images: ResMut<Assets<Image>>,
+    mut new_camera_event: EventReader<SvgLoadEvent>,
 ) {
+    for ev in new_camera_event.read() {
+        println!("event happening now");
+
+        let size = Extent3d {
+            width: 512,
+            height: 512,
+            ..default()
+        };
     
-    for event in svg_load_reader.read() {
-        for holder_entity in holder_entity_query.iter() {
-            commands.spawn(Camera2dBundle::default());
-            println!("");
-            println!("LOADED THE SVG");
-            println!("{:?}", event.entity);
-            println!("{:?}", event.file_name);
-            println!("");
+        // This is the texture that will be rendered to.
+        let mut image = Image {
+            texture_descriptor: TextureDescriptor {
+                label: None,
+                size,
+                dimension: TextureDimension::D2,
+                format: TextureFormat::Bgra8UnormSrgb,
+                mip_level_count: 1,
+                sample_count: 1,
+                usage: TextureUsages::TEXTURE_BINDING
+                    | TextureUsages::COPY_DST
+                    | TextureUsages::RENDER_ATTACHMENT,
+                view_formats: &[],
+            },
+            ..default()
+        };
+    
+        // fill image.data with zeroes
+        image.resize(size);
 
-            // let text_bundle = commands.spawn((
-            //     TextBundle::from_section(
-            //         // format!(text),
-            //         "heloo guys",
-            //         TextStyle {
-            //             font_size: 20.,
-            //             ..default()
-            //         },
-            //     ),
-            //     Label,
-            //     AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-            // )).id();
+        let image_handle = images.add(image);
 
-            // let svg = asset_server.load("result.svg");
+        let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
+        let cube_material_handle = materials.add(StandardMaterial {
+            base_color: Color::rgb(0.8, 0.7, 0.6),
+            reflectance: 0.02,
+            unlit: false,
+            ..default()
+        });
 
-            // println!("{:?}", svg);
-            // println!("made it to load svg");
-            // let svg_bundle = commands.spawn((
-            //     Svg2dBundle {
-            //         svg,
-            //         origin: Origin::Center, // Origin::TopLeft is the default
-            //         ..Default::default()
-            //     },
-            // )).id();
-            // println!("made it to make svg bundle");
+        // This specifies the layer used for the first pass, which will be attached to the first pass camera and cube.
+        let first_pass_layer = RenderLayers::layer(1);
+
+        // The cube that will be rendered to the texture.
+        commands.spawn((
+            PbrBundle {
+                mesh: cube_handle,
+                material: cube_material_handle,
+                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
+                ..default()
+            },
+            FirstPassCube,
+            first_pass_layer,
+        ));
+
+        // Light
+    // NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
+    commands.spawn(PointLightBundle {
+        transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
+        ..default()
+    });
+
+    commands.spawn((
+        Camera3dBundle {
+            camera_3d: Camera3d {
+                clear_color: ClearColorConfig::Custom(Color::WHITE),
+                ..default()
+            },
+            camera: Camera {
+                // render before the "main pass" camera
+                order: 2,
+                target: RenderTarget::Image(image_handle.clone()),
+                ..default()
+            },
+            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
+                .looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        },
+        first_pass_layer,
+    ));
+
+    let cube_size = 4.0;
+    let cube_handle = meshes.add(Mesh::from(shape::Box::new(cube_size, cube_size, cube_size)));
+
+    // This material has the texture that has been rendered.
+    let material_handle = materials.add(StandardMaterial {
+        base_color_texture: Some(image_handle),
+        reflectance: 0.02,
+        unlit: false,
+        ..default()
+    });
+
+    // Main pass cube, with material containing the rendered first pass texture.
+    commands.spawn((
+        PbrBundle {
+            mesh: cube_handle,
+            material: material_handle,
+            transform: Transform::from_xyz(0.0, 0.0, 1.5)
+                .with_rotation(Quat::from_rotation_x(-PI / 5.0)),
+            ..default()
+        },
+        MainPassCube,
+    ));
+
+    // The main pass camera.
+    commands.spawn(Camera3dBundle {
+        transform: Transform::from_xyz(0.0, 0.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y),
+        ..default()
+    });
+
+    }
+}
+
+
+fn debug_minimap (
+    minimap_query: Query<(&Node, &Transform, &GlobalTransform), With<MyMinimapCamera>>,
+) {
+    for (node, transform, global_transform) in minimap_query.iter() {
+        println!("");
+        println!("The node's size is:");
+        println!("{:?}", node.size());
+
+        println!("");
+        println!("Transform");
+        println!("{:?}", transform);
+
+        println!("");
+        println!("Global Transform");
+        println!("{:?}", global_transform.compute_transform());
+
+    }
+}
+
+// fn svg_load (
+//     mut commands: Commands,
+//     asset_server: Res<AssetServer>,
+//     mut svg_load_reader: EventReader<SvgLoadEvent>,
+//     holder_entity_query: Query<Entity, With<SvgHolder>>,
+// ) {
+    
+//     for event in svg_load_reader.read() {
+//         for holder_entity in holder_entity_query.iter() {
+//             commands.spawn(Camera2dBundle::default());
+//             println!("");
+//             println!("LOADED THE SVG");
+//             println!("{:?}", event.entity);
+//             println!("{:?}", event.file_name);
+//             println!("");
+
+//             // let text_bundle = commands.spawn((
+//             //     TextBundle::from_section(
+//             //         // format!(text),
+//             //         "heloo guys",
+//             //         TextStyle {
+//             //             font_size: 20.,
+//             //             ..default()
+//             //         },
+//             //     ),
+//             //     Label,
+//             //     AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+//             // )).id();
+
+//             // let svg = asset_server.load("result.svg");
+
+//             // println!("{:?}", svg);
+//             // println!("made it to load svg");
+//             // let svg_bundle = commands.spawn((
+//             //     Svg2dBundle {
+//             //         svg,
+//             //         origin: Origin::Center, // Origin::TopLeft is the default
+//             //         ..Default::default()
+//             //     },
+//             // )).id();
+//             // println!("made it to make svg bundle");
             
 
-            let outer = commands.spawn((
-                NodeBundle {
-                    style: Style {
-                        width: Val::Px(500.0),
-                        height: Val::Px(125.0),
-                        margin: UiRect::top(Val::VMin(5.)),
-                        ..default()
-                    },
-                    // a `NodeBundle` is transparent by default, so to see the image we have to its color to `WHITE`
-                    background_color: Color::WHITE.into(),
-                    ..default()
-                },
-                UiImage::new(asset_server.load("result.png")),
-            )).id();
+//             let outer = commands.spawn((
+//                 NodeBundle {
+//                     style: Style {
+//                         width: Val::Px(500.0),
+//                         height: Val::Px(125.0),
+//                         margin: UiRect::top(Val::VMin(5.)),
+//                         ..default()
+//                     },
+//                     // a `NodeBundle` is transparent by default, so to see the image we have to its color to `WHITE`
+//                     background_color: Color::WHITE.into(),
+//                     ..default()
+//                 },
+//                 UiImage::new(asset_server.load("result.png")),
+//             )).id();
 
-            commands.entity(holder_entity).push_children(&[outer]);
-        }
-    }
+//             commands.entity(holder_entity).push_children(&[outer]);
+//         }
+//     }
     
-}
+// }
 
 fn mouse_scroll(
     mut interaction_query: Query<
