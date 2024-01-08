@@ -439,7 +439,7 @@ fn setup_new_camera (
         let mut image = Image {
             texture_descriptor: TextureDescriptor {
                 label: None,
-                size,
+                size: size.clone(),
                 dimension: TextureDimension::D2,
                 format: TextureFormat::Bgra8UnormSrgb,
                 mip_level_count: 1,
@@ -453,7 +453,7 @@ fn setup_new_camera (
         };
     
         // fill image.data with zeroes
-        image.resize(size);
+        image.resize(size.clone());
 
         let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
         let cube_material_handle = materials.add(StandardMaterial {
@@ -502,8 +502,8 @@ fn setup_new_camera (
                     viewport: Some(Viewport {
                         physical_position: UVec2::new(0, 0),
                         physical_size: UVec2::new(
-                            500,
-                            500
+                            size.width.clone(),
+                            size.height.clone(),
                         ),
                         ..default()
                     }),
