@@ -1,6 +1,8 @@
 use bevy::prelude::*;
-// use bevy::window::WindowResized;
+use bevy::window::WindowResized;
 mod ui;
+
+use ui::view::UiResizeEvent;
 
 
 fn main() {
@@ -17,6 +19,7 @@ fn main() {
         .add_plugins(bevy_svg::prelude::SvgPlugin)
         .add_plugins(ui::SetupUiPlugin)
         .add_systems(Startup, setup_camera)
+        .add_systems(Update, on_resize_system)
         // .add_systems(Update, (on_resize_system, toggle_resolution))
         .run();
 }
@@ -55,15 +58,20 @@ fn setup_camera(mut commands: Commands) {
 //     // }
 // }
 
-// /// This system shows how to respond to a window being resized.
-// /// Whenever the window is resized, the text will update with the new resolution.
-// fn on_resize_system(
-//     mut q: Query<&mut Text, With<ResolutionText>>,
-//     mut resize_reader: EventReader<WindowResized>,
-// ) {
-//     // let mut text = q.single_mut();
-//     // for e in resize_reader.read() {
-//     //     // When resolution is being changed
-//     //     text.sections[0].value = format!("{:.1} x {:.1}", e.width, e.height);
-//     // }
-// }
+/// This system shows how to respond to a window being resized.
+/// Whenever the window is resized, the text will update with the new resolution.
+fn on_resize_system(
+    mut q: Query<&mut Text, With<ResolutionText>>,
+    mut resize_reader: EventReader<WindowResized>,
+    mut resize_event_writer: EventWriter<UiResizeEvent>,
+) {
+    for e in resize_reader.read() {
+        resize_event_writer.send(UiResizeEvent);
+    }
+    
+    // let mut text = q.single_mut();
+    // for e in resize_reader.read() {
+    //     // When resolution is being changed
+    //     text.sections[0].value = format!("{:.1} x {:.1}", e.width, e.height);
+    // }
+}

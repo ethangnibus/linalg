@@ -16,7 +16,7 @@ use bevy::{
         AccessibilityNode,
     },
     input::mouse::{MouseScrollUnit, MouseWheel},
-    prelude::*,
+    prelude::*, ui,
     // winit::WinitSettings,
 };
 use bevy_svg::prelude::*;
@@ -236,6 +236,9 @@ pub struct RoutingEvent {
     pub subsection_number: u32,
 }
 
+#[derive(Event)]
+pub struct UiResizeEvent;
+
 
 #[derive(Component)]
 pub struct MyMinimapCamera;
@@ -255,9 +258,10 @@ impl Plugin for SystemsPlugin {
         app
         .add_event::<RoutingEvent>()
         .add_event::<SvgLoadEvent>()
+        .add_event::<UiResizeEvent>()
         // .add_systems(Startup, spawn_svg)
         .add_plugins(ShapePlugin)
-        .add_systems(Update, (mouse_scroll, routing_system, setup_new_camera, debug_minimap, rotator_system));
+        .add_systems(Update, (mouse_scroll, routing_system, resize_camera_system, setup_new_camera, debug_minimap, rotator_system));
     }
 }
 
@@ -411,6 +415,12 @@ struct FirstPassCube;
 #[derive(Component)]
 struct MainPassCube;
 
+// Shows us which mini camera this is
+#[derive(Component)]
+pub struct MiniCamera {
+    number: u8,
+}
+
 use std::f32::consts::PI;
 
 fn setup_new_camera (
@@ -491,7 +501,8 @@ fn setup_new_camera (
                 ..default()
             });
 
-            commands.spawn((
+            commands.spawn(
+                (
                 Camera3dBundle {
                     camera_3d: Camera3d {
                         clear_color: ClearColorConfig::Custom(Color::WHITE),
@@ -520,12 +531,25 @@ fn setup_new_camera (
                     show_ui: false,
                 },
                 first_pass_layer,
+                MiniCamera{number: 0},
             ));
 
             // TODO: remember to make a delete system for all game objects and image textures when you leave the page :)
         }
     }
 
+}
+
+fn resize_camera_system (
+    mut mini_camera_query: Query<&Camera, With<MiniCamera>>,
+    mut ui_resize_reader: EventReader<UiResizeEvent>,
+) {
+    
+    for ev in ui_resize_reader.read() {
+        for camera in mini_camera_query.iter() {
+            println!("AYOOO we got a resize event!");
+        }
+    }
 }
 
 /// Rotates the inner cube (first pass)
