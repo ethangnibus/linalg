@@ -419,18 +419,21 @@ fn setup_new_camera (
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut images: ResMut<Assets<Image>>,
     mut new_camera_event: EventReader<SvgLoadEvent>,
-    minimap_query: Query<Entity, With<MyMinimapCamera>>,
+    minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
 ) {
     for ev in new_camera_event.read() {
     
-        let entity = ev.entity;
 
-
+        let (entity, node) = minimap_query.single();
+        
+        let size = node.size();
         let size = Extent3d {
-            width: 1024,
-            height: 512,
+            width: size.x.ceil() as u32,
+            height: size.y.ceil() as u32,
             ..default()
         };
+        // println!("{:?}", size.width);
+        // println!("{:?}", size.height);
     
         // This is the texture that will be rendered to.
         let mut image = Image {
