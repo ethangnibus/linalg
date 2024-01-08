@@ -111,7 +111,38 @@ pub fn image(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load
 
 pub fn camera(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_writer: &mut EventWriter<SvgLoadEvent>, image_path: &String, ratio: f32) -> Entity {
 
-    let img = UiImage::new(asset_server.load(image_path));
+    // let size = Extent3d {
+    //     width: 512,
+    //     height: 512,
+    //     ..default()
+    // };
+
+    // // This is the texture that will be rendered to.
+    // let mut image = Image {
+    //     texture_descriptor: TextureDescriptor {
+    //         label: None,
+    //         size,
+    //         dimension: TextureDimension::D2,
+    //         format: TextureFormat::Bgra8UnormSrgb,
+    //         mip_level_count: 1,
+    //         sample_count: 1,
+    //         usage: TextureUsages::TEXTURE_BINDING
+    //             | TextureUsages::COPY_DST
+    //             | TextureUsages::RENDER_ATTACHMENT,
+    //         view_formats: &[],
+    //     },
+    //     ..default()
+    // };
+
+    // // fill image.data with zeroes
+    // image.resize(size);
+
+    // let ui_image: UiImage = UiImage { texture: image, flip_x: false, flip_y: false };
+
+
+
+
+
     // make banner behind the text
     let background_banner = commands.spawn((
         NodeBundle {
@@ -125,29 +156,30 @@ pub fn camera(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_loa
                 bottom: Val::Px(0.0),
             },
             border: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+                left: Val::Px(4.0),
+                right: Val::Px(4.0),
+                top: Val::Px(4.0),
+                bottom: Val::Px(4.0),
             },
             justify_items: JustifyItems::Start,
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.3, 0.1).into(),
-        border_color: Color::rgb(0.1, 0.5, 0.1).into(),
+        background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+        border_color: Color::rgb(0.5, 0.0, 0.0).into(),
         ..default()
     },
     MyMinimapCamera,
-    // img
+    // image,
     )).id();
 
-    // svg_load_writer.send(
-    //     SvgLoadEvent{
-    //         entity: background_banner,
-    //         file_name: image_path.to_string(),
-    //     }
-    // );
+    svg_load_writer.send(
+        SvgLoadEvent{
+            entity: background_banner,
+            file_name: image_path.to_string(),
+        }
+    );
+
 
 
     return background_banner;

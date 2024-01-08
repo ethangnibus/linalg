@@ -27,7 +27,14 @@ struct ResolutionText;
 
 // Spawns the camera that draws UI
 fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle {
+        camera: Camera {
+            // Renders the right camera after the left camera, which has a default priority of 0
+            order: 0,
+            ..default()
+        },
+        ..default()
+    });
 }
 
 // /// This system shows how to request the window to a new resolution
