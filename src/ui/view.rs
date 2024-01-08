@@ -421,111 +421,109 @@ fn setup_new_camera (
     mut new_camera_event: EventReader<SvgLoadEvent>,
     minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
 ) {
-    for ev in new_camera_event.read() {
-    
-
-        let (entity, node) = minimap_query.single();
+    for (entity, node) in minimap_query.iter() {
+        for ev in new_camera_event.read() {
         
-        let size = node.size();
-        let size = Extent3d {
-            width: size.x.ceil() as u32,
-            height: size.y.ceil() as u32,
-            ..default()
-        };
-        // println!("{:?}", size.width);
-        // println!("{:?}", size.height);
-    
-        // This is the texture that will be rendered to.
-        let mut image = Image {
-            texture_descriptor: TextureDescriptor {
-                label: None,
-                size: size.clone(),
-                dimension: TextureDimension::D2,
-                format: TextureFormat::Bgra8UnormSrgb,
-                mip_level_count: 1,
-                sample_count: 1,
-                usage: TextureUsages::TEXTURE_BINDING
-                    | TextureUsages::COPY_DST
-                    | TextureUsages::RENDER_ATTACHMENT,
-                view_formats: &[],
-            },
-            ..default()
-        };
-    
-        // fill image.data with zeroes
-        image.resize(size.clone());
-
-        let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
-        let cube_material_handle = materials.add(StandardMaterial {
-            base_color: Color::rgb(0.0, 1.0, 0.0),
-            reflectance: 0.02,
-            unlit: false,
-            ..default()
-        });
-
-        let image_handle = images.add(image);
-        let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
-        commands.entity(entity).insert(ui_image);
-
-        let first_pass_layer = RenderLayers::layer(1);
-
-        // The cube that will be rendered to the texture.
-        commands.spawn((
-            PbrBundle {
-                mesh: cube_handle,
-                material: cube_material_handle,
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
+        
+            let size = node.size();
+            let size = Extent3d {
+                width: size.x.ceil() as u32,
+                height: size.y.ceil() as u32,
                 ..default()
-            },
-            FirstPassCube,
-            first_pass_layer,
-        ));
-
-        // Light
-        // NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
-        commands.spawn(PointLightBundle {
-            point_light: PointLight {
-                intensity: 100.0,
+            };
+            // println!("{:?}", size.width);
+            // println!("{:?}", size.height);
+        
+            // This is the texture that will be rendered to.
+            let mut image = Image {
+                texture_descriptor: TextureDescriptor {
+                    label: None,
+                    size: size.clone(),
+                    dimension: TextureDimension::D2,
+                    format: TextureFormat::Bgra8UnormSrgb,
+                    mip_level_count: 1,
+                    sample_count: 1,
+                    usage: TextureUsages::TEXTURE_BINDING
+                        | TextureUsages::COPY_DST
+                        | TextureUsages::RENDER_ATTACHMENT,
+                    view_formats: &[],
+                },
                 ..default()
-            },
-            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
-            ..default()
-        });
+            };
+        
+            // fill image.data with zeroes
+            image.resize(size.clone());
 
-        commands.spawn((
-            Camera3dBundle {
-                camera_3d: Camera3d {
-                    clear_color: ClearColorConfig::Custom(Color::WHITE),
+            let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
+            let cube_material_handle = materials.add(StandardMaterial {
+                base_color: Color::rgb(0.0, 1.0, 0.0),
+                reflectance: 0.02,
+                unlit: false,
+                ..default()
+            });
+
+            let image_handle = images.add(image);
+            let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
+            commands.entity(entity).insert(ui_image);
+
+            let first_pass_layer = RenderLayers::layer(1);
+
+            // The cube that will be rendered to the texture.
+            commands.spawn((
+                PbrBundle {
+                    mesh: cube_handle,
+                    material: cube_material_handle,
+                    transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
                     ..default()
                 },
-                camera: Camera {
-                    viewport: Some(Viewport {
-                        physical_position: UVec2::new(0, 0),
-                        physical_size: UVec2::new(
-                            size.width.clone(),
-                            size.height.clone(),
-                        ),
+                FirstPassCube,
+                first_pass_layer,
+            ));
+
+            // Light
+            // NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
+            commands.spawn(PointLightBundle {
+                point_light: PointLight {
+                    intensity: 100.0,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
+                ..default()
+            });
+
+            commands.spawn((
+                Camera3dBundle {
+                    camera_3d: Camera3d {
+                        clear_color: ClearColorConfig::Custom(Color::WHITE),
                         ..default()
-                    }),
-                    // render before the "main pass" camera
-                    order: 1,
-                    target: RenderTarget::Image(image_handle),
+                    },
+                    camera: Camera {
+                        viewport: Some(Viewport {
+                            physical_position: UVec2::new(0, 0),
+                            physical_size: UVec2::new(
+                                size.width.clone(),
+                                size.height.clone(),
+                            ),
+                            ..default()
+                        }),
+                        // render before the "main pass" camera
+                        order: 1,
+                        target: RenderTarget::Image(image_handle),
+                        ..default()
+                    },
+                    transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
+                        .looking_at(Vec3::ZERO, Vec3::Y),
                     ..default()
                 },
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
-                    .looking_at(Vec3::ZERO, Vec3::Y),
-                ..default()
-            },
-            // UI config is a separate component
-            UiCameraConfig {
-                show_ui: false,
-            },
-            first_pass_layer,
-        ));
+                // UI config is a separate component
+                UiCameraConfig {
+                    show_ui: false,
+                },
+                first_pass_layer,
+            ));
 
-        // TODO: remember to make a delete system for all game objects and image textures when you leave the page :)
-        // TODO: remember to resize the camera and image texture's size based on the size of the parent !!
-    
+            // TODO: remember to make a delete system for all game objects and image textures when you leave the page :)
+        }
     }
 
 }
