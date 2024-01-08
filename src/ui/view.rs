@@ -520,6 +520,8 @@ fn setup_new_camera (
             first_pass_layer,
         ));
 
+        // TODO: remember to make a delete system for all game objects and image textures when you leave the page :)
+        // TODO: remember to resize the camera and image texture's size based on the size of the parent !!
     
     }
 
