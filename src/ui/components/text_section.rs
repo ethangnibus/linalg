@@ -42,7 +42,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
                 left: Val::Px(0.0),
                 right: Val::Px(0.0),
                 top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+                bottom: Val::Px(4.0),
             },
             justify_items: JustifyItems::Start,
             align_items: AlignItems::Center,
@@ -87,20 +87,20 @@ pub fn image(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load
                 left: Val::Px(0.0),
                 right: Val::Px(0.0),
                 top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+                bottom: Val::Px(4.0),
             },
             border: UiRect {
                 left: Val::Px(0.0),
                 right: Val::Px(0.0),
                 top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+                bottom: Val::Px(4.0),
             },
             justify_items: JustifyItems::Start,
             align_items: AlignItems::Center,
             ..default()
         },
         background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-        border_color: Color::rgb(0.1, 0.5, 0.1).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     },
     img
@@ -153,12 +153,12 @@ pub fn camera(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_loa
                 left: Val::Px(0.0),
                 right: Val::Px(0.0),
                 top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+                bottom: Val::Px(4.0),
             },
             border: UiRect {
-                left: Val::Px(4.0),
-                right: Val::Px(4.0),
-                top: Val::Px(4.0),
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                top: Val::Px(0.0),
                 bottom: Val::Px(4.0),
             },
             justify_items: JustifyItems::Start,
@@ -166,7 +166,7 @@ pub fn camera(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_loa
             ..default()
         },
         background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-        border_color: Color::rgb(0.5, 0.0, 0.0).into(),
+        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
         ..default()
     },
     MyMinimapCamera,
