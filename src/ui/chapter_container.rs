@@ -85,6 +85,9 @@ pub struct SectionNumber(pub u32);
 pub struct SubsectionNumber(pub u32);
 
 #[derive(Component)]
+pub struct HeaderButton();
+
+#[derive(Component)]
 pub struct ChapterButton();
 
 #[derive(Component)]
@@ -138,6 +141,7 @@ impl Plugin for SystemsPlugin {
 pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
     let header_button = (
         SidebarItem(),
+        HeaderButton(),
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),

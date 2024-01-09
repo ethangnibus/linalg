@@ -2,6 +2,7 @@ use super::view;
 use super::view::UiResizeEvent;
 use super::sidebar;
 use super::sidebar_frame;
+use super::chapter_container::HeaderButton;
 use bevy::{prelude::*, ui::FocusPolicy};
 use bevy::winit::WinitWindows;
 
@@ -131,10 +132,12 @@ pub fn right_swiper() -> (NodeBundle, ShowingSidebar) {
 fn sidebar_swiper_interactions(
     mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &mut BorderColor, &mut ShowingSidebar), (Changed<Interaction>, With<SidebarSwiper>)>,
     // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
+    // mut header_button_query: Query<&BackgroundColor, With<HeaderButton>>,
     mut sidebar_swiper_color_writer: EventWriter<SidebarSwiperColorEvent>,
     mut sidebar_visibility_writer: EventWriter<SidebarVisibilityEvent>,
 ) {
     for (interaction, mut color, mut border_color, mut showing_sidebar) in &mut interaction_query {
+
         match *interaction {
             Interaction::Pressed => {
                 // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::RED));
@@ -156,6 +159,7 @@ fn sidebar_swiper_interactions(
                         // *color = Color::rgb(0.7, 0.45, 0.45).into();
                         // *color = Color::rgb(0.1, 0.1, 0.1).into();
                         *border_color = Color::rgb(0.5, 0.5, 0.5).into();
+        
                     }
                     false => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
@@ -181,6 +185,7 @@ fn sidebar_swiper_interactions(
                 }
             }
         }
+        
     }
 }
 
