@@ -74,33 +74,39 @@ pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
                 // width: Val::Percent(1.0),
                 width: SWIPERS_WIDTH,
                 height: Val::Percent(100.0),
-                border: UiRect::all(Val::Px(0.0)),
+                border: UiRect {
+                    left: Val::Px(2.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                },
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..default()
             },
             focus_policy: FocusPolicy::Block,
+            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
         ShowingSidebar(true)
     );
     let sidebar_swiper = commands.spawn(sidebar_swiper).id();
 
-    let right_line =
-        NodeBundle {
-            style: Style {
-                width: Val::Px(2.0),
-                height: Val::Percent(100.0),
-                ..default()
-            },
-            // background_color: Color::rgb(1.0, 0.7, 0.1).into(),
-            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-            ..default()
-        };
-    let right_line = commands.spawn(right_line).id();
+    // let right_line =
+    //     NodeBundle {
+    //         style: Style {
+    //             width: Val::Px(2.0),
+    //             height: Val::Percent(100.0),
+    //             ..default()
+    //         },
+    //         // background_color: Color::rgb(1.0, 0.7, 0.1).into(),
+    //         background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+    //         // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+    //         ..default()
+    //     };
+    // let right_line = commands.spawn(right_line).id();
     
-    commands.entity(sidebar_swiper).push_children(&[right_line]);
+    // commands.entity(sidebar_swiper).push_children(&[right_line]);
     return sidebar_swiper;
 }
 
@@ -123,12 +129,12 @@ pub fn right_swiper() -> (NodeBundle, ShowingSidebar) {
 
 // In your sidebar_swiper_interactions function
 fn sidebar_swiper_interactions(
-    mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &mut ShowingSidebar), (Changed<Interaction>, With<SidebarSwiper>)>,
+    mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &mut BorderColor, &mut ShowingSidebar), (Changed<Interaction>, With<SidebarSwiper>)>,
     // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
     mut sidebar_swiper_color_writer: EventWriter<SidebarSwiperColorEvent>,
     mut sidebar_visibility_writer: EventWriter<SidebarVisibilityEvent>,
 ) {
-    for (interaction, mut color, mut showing_sidebar) in &mut interaction_query {
+    for (interaction, mut color, mut border_color, mut showing_sidebar) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
                 // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::RED));
@@ -147,11 +153,14 @@ fn sidebar_swiper_interactions(
                 match showing_sidebar.0 {
                     true => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.7, 0.45, 0.45)));
-                        *color = Color::rgb(0.7, 0.45, 0.45).into();
+                        // *color = Color::rgb(0.7, 0.45, 0.45).into();
+                        // *color = Color::rgb(0.1, 0.1, 0.1).into();
+                        *border_color = Color::rgb(0.5, 0.5, 0.5).into();
                     }
                     false => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
-                        *color = Color::rgb(0.45, 0.45, 0.7).into();
+                        // *color = Color::rgb(1.0, 0.7, 0.1).into();
+                        *border_color = Color::rgb(1.0, 0.7, 0.1).into();
                     }
                 }
             }
@@ -159,11 +168,15 @@ fn sidebar_swiper_interactions(
                 match showing_sidebar.0 {
                     true => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = SWIPERS_COLOR_DEFAULT;
+                        // *color = SWIPERS_COLOR_DEFAULT;
+                        // *color = Color::rgb(1.0, 0.7, 0.1).into();
+                        *border_color = Color::rgb(1.0, 0.7, 0.1).into();
                     }
                     false => {
                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = SWIPERS_COLOR_DEFAULT;
+                        // *color = SWIPERS_COLOR_DEFAULT;
+                        // *color = Color::rgb(0.1, 0.1, 0.1).into();
+                        *border_color = Color::rgb(0.5, 0.5, 0.5).into();
                     }
                 }
             }

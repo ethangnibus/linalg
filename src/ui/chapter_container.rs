@@ -39,8 +39,8 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [0,
 ];
 
 const HEADER_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(4.0),
-    right: Val::Px(2.0),
+    left: Val::Px(0.0),
+    right: Val::Px(0.0),
     top: Val::Px(0.0),
     bottom: Val::Px(0.0),
 };
@@ -147,7 +147,7 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
                 border: HEADER_BUTTON_BORDER,
                 padding: HEADER_BUTTON_BORDER,
                 justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
+                align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
