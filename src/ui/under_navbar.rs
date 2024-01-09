@@ -1,7 +1,9 @@
 use super::view;
+use super::view::UiResizeEvent;
 use super::sidebar;
 use super::sidebar_frame;
 use bevy::{prelude::*, ui::FocusPolicy};
+
 
 const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
 const SWIPERS_WIDTH: Val = Val::Px(12.0);
@@ -186,6 +188,7 @@ fn sidebar_color_change_system(
 fn sidebar_visibility_system(
     mut sidebar_query: Query<(&mut Visibility, &mut Style), With<sidebar::Sidebar>>,
     mut sidebar_visibility_event: EventReader<SidebarVisibilityEvent>,
+    mut ui_resize_writer: EventWriter<UiResizeEvent>,
 ) {
     // println!("printing sidebar visibility query");
     // println!("{:?}", sidebar_query);
@@ -212,8 +215,8 @@ fn sidebar_visibility_system(
                     sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
                 }
             }
-            println!("Visiblity is now {:?}", *sidebar_visibility);
-            println!();
+            
+            ui_resize_writer.send(UiResizeEvent);
         }
     }
 }

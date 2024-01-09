@@ -465,12 +465,13 @@ fn setup_new_camera (
 
             let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
             let cube_material_handle = materials.add(StandardMaterial {
-                base_color: Color::rgb(0.0, 1.0, 0.0),
+                base_color: Color::rgb(1.0, 0.75, 0.90),
+                metallic: 20.0,
                 reflectance: 0.02,
                 unlit: false,
                 ..default()
             });
-
+            
             let image_handle = images.add(image);
 
             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
@@ -544,18 +545,88 @@ fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     mut mini_camera_query: Query<(Entity, &Camera), With<MiniCamera>>,
-    mut minimap_query: Query<(&Node, &UiImage), With<MyMinimapCamera>>,
+    mut minimap_query: Query<(Entity, &Node, &UiImage), With<MyMinimapCamera>>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
 ) {
     for ev in ui_resize_reader.read() {
-        for (node, ui_image) in minimap_query.iter_mut() {
-            for (entity, camera) in mini_camera_query.iter_mut() {
-                println!("Camera computed values: {:?}", camera.computed);
-                println!("Camera target: {:?}", camera.target);
-                // commands.entity(entity).despawn();
-                // let image = images.get(ui_image.texture);
-                // look in to imag resizing based on UiImage
-                // ...
+        for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
+            for (camera_entity, camera) in mini_camera_query.iter_mut() {
+                let size = node.size();
+                let size = Extent3d {
+                    width: size.x.ceil() as u32,
+                    height: size.y.ceil() as u32,
+                    ..default()
+                };
+
+                // remove old image handle from images
+                images.remove(ui_image.texture.clone());
+
+                // remove old UiImage
+                commands.entity(minimap_entity).remove::<UiImage>();
+
+                // remove old Camera
+                commands.entity(camera_entity).despawn();
+
+
+                // create new image handle
+                let mut image = Image {
+                    texture_descriptor: TextureDescriptor {
+                        label: None,
+                        size: size.clone(),
+                        dimension: TextureDimension::D2,
+                        format: TextureFormat::Bgra8UnormSrgb,
+                        mip_level_count: 1,
+                        sample_count: 1,
+                        usage: TextureUsages::TEXTURE_BINDING
+                            | TextureUsages::COPY_DST
+                            | TextureUsages::RENDER_ATTACHMENT,
+                        view_formats: &[],
+                    },
+                    ..default()
+                };
+                image.resize(size.clone()); // fill image.data with zeroes and change it's size to the correct size
+                let image_handle = images.add(image);
+
+
+
+                // create new UiImage
+                let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
+                commands.entity(minimap_entity).insert(ui_image);
+                
+                
+                // create new Camera
+                commands.spawn(
+                    (
+                    Camera3dBundle {
+                        camera_3d: Camera3d {
+                            clear_color: ClearColorConfig::Custom(Color::WHITE),
+                            ..default()
+                        },
+                        camera: Camera {
+                            viewport: Some(Viewport {
+                                physical_position: UVec2::new(0, 0),
+                                physical_size: UVec2::new(
+                                    size.width.clone(),
+                                    size.height.clone(),
+                                ),
+                                ..default()
+                            }),
+                            // render before the "main pass" camera
+                            order: 1,
+                            target: RenderTarget::Image(image_handle),
+                            ..default()
+                        },
+                        transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
+                            .looking_at(Vec3::ZERO, Vec3::Y),
+                        ..default()
+                    },
+                    // UI config is a separate component
+                    UiCameraConfig {
+                        show_ui: false,
+                    },
+                    RenderLayers::layer(1),
+                    MiniCamera{number: 0},
+                ));
 
             }
         }
