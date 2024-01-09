@@ -16,7 +16,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Auto,
-            min_height: Val::Px(50.0),
+            min_height: Val::Px(54.0),
             padding: UiRect {
                 left: Val::Px(4.0),
                 right: Val::Px(0.0),
@@ -24,7 +24,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
                 bottom: Val::Px(4.0),
             },
             border: UiRect {
-                left: Val::Px(4.0),
+                left: Val::Px(0.0),
                 right: Val::Px(0.0),
                 top: Val::Px(0.0),
                 bottom: Val::Px(4.0),

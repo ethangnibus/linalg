@@ -342,6 +342,7 @@ pub fn chapter_button(commands: &mut Commands, chapter_name: &String, chapter_nu
         }
     );
     let bottom_line = commands.spawn(bottom_line).id();
+    
 
     // commands.entity(chapter_button).push_children(&[part_flag, text_item]);
     commands.entity(chapter_button).push_children(&[text_item, bottom_line]);
