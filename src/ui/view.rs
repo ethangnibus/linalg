@@ -2,6 +2,7 @@ use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
     render::{
         camera::{
+            ComputedCameraValues,
             RenderTarget,
             Viewport,
         },
@@ -433,8 +434,6 @@ fn setup_new_camera (
 ) {
     for (entity, node) in minimap_query.iter() {
         for ev in new_camera_event.read() {
-        
-        
             let size = node.size();
             let size = Extent3d {
                 width: size.x.ceil() as u32,
@@ -473,6 +472,7 @@ fn setup_new_camera (
             });
 
             let image_handle = images.add(image);
+
             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
             commands.entity(entity).insert(ui_image);
 
@@ -541,13 +541,23 @@ fn setup_new_camera (
 }
 
 fn resize_camera_system (
-    mut mini_camera_query: Query<&Camera, With<MiniCamera>>,
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    mut mini_camera_query: Query<(Entity, &Camera), With<MiniCamera>>,
+    mut minimap_query: Query<(&Node, &UiImage), With<MyMinimapCamera>>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
 ) {
-    
     for ev in ui_resize_reader.read() {
-        for camera in mini_camera_query.iter() {
-            println!("AYOOO we got a resize event!");
+        for (node, ui_image) in minimap_query.iter_mut() {
+            for (entity, camera) in mini_camera_query.iter_mut() {
+                println!("Camera computed values: {:?}", camera.computed);
+                println!("Camera target: {:?}", camera.target);
+                // commands.entity(entity).despawn();
+                // let image = images.get(ui_image.texture);
+                // look in to imag resizing based on UiImage
+                // ...
+
+            }
         }
     }
 }
