@@ -3,6 +3,7 @@ use super::view::UiResizeEvent;
 use super::sidebar;
 use super::sidebar_frame;
 use bevy::{prelude::*, ui::FocusPolicy};
+use bevy::winit::WinitWindows;
 
 
 const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
@@ -134,11 +135,9 @@ fn sidebar_swiper_interactions(
                 
                 match showing_sidebar.0 {
                     true => {
-                        println!("***** Making the sidebar hidden");
                         sidebar_visibility_writer.send(SidebarVisibilityEvent(Visibility::Hidden));
                     }
                     false => {
-                        println!("***** Making the sidebar visible (inherited)");
                         sidebar_visibility_writer.send(SidebarVisibilityEvent(Visibility::Inherited));
                     }
                 }
@@ -189,6 +188,9 @@ fn sidebar_visibility_system(
     mut sidebar_query: Query<(&mut Visibility, &mut Style), With<sidebar::Sidebar>>,
     mut sidebar_visibility_event: EventReader<SidebarVisibilityEvent>,
     mut ui_resize_writer: EventWriter<UiResizeEvent>,
+    mut windows: NonSend<WinitWindows>
+
+    // mut windows: NonSend<World>,
 ) {
     // println!("printing sidebar visibility query");
     // println!("{:?}", sidebar_query);
@@ -200,23 +202,19 @@ fn sidebar_visibility_system(
             let visibility_kind: Visibility = event.0.into();
             match visibility_kind {
                 Visibility::Hidden => {
-                    println!("setting width to 0 in Hidden");
                     *sidebar_visibility = Visibility::Hidden;
                     sidebar_style.width = Val::Percent(0.0);
                 }
                 Visibility::Visible => {
-                    println!("setting width to 20 in Visible");
                     *sidebar_visibility = Visibility::Visible;
                     sidebar_style.width = Val::Percent(SIDEBAR_WIDTH);
                 }
                 Visibility::Inherited => {
-                    println!("setting width to 20 in Inherited");
                     *sidebar_visibility = Visibility::Inherited;
                     sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
                 }
             }
-            
-            ui_resize_writer.send(UiResizeEvent);
         }
+        ui_resize_writer.send(UiResizeEvent);
     }
 }

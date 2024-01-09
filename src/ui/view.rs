@@ -545,12 +545,12 @@ fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     mut mini_camera_query: Query<(Entity, &Camera), With<MiniCamera>>,
-    mut minimap_query: Query<(Entity, &Node, &UiImage), With<MyMinimapCamera>>,
+    mut minimap_query: Query<(Entity, &Node, &UiImage), (With<MyMinimapCamera>, Changed<Node>)>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
 ) {
-    for ev in ui_resize_reader.read() {
-        for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
-            for (camera_entity, camera) in mini_camera_query.iter_mut() {
+    for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
+        for (camera_entity, camera) in mini_camera_query.iter_mut() {
+            for ev in ui_resize_reader.read() {
                 let size = node.size();
                 let size = Extent3d {
                     width: size.x.ceil() as u32,
@@ -558,13 +558,16 @@ fn resize_camera_system (
                     ..default()
                 };
 
+                
                 // remove old image handle from images
+                println!("image handle: {:?}", ui_image.texture.clone());
                 images.remove(ui_image.texture.clone());
 
                 // remove old UiImage
                 commands.entity(minimap_entity).remove::<UiImage>();
 
                 // remove old Camera
+                println!("image handle: {:?}", camera_entity);
                 commands.entity(camera_entity).despawn();
 
 
