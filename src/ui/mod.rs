@@ -11,6 +11,7 @@ pub mod view;
 pub mod chapter_container;
 pub mod util;
 pub mod routes;
+pub mod sidebar_routes;
 pub mod subsection_cameras;
 mod pages {
     pub mod chapter0section0subsection0;
