@@ -17,9 +17,9 @@ use bevy::{
     // winit::WinitSettings,
 };
 use bevy_svg::prelude::*;
-use super::super::view::SvgLoadEvent;
+use super::super::subsection_cameras::SvgLoadEvent;
 use super::super::view::SvgHolder;
-use super::super::view::MyMinimapCamera;
+use super::super::subsection_cameras::MyMinimapCamera;
 use bevy::render::camera::Viewport;
 
 

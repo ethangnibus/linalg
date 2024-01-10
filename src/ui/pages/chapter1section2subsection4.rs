@@ -17,7 +17,7 @@ use super::super::components::{
     example_header,
     solution_header,
 };
-use super::super::view::SvgLoadEvent;
+use super::super::subsection_cameras::SvgLoadEvent;
 
 
 

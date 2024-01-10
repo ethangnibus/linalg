@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use super::util::SubsectionEntity;
 use super::view::ViewList;
-use super::view::SvgLoadEvent;
+use super::subsection_cameras::SvgLoadEvent;
 use super::pages::*;
 
 pub struct SystemsPlugin;
