@@ -33,14 +33,16 @@ impl Plugin for SystemsPlugin {
 //     return scrollable_page;
 // }
 
-pub fn get_page() -> (ScrollablePage, NodeBundle, AccessibilityNode) {
+pub fn get_page(width: f32) -> (ScrollablePage, NodeBundle, AccessibilityNode) {
     return (
         ScrollablePage,
         NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
+                width: Val::Percent(width),
                 justify_items: JustifyItems::Center, // maybe remove
+                overflow: Overflow::clip(),
                 // row_gap: Val::Percent(0.01),
                 ..default()
             },

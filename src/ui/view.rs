@@ -59,7 +59,7 @@ pub fn setup(commands: &mut Commands) -> Entity {
     let view = commands.spawn(view).id();
     
     let page_items = page_items(commands);
-    let view_list = scrollable_page::get_page();
+    let view_list = scrollable_page::get_page(100.0);
     let view_list = commands.spawn((ViewList::default(), view_list)).id();
     
     commands.entity(view_list).push_children(&page_items);
