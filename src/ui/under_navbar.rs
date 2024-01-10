@@ -6,6 +6,7 @@ use super::chapter_container::HeaderButton;
 use bevy::{prelude::*, ui::FocusPolicy};
 use bevy::winit::WinitWindows;
 
+// ending today
 
 const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
 const SWIPERS_WIDTH: Val = Val::Px(10.0);
