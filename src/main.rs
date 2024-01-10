@@ -1,8 +1,10 @@
+#![allow(warnings)]
 use bevy::prelude::*;
 use bevy::window::WindowResized;
 mod ui;
 
 use ui::view::UiResizeEvent;
+
 
 
 fn main() {
@@ -61,11 +63,11 @@ fn setup_camera(mut commands: Commands) {
 /// This system shows how to respond to a window being resized.
 /// Whenever the window is resized, the text will update with the new resolution.
 fn on_resize_system(
-    mut q: Query<&mut Text, With<ResolutionText>>,
+    // mut q: Query<&mut Text, With<ResolutionText>>,
     mut resize_reader: EventReader<WindowResized>,
     mut resize_event_writer: EventWriter<UiResizeEvent>,
 ) {
-    for e in resize_reader.read() {
+    for _event in resize_reader.read() {
         resize_event_writer.send(UiResizeEvent);
     }
     

@@ -688,7 +688,7 @@ fn section_button_visibility_system (
 
 // ---------- Subsection Button Visibility ----------
 fn subsection_button_visibility_system (
-    mut subsection_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButton>>,
+    mut subsection_button_query: Query<(&mut Visibility, &mut Style, &mut ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber), With<SubsectionButton>>,
     // mut section_button_query: Query<(&mut Visibility, &mut Style), With<SectionButton>>,
     mut section_button_visibility_event: EventReader<SectionVisibilityEvent>,
     mut subsection_button_visibility_event: EventReader<SubsectionVisibilityEvent>,
@@ -700,7 +700,6 @@ fn subsection_button_visibility_system (
             mut showing_subsections,
             subsection_button_chapter_number,
             subsection_button_section_number,
-            subsection_button_subsection_number,
         ) in &mut subsection_button_query.iter_mut() {
             // event where chapter hides subsections
             let event_section_number: u32 = event.section_number;

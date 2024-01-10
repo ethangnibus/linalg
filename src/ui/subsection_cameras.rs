@@ -14,6 +14,7 @@ use bevy::{
     },
 };
 use super::view::UiResizeEvent;
+use super::util::SubsectionGameEntity;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -55,17 +56,17 @@ fn setup_new_camera (
     mut images: ResMut<Assets<Image>>,
     mut new_camera_event: EventReader<SvgLoadEvent>,
     minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
+    
 ) {
     for (entity, node) in minimap_query.iter() {
         for ev in new_camera_event.read() {
+            println!("entity id: {:?}", entity);
             let size = node.size();
             let size = Extent3d {
                 width: size.x.ceil() as u32,
                 height: size.y.ceil() as u32,
                 ..default()
             };
-            // println!("{:?}", size.width);
-            // println!("{:?}", size.height);
         
             // This is the texture that will be rendered to.
             let mut image = Image {
@@ -98,11 +99,12 @@ fn setup_new_camera (
             
             let image_handle = images.add(image);
 
+            println!("before inserting ui_image");
             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
             commands.entity(entity).insert(ui_image);
+            println!("after inserting ui_image");
 
             let first_pass_layer = RenderLayers::layer(1);
-
             // The cube that will be rendered to the texture.
             commands.spawn((
                 PbrBundle {
@@ -113,18 +115,22 @@ fn setup_new_camera (
                 },
                 FirstPassCube,
                 first_pass_layer,
+                SubsectionGameEntity,
             ));
 
             // Light
             // NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
-            commands.spawn(PointLightBundle {
-                point_light: PointLight {
-                    intensity: 100.0,
+            commands.spawn((
+                PointLightBundle {
+                    point_light: PointLight {
+                        intensity: 100.0,
+                        ..default()
+                    },
+                    transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
                     ..default()
                 },
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
-                ..default()
-            });
+                SubsectionGameEntity,
+            ));
 
             commands.spawn(
                 (
@@ -162,7 +168,6 @@ fn setup_new_camera (
             // TODO: remember to make a delete system for all game objects and image textures when you leave the page :)
         }
     }
-
 }
 
 fn resize_camera_system (
@@ -175,6 +180,7 @@ fn resize_camera_system (
     for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
         for (camera_entity, camera) in mini_camera_query.iter_mut() {
             for ev in ui_resize_reader.read() {
+                // make size for new image
                 let size = node.size();
                 let size = Extent3d {
                     width: size.x.ceil() as u32,
@@ -182,17 +188,15 @@ fn resize_camera_system (
                     ..default()
                 };
 
-                
                 // remove old image handle from images
-                println!("image handle: {:?}", ui_image.texture.clone());
                 images.remove(ui_image.texture.clone());
 
                 // remove old UiImage
                 commands.entity(minimap_entity).remove::<UiImage>();
 
                 // remove old Camera
-                println!("image handle: {:?}", camera_entity);
                 commands.entity(camera_entity).despawn();
+
 
 
                 // create new image handle
@@ -214,12 +218,9 @@ fn resize_camera_system (
                 image.resize(size.clone()); // fill image.data with zeroes and change it's size to the correct size
                 let image_handle = images.add(image);
 
-
-
                 // create new UiImage
                 let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
                 commands.entity(minimap_entity).insert(ui_image);
-                
                 
                 // create new Camera
                 commands.spawn(

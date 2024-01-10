@@ -206,8 +206,7 @@ fn sidebar_visibility_system(
     mut sidebar_query: Query<(&mut Visibility, &mut Style), With<sidebar::Sidebar>>,
     mut sidebar_visibility_event: EventReader<SidebarVisibilityEvent>,
     mut ui_resize_writer: EventWriter<UiResizeEvent>,
-    mut windows: NonSend<WinitWindows>
-
+    // mut windows: NonSend<WinitWindows>,
     // mut windows: NonSend<World>,
 ) {
     // println!("printing sidebar visibility query");

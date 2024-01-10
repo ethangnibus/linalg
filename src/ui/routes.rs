@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::util::SubsectionEntity;
+use super::util::SubsectionGameEntity;
 use super::view::ViewList;
 use super::subsection_cameras::SvgLoadEvent;
 use super::pages::*;
@@ -24,7 +24,7 @@ pub struct RoutingEvent {
 fn routing_system(
     mut commands: Commands,
     view_list_query: Query<(Entity, &Children), With<ViewList>>,
-    subsection_entity_query: Query<Entity, With<SubsectionEntity>>,
+    subsection_game_entity_query: Query<Entity, With<SubsectionGameEntity>>,
     mut svg_load_writer: EventWriter<SvgLoadEvent>,
     mut routing_event_reader: EventReader<RoutingEvent>,
     asset_server: Res<AssetServer>,
@@ -38,6 +38,12 @@ fn routing_system(
             }
 
             // remove all current objects from this subsection
+            // lights, cubes, etc.
+            for game_entity in subsection_game_entity_query.iter() {
+                commands.entity(game_entity).despawn();
+            }
+
+            // Fixme: remember to also remove meshes!!!
 
 
 
