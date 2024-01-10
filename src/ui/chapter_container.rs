@@ -8,7 +8,7 @@ use bevy::{
     // winit::WinitSettings,
 };
 use super::sidebar;
-use super::view;
+use super::routes::RoutingEvent;
 
 const HEADER_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
@@ -603,7 +603,7 @@ fn subsection_button_interaction (
         (&Interaction, &ChapterNumber, &SectionNumber, &SubsectionNumber, &mut BackgroundColor, &mut BorderColor),
         (Changed<Interaction>, With<SubsectionButton>)
     >,
-    mut routing_event_writer: EventWriter<view::RoutingEvent>,
+    mut routing_event_writer: EventWriter<RoutingEvent>,
     // mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
 ) {
     for (interaction, chapter_number, section_number, subsection_number, mut chapter_button_background_color, mut chapter_button_border_color ) in &mut interaction_query {
@@ -616,7 +616,7 @@ fn subsection_button_interaction (
                 *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
                 *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 // section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
-                routing_event_writer.send(view::RoutingEvent {
+                routing_event_writer.send(RoutingEvent {
                     chapter_number: chapter_number,
                     section_number: section_number,
                     subsection_number: subsection_number

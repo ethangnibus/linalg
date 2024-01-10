@@ -9,6 +9,8 @@ pub mod sidebar_frame;
 pub mod under_navbar;
 pub mod view;
 pub mod chapter_container;
+pub mod util;
+pub mod routes;
 mod pages {
     pub mod chapter0section0subsection0;
     pub mod chapter0section1subsection0;
@@ -221,6 +223,7 @@ mod pages {
     pub mod chapter14section2subsection6;
     pub mod chapter14section3subsection0;
     pub mod chapter15section0subsection0;
+    pub mod page_not_found;
 }
 
 mod components{
