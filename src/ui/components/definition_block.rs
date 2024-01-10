@@ -19,7 +19,7 @@ pub fn spawn(commands: &mut Commands, text: &str, body_left: Entity, body_right:
             padding: UiRect {
                 left: Val::Px(0.0),
                 right: Val::Px(0.0),
-                top: Val::Px(4.0),
+                top: Val::Px(0.0),
                 bottom: Val::Px(4.0),
             },
             border: UiRect {
