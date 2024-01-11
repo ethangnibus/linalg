@@ -55,79 +55,83 @@ pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_w
     );
 
     page_entities.push(
-        text_section::spawn(commands, "Let’s think about the set inside R2 of all linear combinations of our vectors 1 −1
+        text_section::spawn(commands, "Let’s think about the set inside R2 of all linear
+        combinations of our vectors 1 −1
         a1v1+a2v2=a1 1 +a2 2 foranya1,a2∈R
-        To understand what this set looks like, we will build up the linear combinations in several steps.
+        To understand what this set looks like, we will build up the linear combinations
+        in several steps.
         • Setting a2 = 0, we get all scales of the first vector 1
         a1v1 =a1 1 foranya1 ∈R
         This gives Span {v1}, the straight line through the origin containing v1.
         • Similarly, setting a1 = 0, we get all scales of the second vector −1
         a2v2 =a2 2 foranya2 ∈R
         This gives Span {v2}, the straight line through the origin containing v2.
-        • Finally observe that Span {v1,v2} consists of all vectors formed by adding vectors along these
-        two straight lines. Since any vector in the plane can be reached in this way, we conclude that Span {v1, v2} = R2")
+        • Finally observe that Span {v1,v2} consists of all vectors formed by adding
+        vectors along these
+        two straight lines. Since any vector in the plane can be reached in this way,
+        we conclude that Span {v1, v2} = R2")
     );
 
-    // // page_entities.push(
-    // //     definition_body::spawn(commands, "Span of vectors", content)
-    // // );
+    // page_entities.push(
+    //     definition_body::spawn(commands, "Span of vectors", content)
+    // );
 
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
-    // page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );page_entities.push(
-    //     page_header::spawn(commands, "1.2.4 Spans")
-    // );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
+    page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );page_entities.push(
+        page_header::spawn(commands, "1.2.4 Spans")
+    );
     
     
 }
