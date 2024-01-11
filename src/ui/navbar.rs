@@ -190,7 +190,7 @@ pub fn hamburger_button(commands: &mut Commands, theme: &theme::CurrentTheme, he
                 },
                 focus_policy: bevy::ui::FocusPolicy::Block,
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::navbar_text_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
         ))
@@ -201,7 +201,7 @@ pub fn hamburger_button(commands: &mut Commands, theme: &theme::CurrentTheme, he
             "=",
             TextStyle {
                 font_size: 50.0,
-                color: theme::navbar_text_color(theme).into(),
+                color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
         ),
