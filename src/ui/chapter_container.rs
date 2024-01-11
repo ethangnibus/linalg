@@ -2,6 +2,7 @@ use std::thread::current;
 
 use super::routes;
 use super::sidebar;
+use super::under_navbar;
 use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
@@ -12,6 +13,26 @@ use bevy::{
     ui::FocusPolicy,
     // winit::WinitSettings,
 };
+
+pub struct SystemsPlugin;
+impl Plugin for SystemsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<SectionVisibilityEvent>()
+            .add_event::<SubsectionVisibilityEvent>()
+            .add_systems(
+                Update,
+                (
+                    section_button_visibility_system,
+                    subsection_button_visibility_system,
+                    chapter_button_interaction,
+                    section_button_interaction,
+                    subsection_button_interaction,
+                    sidebar_button_mouse_scroll,
+                    header_button_color_change_system,
+                ),
+            );
+    }
+}
 
 const HEADER_BUTTON_HEIGHT: Val = Val::Px(50.0);
 const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
@@ -122,24 +143,6 @@ pub struct ShowingSectionsOfThisChapter(bool);
 #[derive(Component)]
 pub struct ShowingSubsectionsOfThisSection(bool);
 
-pub struct SystemsPlugin;
-impl Plugin for SystemsPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_event::<SectionVisibilityEvent>()
-            .add_event::<SubsectionVisibilityEvent>()
-            .add_systems(
-                Update,
-                (
-                    section_button_visibility_system,
-                    subsection_button_visibility_system,
-                    chapter_button_interaction,
-                    section_button_interaction,
-                    subsection_button_interaction,
-                    sidebar_button_mouse_scroll,
-                ),
-            );
-    }
-}
 
 // ================================
 // ========== UI Buttons ==========
@@ -525,6 +528,21 @@ pub fn subsection_button(
 // =========================================
 // ========== Interaction Systems ==========
 // =========================================
+
+
+// ---------- Header Button ----------
+fn header_button_color_change_system(
+    mut header_button_query: Query<&mut BackgroundColor, With<HeaderButton>>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut sidebar_swiper_color_event_reader: EventReader<under_navbar::SidebarCollapseInteractionEvent>,
+) {
+    for event in sidebar_swiper_color_event_reader.read() {
+        for mut header_button_color in &mut header_button_query.iter_mut() {
+            *header_button_color = event.0.into();
+        }
+
+    }
+}
 
 // ---------- Chapter Interaction ----------
 fn chapter_button_interaction(
