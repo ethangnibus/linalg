@@ -14,7 +14,8 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
     let body_content = commands.spawn(
         NodeBundle {
         style: Style {
-            width: Val::Percent(50.0),
+            width: Val::Px(200.0),
+            flex_grow: 1.0,
             height: Val::Auto,
             padding: UiRect {
                 left: Val::Px(4.0),
