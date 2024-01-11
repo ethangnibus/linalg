@@ -74,6 +74,7 @@ pub fn new() -> (View, ButtonBundle) {
             flex_direction: FlexDirection::Column,
             // align_self: AlignSelf::Stretch,
             flex_grow: 1.0,
+            width: Val::Percent(100.0), // FIXME: REMOVE THIS and try to find a way to make definition_block not make the width 100% even if it's gone
             height: Val::Percent(100.0),
             overflow: Overflow::clip(),
             ..default()
