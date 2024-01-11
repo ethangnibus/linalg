@@ -27,7 +27,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
     let background_banner = commands
         .spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(100.0),
+                width: Val::Percent(100.0), // FIXME: fix so navbar isnt weird when going to 1.2.4
                 height: Val::Auto,
                 padding: UiRect {
                     left: Val::Px(4.0),

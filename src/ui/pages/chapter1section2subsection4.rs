@@ -36,37 +36,37 @@ pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_w
         definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right)
     );
 
-    // page_entities.push(
-    //     text_section::camera(commands, asset_server, svg_load_writer, &"3.png".into(), 5.5)
-    // );
+    page_entities.push(
+        text_section::camera(commands, asset_server, svg_load_writer, &"3.png".into(), 5.5)
+    );
 
-    // page_entities.push(
-    //     example_header::spawn(commands, "Example 16")
-    // );
+    page_entities.push(
+        example_header::spawn(commands, "Example 16")
+    );
 
-    // page_entities.push(
-    //     text_section::spawn(commands, "Consider the vectors
-    //     1 −1 v1=1,v2= 2
-    //     Give a geometric description of their span Span {v1,v2}.")
-    // );
+    page_entities.push(
+        text_section::spawn(commands, "Consider the vectors
+        1 −1 v1=1,v2= 2
+        Give a geometric description of their span Span {v1,v2}.")
+    );
 
-    // page_entities.push(
-    //     solution_header::spawn(commands, "SOLUTION")
-    // );
+    page_entities.push(
+        solution_header::spawn(commands, "SOLUTION")
+    );
 
-    // page_entities.push(
-    //     text_section::spawn(commands, "Let’s think about the set inside R2 of all linear combinations of our vectors 1 −1
-    //     a1v1+a2v2=a1 1 +a2 2 foranya1,a2∈R
-    //     To understand what this set looks like, we will build up the linear combinations in several steps.
-    //     • Setting a2 = 0, we get all scales of the first vector 1
-    //     a1v1 =a1 1 foranya1 ∈R
-    //     This gives Span {v1}, the straight line through the origin containing v1.
-    //     • Similarly, setting a1 = 0, we get all scales of the second vector −1
-    //     a2v2 =a2 2 foranya2 ∈R
-    //     This gives Span {v2}, the straight line through the origin containing v2.
-    //     • Finally observe that Span {v1,v2} consists of all vectors formed by adding vectors along these
-    //     two straight lines. Since any vector in the plane can be reached in this way, we conclude that Span {v1, v2} = R2")
-    // );
+    page_entities.push(
+        text_section::spawn(commands, "Let’s think about the set inside R2 of all linear combinations of our vectors 1 −1
+        a1v1+a2v2=a1 1 +a2 2 foranya1,a2∈R
+        To understand what this set looks like, we will build up the linear combinations in several steps.
+        • Setting a2 = 0, we get all scales of the first vector 1
+        a1v1 =a1 1 foranya1 ∈R
+        This gives Span {v1}, the straight line through the origin containing v1.
+        • Similarly, setting a1 = 0, we get all scales of the second vector −1
+        a2v2 =a2 2 foranya2 ∈R
+        This gives Span {v2}, the straight line through the origin containing v2.
+        • Finally observe that Span {v1,v2} consists of all vectors formed by adding vectors along these
+        two straight lines. Since any vector in the plane can be reached in this way, we conclude that Span {v1, v2} = R2")
+    );
 
     // // page_entities.push(
     // //     definition_body::spawn(commands, "Span of vectors", content)
