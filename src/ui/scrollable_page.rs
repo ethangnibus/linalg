@@ -41,6 +41,7 @@ pub fn get_page() -> (ScrollablePage, NodeBundle, AccessibilityNode) {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
                 justify_items: JustifyItems::Center, // maybe remove
+                overflow: Overflow::clip(),
                 // row_gap: Val::Percent(0.01),
                 ..default()
             },
