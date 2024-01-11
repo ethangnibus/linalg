@@ -190,6 +190,7 @@ pub fn spawn(commands: &mut Commands, text: &str, body_left: Entity, body_right:
     commands.entity(definition_flag).push_children(&[definition_text]);
     commands.entity(definition_body).push_children(&[body_left, body_right]);
     commands.entity(definition_block).push_children(&[fake_background, definition_banner, definition_flag, definition_body]);
+    // FIXME: DEFINITION BLOCK ruins size of view when spawned in
     
     return definition_block;
 }

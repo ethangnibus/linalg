@@ -64,7 +64,6 @@ fn routing_system(
 
             // Fixme: remember to also remove meshes!!!
 
-
             // let mut page_item: Entity = Entity::PLACEHOLDER;
             let mut page_entities: Vec<Entity> = Vec::new();
             // Add new page stuff

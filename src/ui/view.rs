@@ -72,10 +72,10 @@ pub fn new() -> (View, ButtonBundle) {
     return (View, ButtonBundle {
         style: Style {
             flex_direction: FlexDirection::Column,
-            align_self: AlignSelf::Stretch,
-            width: Val::Percent(100.0),
+            // align_self: AlignSelf::Stretch,
+            flex_grow: 1.0,
             height: Val::Percent(100.0),
-            overflow: Overflow::clip_y(),
+            overflow: Overflow::clip(),
             ..default()
         },
         background_color: Color::rgb(0.0, 1.0, 0.0).into(),

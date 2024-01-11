@@ -40,8 +40,10 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) 
     let navbar = commands.spawn(navbar).id();
 
     let sidebar_button = sidebar_button(commands, theme, height);
+    let navbar_banner = navbar_banner(commands, theme, height);
+    let hamburger_button = hamburger_button(commands, theme, height);
 
-    commands.entity(navbar).push_children(&[sidebar_button]);
+    commands.entity(navbar).push_children(&[sidebar_button, navbar_banner, hamburger_button]);
 
     return navbar;
 }
@@ -54,6 +56,7 @@ pub fn new(theme: &theme::CurrentTheme, height: f32) -> NodeBundle {
             width: Val::Percent(100.0),
             align_items: AlignItems::Center,
             justify_items: JustifyItems::Center,
+            flex_direction: FlexDirection::Row,
             border: UiRect {
                 left: Val::Px(0.0),
                 right: Val::Px(0.0),
@@ -119,6 +122,95 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
     commands.entity(sidebar_button).push_children(&[arrow_text]);
 
     return sidebar_button;
+}
+
+pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
+    let background_banner = commands
+        .spawn((
+            ButtonBundle {
+                style: Style {
+                    // height: Val::Percent(height),
+                    height: Val::Percent(100.0),
+                    flex_grow: 2.0,
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    border: UiRect {
+                        left: Val::Px(0.0),
+                        right: Val::Px(0.0),
+                        top: Val::Px(0.0),
+                        bottom: Val::Px(0.0),
+                    },
+                    overflow: Overflow::clip(),
+                    ..default()
+                },
+                
+                focus_policy: bevy::ui::FocusPolicy::Block,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::navbar_text_color(theme).into(),
+                ..default()
+            },
+        ))
+        .id();
+    
+    let navbar_text = commands
+        .spawn((TextBundle::from_section(
+            "Math 56",
+            TextStyle {
+                font_size: 50.0,
+                color: theme::navbar_text_color(theme).into(),
+                ..default()
+            },
+        ),
+        ))
+        .id();
+
+    commands.entity(background_banner).push_children(&[navbar_text]);
+
+    return background_banner;
+}
+
+pub fn hamburger_button(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
+    let background_banner = commands
+        .spawn((
+            ButtonBundle {
+                style: Style {
+                    // height: Val::Percent(height),
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(1.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    border: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(2.0),
+                        bottom: Val::Px(2.0),
+                    },
+                    overflow: Overflow::clip(),
+                    ..default()
+                },
+                focus_policy: bevy::ui::FocusPolicy::Block,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::navbar_text_color(theme).into(),
+                ..default()
+            },
+        ))
+        .id();
+    
+    let text = commands
+        .spawn((TextBundle::from_section(
+            "=",
+            TextStyle {
+                font_size: 50.0,
+                color: theme::navbar_text_color(theme).into(),
+                ..default()
+            },
+        ),
+        ))
+        .id();
+
+    commands.entity(background_banner).push_children(&[text]);
+
+    return background_banner;
 }
 
 fn sidebar_button_interactions(

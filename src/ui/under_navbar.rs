@@ -11,7 +11,7 @@ use bevy::{prelude::*, ui::FocusPolicy};
 // ending today
 // remember to do colors
 
-const SIDEBAR_WIDTH: f32 = 40.0; // in percentage
+const SIDEBAR_WIDTH: f32 = 38.23; // in percentage golden ratio
 const SWIPERS_WIDTH: Val = Val::Px(10.0);
 const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.1, 0.1, 0.1));
 
@@ -67,13 +67,13 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
     let right_border = right_swiper();
     let right_border = commands.spawn(right_border).id();
 
-    let scrollable_page = view::setup(commands);
+    let view = view::setup(commands);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands.entity(under_navbar).push_children(&[
         sidebar,
         sidebar_swiper,
-        scrollable_page,
+        view,
         right_border,
     ]);
 
