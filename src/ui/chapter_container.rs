@@ -13,6 +13,7 @@ use bevy::{
     ui::FocusPolicy,
     // winit::WinitSettings,
 };
+use super::util::theme;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -538,7 +539,10 @@ fn header_button_color_change_system(
 ) {
     for event in sidebar_swiper_color_event_reader.read() {
         for mut header_button_color in &mut header_button_query.iter_mut() {
-            *header_button_color = event.0.into();
+            let color = event.0;
+            if color != theme::NOT_A_COLOR {
+                *header_button_color = color.into();
+            }
         }
 
     }

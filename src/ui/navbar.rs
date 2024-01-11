@@ -6,14 +6,26 @@ use super::{sidebar, under_navbar, util::theme};
 #[derive(Component)]
 pub struct Navbar;
 
+// Marker
 #[derive(Component)]
 pub struct SidebarButton;
+
+// Marker
+#[derive(Component)]
+pub struct SidebarButtonText;
+
 
 pub struct SystemsPlugin;
 
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, sidebar_button_color_change_system);
+        app.add_systems(Update, (
+            sidebar_button_interactions,
+            sidebar_button_color_change_system,
+            sidebar_button_text_color_change_system
+
+            
+        ));
     }
 }
 
@@ -90,15 +102,17 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
             SidebarButton,
         ))
         .id();
-
+    
     let arrow_text = commands
-        .spawn(TextBundle::from_section(
-            ">",
+        .spawn((TextBundle::from_section(
+            "<",
             TextStyle {
                 font_size: 50.0,
                 color: theme::navbar_text_color(theme).into(),
                 ..default()
             },
+        ),
+        SidebarButtonText,
         ))
         .id();
 
@@ -107,67 +121,58 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
     return sidebar_button;
 }
 
-// fn sidebar_button_interactions(
-//     mut interaction_query: Query<
-//         (&Interaction, &mut BackgroundColor, &mut BorderColor),
-//         (Changed<Interaction>, With<SidebarButton>),
-//     >,
-//     mut showing_sidebar: ResMut<under_navbar::ShowingSidebar>,
-//     // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
-//     // mut header_button_query: Query<&BackgroundColor, With<HeaderButton>>,
-//     mut sidebar_swiper_color_writer: EventWriter<under_navbar::SidebarSwiperColorEvent>,
-//     mut sidebar_visibility_writer: EventWriter<under_navbar::SidebarVisibilityEvent>,
-// ) {
-//     // for mut showing_sidebar in interaction_query.iter_mut() {
-//     //     for (interaction, mut sidebar_swiper_color, mut border_sidebar_swiper_color, mut showing_sidebar) in sidebar_swiper_query.iter_mut() {
-//     //         match *interaction {
-//     //             Interaction::Pressed => {
-
-//     //                 match showing_sidebar.0 {
-//     //                     true => {
-//     //                         sidebar_visibility_writer.send(under_navbar::SidebarVisibilityEvent(Visibility::Hidden));
-//     //                     }
-//     //                     false => {
-//     //                         sidebar_visibility_writer
-//     //                             .send(under_navbar::SidebarVisibilityEvent(Visibility::Inherited));
-//     //                     }
-//     //                 }
-//     //                 showing_sidebar.0 = !showing_sidebar.0;
-//     //             }
-//     //             Interaction::Hovered => {
-//     //                 match showing_sidebar.0 {
-//     //                     true => {
-//     //                         // *sidebar_swiper_color = sidebar_swiper_color::rgb(0.7, 0.45, 0.45).into();
-//     //                         // *sidebar_swiper_color = sidebar_swiper_color::rgb(0.1, 0.1, 0.1).into();
-//     //                         *border_sidebar_swiper_color = Color::rgb(0.5, 0.5, 0.5).into();
-//     //                     }
-//     //                     false => {
-//     //                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
-//     //                         // *color = Color::rgb(1.0, 0.7, 0.1).into();
-//     //                         *border_sidebar_swiper_color = Color::rgb(1.0, 0.7, 0.1).into();
-//     //                     }
-//     //                 }
-//     //             }
-//     //             Interaction::None => {
-//     //                 match showing_sidebar.0 {
-//     //                     true => {
-//     //                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-//     //                         // *color = SWIPERS_COLOR_DEFAULT;
-//     //                         // *color = Color::rgb(1.0, 0.7, 0.1).into();
-//     //                         *border_sidebar_swiper_color = Color::rgb(1.0, 0.7, 0.1).into();
-//     //                     }
-//     //                     false => {
-//     //                         // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-//     //                         // *color = SWIPERS_COLOR_DEFAULT;
-//     //                         // *color = Color::rgb(0.1, 0.1, 0.1).into();
-//     //                         *border_sidebar_swiper_color = Color::rgb(0.5, 0.5, 0.5).into();
-//     //                     }
-//     //                 }
-//     //             }
-//     //         }
-//     //     }
-//     // }
-// }
+fn sidebar_button_interactions(
+    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<SidebarButton>)>,
+    mut showing_sidebar: ResMut<under_navbar::ShowingSidebar>,
+    theme: Res<theme::CurrentTheme>,
+    // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
+    // mut header_button_query: Query<&BackgroundColor, With<HeaderButton>>,
+    mut sidebar_swiper_color_writer: EventWriter<under_navbar::SidebarCollapseInteractionEvent>,
+    mut sidebar_visibility_writer: EventWriter<under_navbar::SidebarVisibilityEvent>,
+) {
+    let theme = theme.as_ref();
+    for interaction in interaction_query.iter() {
+        match *interaction {
+            Interaction::Pressed => {
+                match showing_sidebar.0 {
+                    true => {
+                        sidebar_visibility_writer.send(under_navbar::SidebarVisibilityEvent(Visibility::Hidden));
+                    }
+                    false => {
+                        sidebar_visibility_writer
+                            .send(under_navbar::SidebarVisibilityEvent(Visibility::Inherited));
+                    }
+                }
+                sidebar_swiper_color_writer.send(under_navbar::SidebarCollapseInteractionEvent(
+                    theme::NOT_A_COLOR
+                ));
+                showing_sidebar.0 = !showing_sidebar.0;
+            }
+            Interaction::Hovered => match showing_sidebar.0 {
+                true => {
+                    sidebar_swiper_color_writer.send(under_navbar::SidebarCollapseInteractionEvent(
+                        theme::sidebar_collapsed_color(theme),
+                    ));
+                }
+                false => {
+                    sidebar_swiper_color_writer
+                        .send(under_navbar::SidebarCollapseInteractionEvent(theme::sidebar_color(theme)));
+                }
+            },
+            Interaction::None => match showing_sidebar.0 {
+                true => {
+                    sidebar_swiper_color_writer
+                        .send(under_navbar::SidebarCollapseInteractionEvent(theme::sidebar_color(theme)));
+                }
+                false => {
+                    sidebar_swiper_color_writer.send(under_navbar::SidebarCollapseInteractionEvent(
+                        theme::sidebar_collapsed_color(theme),
+                    ));
+                }
+            },
+        }
+    }
+}
 
 
 fn sidebar_button_color_change_system(
@@ -177,11 +182,39 @@ fn sidebar_button_color_change_system(
 ) {
     for event in sidebar_swiper_color_event_reader.read() {
         for mut sidebar_swiper_border_color in &mut sidebar_swiper_query.iter_mut() {
-            *sidebar_swiper_border_color = event.0.into();
+            let color = event.0;
+            if color != theme::NOT_A_COLOR {
+                *sidebar_swiper_border_color = color.into();
+            }
         }
         // for mut sidebar_button_border_color in &mut sidebar_button_query.iter_mut() {
         //     *sidebar_button_border_color = event.0.into();
         // }
 
+    }
+}
+
+fn sidebar_button_text_color_change_system(
+    mut sidebar_swiper_query: Query<&mut Text, With<SidebarButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut sidebar_swiper_color_event_reader: EventReader<under_navbar::SidebarCollapseInteractionEvent>,
+) {
+    let theme = theme.as_ref();
+    for event in sidebar_swiper_color_event_reader.read() {
+        for mut sidebar_button_text in &mut sidebar_swiper_query.iter_mut() {
+
+            let color = event.0;
+
+            if color == theme::NOT_A_COLOR {
+                if sidebar_button_text.sections[0].value == String::from(">") {
+                    sidebar_button_text.sections[0].value = String::from("<");
+                } else if sidebar_button_text.sections[0].value == String::from("<") {
+                    sidebar_button_text.sections[0].value = String::from(">");
+                }
+            } else {
+                sidebar_button_text.sections[0].style.color = event.0.into();
+            }
+        }
     }
 }

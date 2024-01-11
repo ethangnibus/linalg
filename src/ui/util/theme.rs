@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 
 pub const BERKELEY_GOLD: Color = Color::rgb(1.0, 0.7, 0.1);
+pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
 
 #[derive(Resource)]
 pub enum CurrentTheme {
