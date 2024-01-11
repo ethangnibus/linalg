@@ -1,6 +1,7 @@
 use super::navbar;
 use super::navbar_frame;
 use super::under_navbar;
+use super::util::theme;
 use bevy::prelude::*;
 
 // Marker for Root UI node
@@ -24,12 +25,12 @@ impl Plugin for SystemsPlugin {
 // }
 
 // Returns root node
-pub fn setup(commands: &mut Commands) {
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) {
     // Make ECS for root and navbar
     // return entities
     let navbar_frame = navbar_frame::setup(commands, 100.0, 100.0);
-    let navbar_height: f32 = 10.0; // in percentage
-    let navbar = navbar::setup(commands, navbar_height);
+    let navbar_height: f32 = 8.0; // in percentage
+    let navbar = navbar::setup(commands, theme, navbar_height);
     let under_navbar = under_navbar::setup(commands, 100.0, 100.0 - navbar_height);
 
     // make root parent of navbar and under_navbar

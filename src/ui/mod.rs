@@ -1,5 +1,7 @@
 // ui_plugin.rs
 use bevy::prelude::*;
+
+use self::util::theme;
 pub mod navbar;
 pub mod navbar_frame;
 mod root;
@@ -9,10 +11,14 @@ pub mod sidebar_frame;
 pub mod under_navbar;
 pub mod view;
 pub mod chapter_container;
-pub mod util;
+
 pub mod routes;
 pub mod sidebar_routes;
 pub mod subsection_cameras;
+mod util {
+    pub mod theme;
+    pub mod subsection;
+}
 mod pages {
     pub mod chapter0section0subsection0;
     pub mod chapter0section1subsection0;
@@ -245,6 +251,7 @@ impl Plugin for SetupUiPlugin {
         // Add the setup_ui system as a startup system
         app.add_plugins(root::SystemsPlugin)
             .add_plugins(scrollable_page::SystemsPlugin)
+            .insert_resource(theme::CurrentTheme::Dark)
             .add_systems(Startup, setup)
             .add_systems(Update, temp);
     }
@@ -268,8 +275,12 @@ impl Plugin for SetupUiPlugin {
 // }
 
 // Define your setup_ui and toggle resolution systems here
-fn setup(mut commands: Commands) {
-    root::setup(&mut commands);
+fn setup(
+    mut commands: Commands,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+    root::setup(&mut commands, theme);
 }
 
 fn temp() {}

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use super::util::SubsectionGameEntity;
+use super::util::subsection::SubsectionGameEntity;
 use super::view::ViewList;
 use super::subsection_cameras::SvgLoadEvent;
 use super::pages::*;

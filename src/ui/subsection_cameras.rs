@@ -14,7 +14,7 @@ use bevy::{
     },
 };
 use super::view::UiResizeEvent;
-use super::util::SubsectionGameEntity;
+use super::util::subsection::SubsectionGameEntity;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
