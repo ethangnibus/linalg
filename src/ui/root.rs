@@ -33,14 +33,14 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) {
     // return entities
     let navbar_frame = navbar_frame::setup(commands, 100.0, 100.0);
     let navbar_height: f32 = 8.0; // in percentage
-    // let navbar = navbar::setup(commands, theme, navbar_height);
+    let navbar = navbar::setup(commands, theme, navbar_height);
     let under_navbar = under_navbar::setup(commands, 100.0, 100.0 - navbar_height);
 
     // make root parent of navbar and under_navbar
     commands
         .entity(navbar_frame)
         .push_children(&[
-            // navbar,
+            navbar,
             under_navbar,
         ]);
 }

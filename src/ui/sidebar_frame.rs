@@ -26,7 +26,7 @@ pub fn new(width: f32, height: f32) -> NodeBundle {
     return NodeBundle {
         style: Style {
             width: Val::Percent(width),
-            // height: Val::Percent(height),
+            height: Val::Percent(100.0),
             flex_grow: 1.0,
             flex_direction: FlexDirection::Row,
             ..default()
