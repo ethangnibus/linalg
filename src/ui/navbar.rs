@@ -1,8 +1,6 @@
-use bevy::{prelude::*, ui::FocusPolicy, render::view::visibility};
+use bevy::{prelude::*, render::view::visibility, ui::FocusPolicy};
 
-use super::{sidebar, under_navbar, util::theme, util::style};
-
-
+use super::{sidebar, under_navbar, util::style, util::theme};
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -16,6 +14,7 @@ impl Plugin for SystemsPlugin {
                 navbar_swiper_interactions,
                 navbar_swiper_color_change_system,
                 navbar_visibility_system,
+                navbar_banner_text_color_change_system,
             ),
         )
         .insert_resource(ShowingNavbar(true))
@@ -29,7 +28,7 @@ pub const NAVBAR_PADDING: UiRect = UiRect {
     left: Val::Px(4.0),
     right: Val::Px(4.0),
     top: Val::Px(4.0),
-    bottom: Val::Px(4.0),
+    bottom: Val::Px(6.0),
 };
 
 // Marker for UI node
@@ -48,6 +47,14 @@ pub struct SidebarButtonText;
 #[derive(Component)]
 pub struct NavbarSwiper;
 
+// Marker
+#[derive(Component)]
+pub struct NavbarBanner;
+
+// Marker
+#[derive(Component)]
+pub struct NavbarBannerText;
+
 // pub fn setup(mut commands: Commands) {
 //     //
 //     println!("navbar.rs");
@@ -61,7 +68,6 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) 
     let sidebar_button = sidebar_button(commands, theme, height);
     let navbar_banner = navbar_banner(commands, theme, height);
     let hamburger_button = hamburger_button(commands, theme, height);
-    
 
     commands
         .entity(navbar)
@@ -187,18 +193,22 @@ pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
             background_color: theme::navbar_background_color(theme).into(),
             border_color: theme::navbar_text_color(theme).into(),
             ..default()
-        },))
+        },
+    NavbarBanner))
         .id();
 
     let navbar_text = commands
-        .spawn((TextBundle::from_section(
-            "Math 56",
-            TextStyle {
-                font_size: 50.0,
-                color: theme::navbar_text_color(theme).into(),
-                ..default()
-            },
-        ),))
+        .spawn((
+            TextBundle::from_section(
+                "Math 56",
+                TextStyle {
+                    font_size: 50.0,
+                    color: theme::navbar_text_color(theme).into(),
+                    ..default()
+                },
+            ),
+            NavbarBannerText,
+        ))
         .id();
 
     commands
@@ -425,16 +435,12 @@ fn navbar_swiper_interactions(
                 showing_navbar.0 = !showing_navbar.0;
             }
             Interaction::Hovered => match showing_navbar.0 {
-                true => {
-                    navbar_collapse_writer.send(NavbarCollapseEvent {
-                        color: theme::sidebar_collapsed_color(theme),
-                    })
-                }
-                false => {
-                    navbar_collapse_writer.send(NavbarCollapseEvent {
-                        color: theme::sidebar_color(theme),
-                    })
-                }
+                true => navbar_collapse_writer.send(NavbarCollapseEvent {
+                    color: theme::sidebar_collapsed_color(theme),
+                }),
+                false => navbar_collapse_writer.send(NavbarCollapseEvent {
+                    color: theme::sidebar_color(theme),
+                }),
             },
             Interaction::None => match showing_navbar.0 {
                 true => navbar_collapse_writer.send(NavbarCollapseEvent {
@@ -462,31 +468,48 @@ fn navbar_swiper_color_change_system(
 }
 
 fn navbar_visibility_system(
-    mut navbar_query: Query<(&mut Visibility, &mut Style ), With<Navbar>>,
-    mut navbar_visibility_reader: EventReader<NavbarVisibilityEvent>
+    mut navbar_query: Query<(&mut Visibility, &mut Style), With<Navbar>>,
+    mut navbar_visibility_reader: EventReader<NavbarVisibilityEvent>,
 ) {
     for event_visibility in navbar_visibility_reader.read() {
         for (mut navbar_visibility, mut navbar_style) in navbar_query.iter_mut() {
-            
-        
-        match event_visibility.0 {
-            Visibility::Hidden => {
-                *navbar_visibility = Visibility::Hidden;
-                navbar_style.height = Val::Px(0.0);
-                navbar_style.padding = style::NO_PADDING;
+            match event_visibility.0 {
+                Visibility::Hidden => {
+                    *navbar_visibility = Visibility::Hidden;
+                    navbar_style.height = Val::Px(0.0);
+                    navbar_style.padding = style::NO_PADDING;
+                }
+                Visibility::Visible => {
+                    *navbar_visibility = Visibility::Visible;
+                    navbar_style.height = NAVBAR_HEIGHT;
+                    navbar_style.padding = NAVBAR_PADDING;
+                }
+                Visibility::Inherited => {
+                    *navbar_visibility = Visibility::Inherited;
+                    navbar_style.height = NAVBAR_HEIGHT;
+                    navbar_style.padding = NAVBAR_PADDING;
+                }
             }
-            Visibility::Visible => {
-                *navbar_visibility = Visibility::Visible;
-                navbar_style.height = NAVBAR_HEIGHT;
-                navbar_style.padding = NAVBAR_PADDING;
-            }
-            Visibility::Inherited => {
-                *navbar_visibility = Visibility::Inherited;
-                navbar_style.height = NAVBAR_HEIGHT;
-                navbar_style.padding = NAVBAR_PADDING;
-            }
-        }
         }
     }
-    
+}
+
+
+
+fn navbar_banner_text_color_change_system(
+    mut text_query: Query<&mut Text, With<NavbarBannerText>>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut navbar_collapse_reader: EventReader<NavbarCollapseEvent>,
+) {
+    for event in navbar_collapse_reader.read() {
+        println!("navbar collapse event happened");
+        for mut text in &mut text_query.iter_mut() {
+            println!("text query");
+            let color = event.color;
+
+            if color != theme::NOT_A_COLOR {
+                text.sections[0].style.color = color.into();
+            }
+        }
+    }
 }
