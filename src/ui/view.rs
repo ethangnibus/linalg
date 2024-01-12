@@ -1,29 +1,26 @@
+use super::routes;
+use super::scrollable_page;
+use super::subsection_cameras;
 use bevy::{
+    a11y::{
+        accesskit::{NodeBuilder, Role},
+        AccessibilityNode,
+    },
+    input::mouse::{MouseScrollUnit, MouseWheel},
+    prelude::*,
     render::{
-        camera::{
-            ComputedCameraValues,
-            RenderTarget,
-            Viewport,
-        },
+        camera::{ComputedCameraValues, RenderTarget, Viewport},
         render_resource::{
             Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
         },
         view::RenderLayers,
     },
 
-    a11y::{
-        accesskit::{NodeBuilder, Role},
-        AccessibilityNode,
-    },
-    input::mouse::{MouseScrollUnit, MouseWheel},
-    prelude::*, ui,
+    ui,
     // winit::WinitSettings,
 };
-use bevy_svg::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use super::scrollable_page;
-use super::routes;
-use super::subsection_cameras;
+use bevy_svg::prelude::*;
 
 // Marker for UI node
 #[derive(Component)]
@@ -37,31 +34,29 @@ pub struct ViewList {
 #[derive(Event)]
 pub struct UiResizeEvent;
 
-
 #[derive(Component)]
 pub struct SvgHolder;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app
-        .add_plugins(routes::SystemsPlugin)
-        .add_plugins(subsection_cameras::SystemsPlugin)
-        .add_event::<UiResizeEvent>()
-        // .add_systems(Startup, spawn_svg)
-        .add_plugins(ShapePlugin)
-        .add_systems(Update, (mouse_scroll));
+        app.add_plugins(routes::SystemsPlugin)
+            .add_plugins(subsection_cameras::SystemsPlugin)
+            .add_event::<UiResizeEvent>()
+            // .add_systems(Startup, spawn_svg)
+            .add_plugins(ShapePlugin)
+            .add_systems(Update, (mouse_scroll));
     }
 }
 
 pub fn setup(commands: &mut Commands) -> Entity {
     let view = new();
     let view = commands.spawn(view).id();
-    
+
     let page_items = page_items(commands);
     let view_list = scrollable_page::get_page();
     let view_list = commands.spawn((ViewList::default(), view_list)).id();
-    
+
     commands.entity(view_list).push_children(&page_items);
     commands.entity(view).push_children(&[view_list]);
 
@@ -69,20 +64,22 @@ pub fn setup(commands: &mut Commands) -> Entity {
 }
 
 pub fn new() -> (View, ButtonBundle) {
-    return (View, ButtonBundle {
-        style: Style {
-            flex_direction: FlexDirection::Column,
-            // align_self: AlignSelf::Stretch,
-            flex_grow: 1.0,
-            
-            // width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            overflow: Overflow::clip(),
+    return (
+        View,
+        ButtonBundle {
+            style: Style {
+                flex_direction: FlexDirection::Column,
+                // align_self: AlignSelf::Stretch,
+                // flex_grow: 1.0,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                overflow: Overflow::clip(),
+                ..default()
+            },
+            background_color: Color::rgb(0.0, 1.0, 0.0).into(),
             ..default()
         },
-        background_color: Color::rgb(0.0, 1.0, 0.0).into(),
-        ..default()
-    });
+    );
 }
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
@@ -142,16 +139,10 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
     return page_items;
 }
 
-
-
 use std::f32::consts::PI;
 
-
 fn mouse_scroll(
-    mut interaction_query: Query<
-        &Interaction,
-        With<View>
-    >,
+    mut interaction_query: Query<&Interaction, With<View>>,
     mut mouse_wheel_events: EventReader<MouseWheel>,
     mut query_list: Query<(&mut ViewList, &mut Style, &Parent, &Node)>,
     query_node: Query<&Node>,
@@ -163,14 +154,14 @@ fn mouse_scroll(
                     for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
                         let items_height = list_node.size().y;
                         let container_height = query_node.get(parent.get()).unwrap().size().y;
-            
+
                         let max_scroll = (items_height - container_height).max(0.);
-            
+
                         let dy = match mouse_wheel_event.unit {
                             MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
                             MouseScrollUnit::Pixel => mouse_wheel_event.y,
                         };
-            
+
                         scrolling_list.position += dy;
                         scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
                         style.top = Val::Px(scrolling_list.position);
@@ -181,6 +172,3 @@ fn mouse_scroll(
         }
     }
 }
-
-
-
