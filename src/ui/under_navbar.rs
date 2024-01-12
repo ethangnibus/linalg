@@ -87,7 +87,7 @@ pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
             style: Style {
                 // width: Val::Percent(1.0),
                 width: SWIPERS_WIDTH,
-                height: Val::Percent(100.0),
+                flex_grow: 1.0,
                 border: UiRect {
                     left: Val::Px(2.0),
                     right: Val::Px(0.0),
@@ -128,7 +128,7 @@ pub fn right_swiper() -> (NodeBundle) {
         style: Style {
             // width: Val::Percent(1.0),
             width: SWIPERS_WIDTH,
-            height: Val::Percent(100.0),
+            flex_grow: 1.0,
             border: UiRect::all(Val::Px(0.0)),
             ..default()
         },

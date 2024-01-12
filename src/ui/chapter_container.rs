@@ -3,6 +3,7 @@ use std::thread::current;
 use super::routes;
 use super::sidebar;
 use super::under_navbar;
+use super::util::style;
 use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
@@ -93,12 +94,7 @@ const SUBSECTION_BUTTON_BORDER: UiRect = UiRect {
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
 };
-const HIDDEN_BUTTON_BORDER: UiRect = UiRect {
-    left: Val::Px(0.0),
-    right: Val::Px(0.0),
-    top: Val::Px(0.0),
-    bottom: Val::Px(0.0),
-};
+const HIDDEN_BUTTON_BORDER: UiRect = style::NO_BORDER;
 
 #[derive(Component, Copy, Clone)]
 pub struct ChapterNumber(pub u32);

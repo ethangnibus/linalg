@@ -72,7 +72,8 @@ pub fn new() -> (View, ButtonBundle) {
                 // align_self: AlignSelf::Stretch,
                 // flex_grow: 1.0,
                 width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
+                // height: Val::Percent(100.0),
+                flex_grow: 1.0,
                 overflow: Overflow::clip(),
                 ..default()
             },

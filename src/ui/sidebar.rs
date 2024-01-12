@@ -33,13 +33,14 @@ impl Plugin for SystemsPlugin {
 }
 
 pub fn setup(commands: &mut Commands, width: f32) -> Entity {
-    let sidebar = new(width);
-    let sidebar = commands.spawn(sidebar).id();
+    let sidebar = commands.spawn(
+        new(width)).id();
 
     let page_items = sidebar_routes::page_items(commands);
-    let scrollable_page = scrollable_page::get_page();
-
-    let scrollable_page = commands.spawn((SidebarList::default(), scrollable_page)).id();
+    let scrollable_page = commands.spawn((
+        SidebarList::default(),
+        scrollable_page::get_page(),
+    )).id();
 
     commands.entity(scrollable_page).push_children(&page_items);
     commands.entity(sidebar).push_children(&[scrollable_page]);
@@ -53,11 +54,10 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
         ButtonBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
-                align_self: AlignSelf::Stretch,
-                height: Val::Percent(100.0),
+                // align_self: AlignSelf::Stretch,
+                flex_grow: 1.0,
                 width: Val::Percent(width),
-                // width: Val::Px(500.0),
-                overflow: Overflow::clip_y(),
+                overflow: Overflow::clip(),
                 ..default()
             },
             background_color: Color::rgb(1.0, 0.0, 1.0).into(),

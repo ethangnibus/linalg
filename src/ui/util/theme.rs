@@ -10,6 +10,17 @@ pub enum CurrentTheme {
     Dark,
 }
 
+pub fn background_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Dark => {
+            return Color::BLACK;
+        }
+    }
+}
+
 pub fn navbar_background_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {

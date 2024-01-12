@@ -18,6 +18,7 @@ pub mod subsection_cameras;
 mod util {
     pub mod theme;
     pub mod subsection;
+    pub mod style;
 }
 mod pages {
     pub mod chapter0section0subsection0;
