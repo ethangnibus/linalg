@@ -28,7 +28,7 @@ pub struct View;
 
 #[derive(Component, Default)]
 pub struct ViewList {
-    pub position: f32,
+    position: f32,
 }
 
 #[derive(Event)]
