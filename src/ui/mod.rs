@@ -11,6 +11,7 @@ pub mod sidebar_frame;
 pub mod under_navbar;
 pub mod view;
 pub mod chapter_container;
+pub mod option_bar;
 
 pub mod routes;
 pub mod sidebar_routes;

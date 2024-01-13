@@ -2,7 +2,11 @@ use super::chapter_container::HeaderButton;
 use super::navbar;
 use super::sidebar;
 use super::sidebar_frame;
-use super::util::theme;
+use super::option_bar;
+use super::util::{
+    theme,
+    style,
+};
 use super::view;
 use super::view::UiResizeEvent;
 use bevy::winit::WinitWindows;
@@ -12,7 +16,6 @@ use bevy::{prelude::*, ui::FocusPolicy};
 // remember to do colors
 
 const SIDEBAR_WIDTH: f32 = 38.23; // in percentage golden ratio
-const SWIPERS_WIDTH: Val = Val::Px(10.0);
 const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.1, 0.1, 0.1));
 
 // Marker for Node
@@ -41,6 +44,7 @@ impl Plugin for SystemsPlugin {
         app.add_plugins(sidebar_frame::SystemsPlugin)
             .add_plugins(sidebar::SystemsPlugin)
             .add_plugins(view::SystemsPlugin)
+            .add_plugins(option_bar::SystemsPlugin)
             .insert_resource(ShowingSidebar(true))
             .add_event::<SidebarCollapseInteractionEvent>()
             .add_event::<SidebarVisibilityEvent>()
@@ -56,7 +60,7 @@ impl Plugin for SystemsPlugin {
 }
 
 // Returns root node
-pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, height: f32) -> Entity {
     // Make ECS for root and navbar
     // return entities
     let under_navbar = sidebar_frame::setup(commands, width, height);
@@ -64,29 +68,31 @@ pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
 
     let sidebar_swiper = sidebar_swiper(commands);
 
-    let right_border = right_swiper();
-    let right_border = commands.spawn(right_border).id();
 
     let view = view::setup(commands);
+
+    let option_bar_swiper = option_bar::option_bar_swiper(commands, theme);
+    let option_bar = option_bar::option_bar(commands, SIDEBAR_WIDTH);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands.entity(under_navbar).push_children(&[
         sidebar,
         sidebar_swiper,
         view,
-        right_border,
+        option_bar_swiper,
+        option_bar,
     ]);
 
     return under_navbar;
 }
 
 pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
-    let sidebar_swiper = (
+    return commands.spawn((
         SidebarSwiper,
         ButtonBundle {
             style: Style {
                 // width: Val::Percent(1.0),
-                width: SWIPERS_WIDTH,
+                width: style::SWIPERS_WIDTH,
                 // flex_grow: 1.0,
                 height: Val::Percent(100.0),
                 border: UiRect {
@@ -103,41 +109,9 @@ pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
             background_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
-    );
-    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
-
-    // let right_line =
-    //     NodeBundle {
-    //         style: Style {
-    //             width: Val::Px(2.0),
-    //             height: Val::Percent(100.0),
-    //             ..default()
-    //         },
-    //         // background_color: Color::rgb(1.0, 0.7, 0.1).into(),
-    //         background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-    //         // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-    //         ..default()
-    //     };
-    // let right_line = commands.spawn(right_line).id();
-
-    // commands.entity(sidebar_swiper).push_children(&[right_line]);
-    return sidebar_swiper;
+    )).id();
 }
 
-pub fn right_swiper() -> (NodeBundle) {
-    return (NodeBundle {
-        style: Style {
-            // width: Val::Percent(1.0),
-            width: SWIPERS_WIDTH,
-            // flex_grow: 1.0,
-            height: Val::Percent(100.0),
-            border: UiRect::all(Val::Px(0.0)),
-            ..default()
-        },
-        background_color: SWIPERS_COLOR_DEFAULT,
-        ..default()
-    });
-}
 
 // In your sidebar_swiper_interactions function
 fn sidebar_swiper_interactions(

@@ -7,3 +7,5 @@ pub const NO_PADDING: UiRect = UiRect {
     bottom: Val::Px(0.0),
 };
 pub const NO_BORDER: UiRect = NO_PADDING;
+
+pub const SWIPERS_WIDTH: Val = Val::Px(10.0);

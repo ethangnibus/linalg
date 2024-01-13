@@ -502,9 +502,7 @@ fn navbar_banner_text_color_change_system(
     mut navbar_collapse_reader: EventReader<NavbarCollapseEvent>,
 ) {
     for event in navbar_collapse_reader.read() {
-        println!("navbar collapse event happened");
         for mut text in &mut text_query.iter_mut() {
-            println!("text query");
             let color = event.color;
 
             if color != theme::NOT_A_COLOR {
