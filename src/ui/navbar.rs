@@ -1,6 +1,6 @@
 use bevy::{prelude::*, render::view::visibility, ui::FocusPolicy};
 
-use super::{sidebar, under_navbar, util::style, util::theme};
+use super::{sidebar, under_navbar, util::style, util::theme, option_bar};
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -11,6 +11,9 @@ impl Plugin for SystemsPlugin {
                 sidebar_button_interactions,
                 sidebar_button_color_change_system,
                 sidebar_button_text_color_change_system,
+                option_bar_button_interactions,
+                option_bar_button_color_change_system,
+                option_bar_button_text_color_change_system,
                 navbar_swiper_interactions,
                 navbar_swiper_color_change_system,
                 navbar_visibility_system,
@@ -45,6 +48,14 @@ pub struct SidebarButtonText;
 
 // Marker
 #[derive(Component)]
+pub struct OptionBarButton;
+
+// Marker
+#[derive(Component)]
+pub struct OptionBarButtonText;
+
+// Marker
+#[derive(Component)]
 pub struct NavbarSwiper;
 
 // Marker
@@ -67,11 +78,11 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) 
 
     let sidebar_button = sidebar_button(commands, theme, height);
     let navbar_banner = navbar_banner(commands, theme, height);
-    let hamburger_button = hamburger_button(commands, theme, height);
+    let option_bar_button = option_bar_button(commands, theme, height);
 
     commands
         .entity(navbar)
-        .push_children(&[sidebar_button, navbar_banner, hamburger_button]);
+        .push_children(&[sidebar_button, navbar_banner, option_bar_button]);
     commands
         .entity(navbar_holder)
         .push_children(&[navbar, navbar_swiper]);
@@ -218,7 +229,7 @@ pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
     return background_banner;
 }
 
-pub fn hamburger_button(
+pub fn option_bar_button(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
     height: f32,
@@ -245,25 +256,30 @@ pub fn hamburger_button(
             background_color: theme::navbar_background_color(theme).into(),
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
-        },))
-        .id();
+        },
+        OptionBarButton
+    )).id();
 
     let text = commands
         .spawn((TextBundle::from_section(
-            "=",
+            "+",
             TextStyle {
                 font_size: 50.0,
                 color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
-        ),))
-        .id();
+        ),
+        OptionBarButtonText,
+    )).id();
 
     commands.entity(background_banner).push_children(&[text]);
 
     return background_banner;
 }
 
+
+
+// ==================== sidebar button ====================
 fn sidebar_button_interactions(
     mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<SidebarButton>)>,
     mut showing_sidebar: ResMut<under_navbar::ShowingSidebar>,
@@ -325,22 +341,19 @@ fn sidebar_button_interactions(
 }
 
 fn sidebar_button_color_change_system(
-    mut sidebar_swiper_query: Query<&mut BorderColor, With<SidebarButton>>,
+    mut sidebar_button_query: Query<&mut BorderColor, With<SidebarButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
-    mut sidebar_swiper_color_event_reader: EventReader<
+    mut sidebar_collapse_reader: EventReader<
         under_navbar::SidebarCollapseInteractionEvent,
     >,
 ) {
-    for event in sidebar_swiper_color_event_reader.read() {
-        for mut sidebar_swiper_border_color in &mut sidebar_swiper_query.iter_mut() {
+    for event in sidebar_collapse_reader.read() {
+        for mut sidebar_button_border_color in &mut sidebar_button_query.iter_mut() {
             let color = event.0;
             if color != theme::NOT_A_COLOR {
-                *sidebar_swiper_border_color = color.into();
+                *sidebar_button_border_color = color.into();
             }
         }
-        // for mut sidebar_button_border_color in &mut sidebar_button_query.iter_mut() {
-        //     *sidebar_button_border_color = event.0.into();
-        // }
     }
 }
 
@@ -370,7 +383,9 @@ fn sidebar_button_text_color_change_system(
     }
 }
 
-// navbar swiper
+
+
+// ==================== navbar swiper ====================
 pub fn navbar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     let navbar_swiper = commands
         .spawn((
@@ -507,6 +522,114 @@ fn navbar_banner_text_color_change_system(
 
             if color != theme::NOT_A_COLOR {
                 text.sections[0].style.color = color.into();
+            }
+        }
+    }
+}
+
+
+
+// ==================== option bar button ====================
+fn option_bar_button_interactions(
+    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<OptionBarButton>)>,
+    mut showing_option_bar: ResMut<option_bar::ShowingOptionBar>,
+    theme: Res<theme::CurrentTheme>,
+    // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
+    // mut header_button_query: Query<&BackgroundColor, With<HeaderButton>>,
+    mut option_bar_swiper_color_writer: EventWriter<option_bar::OptionBarCollapseEvent>,
+    mut option_bar_visibility_writer: EventWriter<option_bar::OptionBarVisibilityEvent>,
+) {
+    let theme = theme.as_ref();
+    for interaction in interaction_query.iter() {
+        match *interaction {
+            Interaction::Pressed => {
+                match showing_option_bar.0 {
+                    true => {
+                        option_bar_visibility_writer
+                            .send(option_bar::OptionBarVisibilityEvent(Visibility::Hidden));
+                    }
+                    false => {
+                        option_bar_visibility_writer
+                            .send(option_bar::OptionBarVisibilityEvent(Visibility::Inherited));
+                    }
+                }
+                option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
+                    theme::NOT_A_COLOR,
+                ));
+                showing_option_bar.0 = !showing_option_bar.0;
+            }
+            Interaction::Hovered => match showing_option_bar.0 {
+                true => {
+                    option_bar_swiper_color_writer.send(
+                        option_bar::OptionBarCollapseEvent(
+                            theme::sidebar_collapsed_color(theme),
+                        ),
+                    );
+                }
+                false => {
+                    option_bar_swiper_color_writer.send(
+                        option_bar::OptionBarCollapseEvent(theme::sidebar_color(theme)),
+                    );
+                }
+            },
+            Interaction::None => match showing_option_bar.0 {
+                true => {
+                    option_bar_swiper_color_writer.send(
+                        option_bar::OptionBarCollapseEvent(
+                            theme::sidebar_color(theme)
+                        ),
+                    );
+                }
+                false => {
+                    option_bar_swiper_color_writer.send(
+                        option_bar::OptionBarCollapseEvent(
+                            theme::sidebar_collapsed_color(theme),
+                        ),
+                    );
+                }
+            },
+        }
+    }
+}
+
+fn option_bar_button_color_change_system(
+    mut option_bar_button_query: Query<&mut BorderColor, With<OptionBarButton>>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut option_bar_color_reader: EventReader<
+        option_bar::OptionBarCollapseEvent,
+    >,
+) {
+    for event in option_bar_color_reader.read() {
+        for mut option_bar_border_color in &mut option_bar_button_query.iter_mut() {
+            let color = event.0;
+            if color != theme::NOT_A_COLOR {
+                *option_bar_border_color = color.into();
+            }
+        }
+    }
+}
+
+fn option_bar_button_text_color_change_system(
+    mut option_bar_text_query: Query<&mut Text, With<OptionBarButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut option_bar_color_reader: EventReader<
+        option_bar::OptionBarCollapseEvent,
+    >,
+) {
+    let theme = theme.as_ref();
+    for event in option_bar_color_reader.read() {
+        for mut option_bar_button_text in &mut option_bar_text_query.iter_mut() {
+            let color = event.0;
+
+            if color == theme::NOT_A_COLOR {
+                if option_bar_button_text.sections[0].value == String::from("+") {
+                    option_bar_button_text.sections[0].value = String::from("-");
+                } else if option_bar_button_text.sections[0].value == String::from("-") {
+                    option_bar_button_text.sections[0].value = String::from("+");
+                }
+            } else {
+                option_bar_button_text.sections[0].style.color = event.0.into();
             }
         }
     }

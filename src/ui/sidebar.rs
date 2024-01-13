@@ -57,7 +57,7 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
                 align_self: AlignSelf::Stretch,
                 height: Val::Percent(100.0),
                 // flex_grow: 1.0,
-                width: Val::Percent(width),
+                width: Val::Px(width),
                 overflow: Overflow::clip(),
                 ..default()
             },

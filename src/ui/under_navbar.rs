@@ -8,14 +8,13 @@ use super::util::{
     style,
 };
 use super::view;
-use super::view::UiResizeEvent;
 use bevy::winit::WinitWindows;
 use bevy::{prelude::*, ui::FocusPolicy};
 
 // ending today
 // remember to do colors
 
-const SIDEBAR_WIDTH: f32 = 38.23; // in percentage golden ratio
+const SIDEBAR_WIDTH: f32 = 500.0; // in percentage golden ratio
 const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.1, 0.1, 0.1));
 
 // Marker for Node
@@ -72,7 +71,7 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, h
     let view = view::setup(commands);
 
     let option_bar_swiper = option_bar::option_bar_swiper(commands, theme);
-    let option_bar = option_bar::option_bar(commands, SIDEBAR_WIDTH);
+    let option_bar = option_bar::setup(commands, theme, SIDEBAR_WIDTH);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands.entity(under_navbar).push_children(&[
@@ -190,7 +189,7 @@ fn sidebar_swiper_color_change_system(
 fn sidebar_visibility_system(
     mut sidebar_query: Query<(&mut Visibility, &mut Style), With<sidebar::Sidebar>>,
     mut sidebar_visibility_event: EventReader<SidebarVisibilityEvent>,
-    mut ui_resize_writer: EventWriter<UiResizeEvent>,
+    mut ui_resize_writer: EventWriter<view::UiResizeEvent>,
     // mut windows: NonSend<WinitWindows>,
     // mut windows: NonSend<World>,
 ) {
@@ -209,14 +208,14 @@ fn sidebar_visibility_system(
                 }
                 Visibility::Visible => {
                     *sidebar_visibility = Visibility::Visible;
-                    sidebar_style.width = Val::Percent(SIDEBAR_WIDTH);
+                    sidebar_style.width = Val::Px(SIDEBAR_WIDTH);
                 }
                 Visibility::Inherited => {
                     *sidebar_visibility = Visibility::Inherited;
-                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
+                    sidebar_style.width = Val::Px(SIDEBAR_WIDTH);
                 }
             }
         }
-        ui_resize_writer.send(UiResizeEvent);
+        ui_resize_writer.send(view::UiResizeEvent);
     }
 }

@@ -36,13 +36,13 @@ impl Plugin for SystemsPlugin {
     }
 }
 
-const HEADER_BUTTON_HEIGHT: Val = Val::Px(50.0);
-const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
-const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
-const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
-const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
-const SECTION_BUTTON_FONT_SIZE: f32 = 16.0;
-const SUBSECTION_BUTTON_FONT_SIZE: f32 = 14.0;
+pub const HEADER_BUTTON_HEIGHT: Val = Val::Px(50.0);
+pub const TITLE_BUTTON_HEIGHT: Val = Val::Px(50.0);
+pub const SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(50.0);
+pub const HIDDEN_SIDEBAR_BUTTON_HEIGHT: Val = Val::Px(0.0);
+pub const CHAPTER_BUTTON_FONT_SIZE: f32 = 18.0;
+pub const SECTION_BUTTON_FONT_SIZE: f32 = 16.0;
+pub const SUBSECTION_BUTTON_FONT_SIZE: f32 = 14.0;
 
 // i-th index gets the number of sections in the i-th chapter. For example
 // NUMBER_OF_SECTIONS_IN_CHAPTER[3] gets the number of sections in chapter 3
@@ -64,37 +64,37 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [
     0, // Bibliography
 ];
 
-const HEADER_BUTTON_BORDER: UiRect = UiRect {
+pub const HEADER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(0.0),
     right: Val::Px(0.0),
     top: Val::Px(0.0),
     bottom: Val::Px(0.0),
 };
-const TITLE_BUTTON_BORDER: UiRect = UiRect {
+pub const TITLE_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
     right: Val::Px(4.0),
     top: Val::Px(20.0),
     bottom: Val::Px(4.0),
 };
-const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
+pub const CHAPTER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(12.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
 };
-const SECTION_BUTTON_BORDER: UiRect = UiRect {
+pub const SECTION_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(20.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
 };
-const SUBSECTION_BUTTON_BORDER: UiRect = UiRect {
+pub const SUBSECTION_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(28.0),
     right: Val::Px(4.0),
     top: Val::Px(0.0),
     bottom: Val::Px(4.0),
 };
-const HIDDEN_BUTTON_BORDER: UiRect = style::NO_BORDER;
+pub const HIDDEN_BUTTON_BORDER: UiRect = style::NO_BORDER;
 
 #[derive(Component, Copy, Clone)]
 pub struct ChapterNumber(pub u32);
