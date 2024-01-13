@@ -64,6 +64,7 @@ impl Plugin for SystemsPlugin {
                 option_bar_swiper_interacitons,
                 option_bar_swiper_color_change_system,
                 option_bar_visibility_system,
+                themes_header_color_change_system,
             ));
     }
 }
@@ -393,5 +394,24 @@ fn option_bar_visibility_system(
             }
         }
         ui_resize_writer.send(view::UiResizeEvent);
+    }
+}
+
+
+
+
+fn themes_header_color_change_system(
+    mut themes_header_query: Query<&mut BackgroundColor, With<ThemesHeader>>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut option_bar_collape_reader: EventReader<OptionBarCollapseEvent>,
+) {
+    for event in option_bar_collape_reader.read() {
+        for mut themes_header_color in &mut themes_header_query.iter_mut() {
+            let color = event.0;
+            if color != theme::NOT_A_COLOR {
+                *themes_header_color = color.into();
+            }
+        }
+
     }
 }
