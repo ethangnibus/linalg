@@ -95,6 +95,7 @@ pub fn option_bar(commands: &mut Commands, theme: &theme::CurrentTheme, width: f
                 align_self: AlignSelf::Stretch,
                 height: Val::Percent(100.0),
                 width: Val::Percent(0.0),
+                max_width: Val::Vw(100.0),
                 overflow: Overflow::clip(),
                 ..default()
             },

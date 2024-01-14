@@ -58,6 +58,7 @@ pub fn new(width: f32) -> (Sidebar, ButtonBundle) {
                 height: Val::Percent(100.0),
                 // flex_grow: 1.0,
                 width: Val::Px(width),
+                max_width: Val::Vw(100.0),
                 overflow: Overflow::clip(),
                 ..default()
             },
