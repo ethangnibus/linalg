@@ -2,12 +2,24 @@ use bevy::prelude::*;
 
 
 pub const BERKELEY_GOLD: Color = Color::rgb(1.0, 0.7, 0.1);
+pub const BERKELEY_BLUE: Color = Color::rgb(0.0, 0.19, 0.38);
 pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
 
-#[derive(Resource)]
+
+#[derive(Resource, Clone, Copy)]
 pub enum CurrentTheme {
     Light,
     Dark,
+}
+
+#[derive(Event)]
+pub struct ThemeChangeEvent {
+    pub new_theme: CurrentTheme,
+}
+
+#[derive(Component)]
+pub struct ThemeButton {
+    pub next_theme: CurrentTheme,
 }
 
 pub fn background_color(theme: &CurrentTheme) -> Color {
@@ -46,7 +58,7 @@ pub fn navbar_text_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_GOLD;
+            return BERKELEY_BLUE;
         }
         CurrentTheme::Dark => {
             return BERKELEY_GOLD;

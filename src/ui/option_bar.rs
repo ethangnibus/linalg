@@ -28,14 +28,6 @@ pub struct ThemesHeader;
 
 // Marker
 #[derive(Component)]
-pub struct LightThemeButton;
-
-// Marker
-#[derive(Component)]
-pub struct DarkThemeButton;
-
-// Marker
-#[derive(Component)]
 pub struct OptionBarSwiper;
 
 #[derive(Event)]
@@ -46,8 +38,23 @@ pub struct OptionBarCollapseEvent(
 #[derive(Event)]
 pub struct OptionBarVisibilityEvent(pub Visibility);
 
+#[derive(Event)]
+pub struct ThemeButtonColorEvent {
+    pub theme: theme::CurrentTheme,
+    pub color: Color,
+}
+
 #[derive(Resource)]
 pub struct ShowingOptionBar(pub bool);
+
+#[derive(Component)]
+pub struct DarkThemeButtonText;
+#[derive(Component)]
+pub struct DarkThemeButtonLine;
+#[derive(Component)]
+pub struct LightThemeButtonText;
+#[derive(Component)]
+pub struct LightThemeButtonLine;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -56,6 +63,8 @@ impl Plugin for SystemsPlugin {
         .insert_resource(ShowingOptionBar(false))
         .add_event::<OptionBarCollapseEvent>()
         .add_event::<OptionBarVisibilityEvent>()
+        .add_event::<ThemeButtonColorEvent>()
+        .add_event::<theme::ThemeChangeEvent>()
         // .add_plugins(chapter_container::SystemsPlugin);
         // .add_event::<SidebarScrollEvent>()
         .add_systems(
@@ -65,6 +74,11 @@ impl Plugin for SystemsPlugin {
                 option_bar_swiper_color_change_system,
                 option_bar_visibility_system,
                 themes_header_color_change_system,
+                theme_button_interaction,
+                dark_theme_button_text_color_change_system,
+                dark_theme_button_line_color_change_system,
+                light_theme_button_text_color_change_system,
+                light_theme_button_line_color_change_system,
             ));
     }
 }
@@ -150,7 +164,9 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
 pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
 
     let light_theme_button = commands.spawn((
-        LightThemeButton,
+        theme::ThemeButton {
+            next_theme: theme::CurrentTheme::Light
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -170,6 +186,7 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
     )).id();
 
     let text_item = commands.spawn((
+        LightThemeButtonText,
         TextBundle::from_section(
             "Light",
             TextStyle {
@@ -181,6 +198,7 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
     )).id();
 
     let bottom_line = commands.spawn((
+        LightThemeButtonLine,
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -206,7 +224,9 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
 
 pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     let dark_theme_button = commands.spawn((
-        DarkThemeButton,
+        theme::ThemeButton {
+            next_theme: theme::CurrentTheme::Dark
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -226,6 +246,7 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
     )).id();
 
     let text_item = commands.spawn((
+        DarkThemeButtonText,
         TextBundle::from_section(
             "Dark",
             TextStyle {
@@ -237,6 +258,7 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
     )).id();
 
     let bottom_line = commands.spawn((
+        DarkThemeButtonLine,
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -293,12 +315,118 @@ pub fn option_bar_swiper (commands: &mut Commands, theme: &theme::CurrentTheme) 
 
 
 
+// ========================= Theme button events =========================
+fn theme_button_interaction(
+    mut interaction_query: Query<(&Interaction, &theme::ThemeButton), (Changed<Interaction>, With<theme::ThemeButton>)>,
+    mut theme_button_color_writer: EventWriter<ThemeButtonColorEvent>,
+    mut theme_change_writer: EventWriter<theme::ThemeChangeEvent>,
+    mut theme: ResMut<theme::CurrentTheme>,
+
+) {
+    
+    for (mut interaction, mut theme_button) in interaction_query.iter_mut() {
+        match *interaction {
+            Interaction::Pressed => {
+                *theme = theme_button.next_theme;
+                theme_change_writer.send(theme::ThemeChangeEvent {
+                    new_theme: theme_button.next_theme,
+                })
+            }
+            Interaction::Hovered => {
+                theme_button_color_writer.send(ThemeButtonColorEvent {
+                    theme: theme_button.next_theme,
+                    color: theme::sidebar_collapsed_color(&theme),
+                })
+            }
+            Interaction::None => {
+                theme_button_color_writer.send(ThemeButtonColorEvent {
+                    theme: theme_button.next_theme,
+                    color: theme::sidebar_color(&theme),
+                })
+            }
+        }
+    }
+}
+
+fn dark_theme_button_text_color_change_system(
+    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
+    mut text_query: Query<&mut Text, With<DarkThemeButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+    for event in theme_button_color_reader.read() {
+        match event.theme {
+            theme::CurrentTheme::Dark => {
+                for mut text in text_query.iter_mut() {
+                    text.sections[0].style.color = event.color;
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn dark_theme_button_line_color_change_system(
+    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
+    mut line_query: Query<&mut BackgroundColor, With<DarkThemeButtonLine>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+    for event in theme_button_color_reader.read() {
+        match event.theme {
+            theme::CurrentTheme::Dark => {
+                for mut background_color in line_query.iter_mut() {
+                    *background_color = event.color.into();
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+
+fn light_theme_button_text_color_change_system(
+    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
+    mut text_query: Query<&mut Text, With<LightThemeButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+    for event in theme_button_color_reader.read() {
+        match event.theme {
+            theme::CurrentTheme::Light => {
+                for mut text in text_query.iter_mut() {
+                    text.sections[0].style.color = event.color;
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn light_theme_button_line_color_change_system(
+    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
+    mut line_query: Query<&mut BackgroundColor, With<LightThemeButtonLine>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+    for event in theme_button_color_reader.read() {
+        match event.theme {
+            theme::CurrentTheme::Light => {
+                for mut background_color in line_query.iter_mut() {
+                    *background_color = event.color.into();
+                }
+            }
+            _ => {}
+        }
+    }
+}
 
 
 
 
 
 
+// ========================= Option bar collapse systems =========================
 fn option_bar_swiper_interacitons(
     mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<OptionBarSwiper>)>,
     mut showing_sidebar: ResMut<ShowingOptionBar>,
