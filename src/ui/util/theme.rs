@@ -13,13 +13,17 @@ pub enum CurrentTheme {
 }
 
 #[derive(Event)]
-pub struct ThemeChangeEvent {
-    pub new_theme: CurrentTheme,
-}
+pub struct ThemeChangeEvent;
 
 #[derive(Component)]
 pub struct ThemeButton {
     pub next_theme: CurrentTheme,
+}
+
+#[derive(Component)]
+pub struct ColorFunction {
+    pub background: fn(&CurrentTheme) -> Color,
+    pub border: fn(&CurrentTheme) -> Color,
 }
 
 pub fn background_color(theme: &CurrentTheme) -> Color {
@@ -47,7 +51,7 @@ pub fn navbar_background_color(theme: &CurrentTheme) -> Color {
 pub fn navbar_text_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return Color::BLACK;
+            return BERKELEY_BLUE;
         }
         CurrentTheme::Dark => {
             return BERKELEY_GOLD;
@@ -73,6 +77,18 @@ pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
         }
         CurrentTheme::Dark => {
             return Color::GRAY;
+        }
+    }
+}
+
+
+pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Dark => {
+            return Color::BLACK;
         }
     }
 }

@@ -65,7 +65,7 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, h
     let under_navbar = sidebar_frame::setup(commands, width, height);
     let sidebar = sidebar::setup(commands, SIDEBAR_WIDTH);
 
-    let sidebar_swiper = sidebar_swiper(commands);
+    let sidebar_swiper = sidebar_swiper(commands, theme);
 
 
     let view = view::setup(commands);
@@ -85,9 +85,13 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, h
     return under_navbar;
 }
 
-pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
+pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     return commands.spawn((
         SidebarSwiper,
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::sidebar_color,
+        },
         ButtonBundle {
             style: Style {
                 // width: Val::Percent(1.0),
@@ -105,7 +109,8 @@ pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
                 ..default()
             },
             focus_policy: FocusPolicy::Block,
-            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            background_color: theme::background_color(theme).into(),
+            border_color: theme::sidebar_color(theme).into(),
             ..default()
         },
     )).id();

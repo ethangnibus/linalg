@@ -5,12 +5,12 @@ use bevy::{
     },
     ui::FocusPolicy,
     input::mouse::{MouseScrollUnit, MouseWheel},
-    prelude::*,
+    prelude::*, render::color,
     // winit::WinitSettings,
 };
 use super::util::{
     style,
-    theme,
+    theme::{self, ColorFunction},
 };
 use super::view;
 use super::under_navbar;
@@ -75,6 +75,8 @@ impl Plugin for SystemsPlugin {
                 option_bar_visibility_system,
                 themes_header_color_change_system,
                 theme_button_interaction,
+                theme_change_node_color_change_system,
+                theme_change_text_color_change_system,
                 dark_theme_button_text_color_change_system,
                 dark_theme_button_line_color_change_system,
                 light_theme_button_text_color_change_system,
@@ -103,6 +105,10 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -
 pub fn option_bar(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -> Entity {
     return commands.spawn((
         OptionBar,
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         NodeBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
@@ -123,6 +129,10 @@ pub fn option_bar(commands: &mut Commands, theme: &theme::CurrentTheme, width: f
 pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     let header_button = commands.spawn((
         ThemesHeader,
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -136,19 +146,22 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 0.7, 0.1).into(),
-            border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            background_color: theme::sidebar_color(&theme).into(),
             ..default()
         },
     )).id();
 
 
     let text_item = commands.spawn((
+        theme::ColorFunction {
+            background: theme::sidebar_header_text_color,
+            border: theme::sidebar_header_text_color,
+        },
         TextBundle::from_section(
             "Themes",
             TextStyle {
                 font_size: chapter_container::CHAPTER_BUTTON_FONT_SIZE,
-                color: Color::rgb(0.0, 0.0, 0.0).into(),
+                color: theme::sidebar_header_text_color(&theme),
                 ..default()
             },
         ),
@@ -166,6 +179,10 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
     let light_theme_button = commands.spawn((
         theme::ThemeButton {
             next_theme: theme::CurrentTheme::Light
+        },
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color
         },
         ButtonBundle {
             style: Style {
@@ -187,11 +204,15 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
 
     let text_item = commands.spawn((
         LightThemeButtonText,
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color,
+        },
         TextBundle::from_section(
             "Light",
             TextStyle {
                 font_size: chapter_container::CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::navbar_text_color(theme),
+                color: theme::sidebar_color(theme),
                 ..default()
             },
         )
@@ -199,6 +220,10 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
 
     let bottom_line = commands.spawn((
         LightThemeButtonLine,
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -210,7 +235,7 @@ pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) 
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: theme::navbar_text_color(theme).into(),
+            background_color: theme::sidebar_color(theme).into(),
             ..default()
         },
     )).id();
@@ -226,6 +251,10 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
     let dark_theme_button = commands.spawn((
         theme::ThemeButton {
             next_theme: theme::CurrentTheme::Dark
+        },
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color
         },
         ButtonBundle {
             style: Style {
@@ -247,6 +276,10 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
 
     let text_item = commands.spawn((
         DarkThemeButtonText,
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color
+        },
         TextBundle::from_section(
             "Dark",
             TextStyle {
@@ -259,6 +292,10 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
 
     let bottom_line = commands.spawn((
         DarkThemeButtonLine,
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -288,6 +325,10 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
 pub fn option_bar_swiper (commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     return commands.spawn((
         OptionBarSwiper,
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::sidebar_color,
+        },
         ButtonBundle {
             style: Style {
                 // width: Val::Percent(1.0),
@@ -328,9 +369,7 @@ fn theme_button_interaction(
         match *interaction {
             Interaction::Pressed => {
                 *theme = theme_button.next_theme;
-                theme_change_writer.send(theme::ThemeChangeEvent {
-                    new_theme: theme_button.next_theme,
-                })
+                theme_change_writer.send(theme::ThemeChangeEvent)
             }
             Interaction::Hovered => {
                 theme_button_color_writer.send(ThemeButtonColorEvent {
@@ -348,16 +387,47 @@ fn theme_button_interaction(
     }
 }
 
-fn dark_theme_button_text_color_change_system(
-    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
-    mut text_query: Query<&mut Text, With<DarkThemeButtonText>>,
+fn theme_change_node_color_change_system(
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut node_query: Query<(&mut BackgroundColor, &mut BorderColor, &ColorFunction), With<ColorFunction>>,
     theme: Res<theme::CurrentTheme>,
 ) {
+    for event in theme_change_reader.read() {
+        for (mut background_color, mut border_color, ColorFunction) in node_query.iter_mut() {
+            *background_color = (ColorFunction.background)(&theme).into();
+            *border_color = (ColorFunction.border)(&theme).into();
+        }
+    }
+}
+
+fn theme_change_text_color_change_system(
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut text_query: Query<(&mut Text, &ColorFunction), With<ColorFunction>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in theme_change_reader.read() {
+        for (mut text, color_function) in text_query.iter_mut() {
+            text.sections[0].style.color = (color_function.background)(&theme).into();
+        }
+    }
+}
+
+fn dark_theme_button_text_color_change_system(
+    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut text_query: Query<(&mut Text, &ColorFunction), With<DarkThemeButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in theme_change_reader.read() {
+        for (mut text, color_function) in text_query.iter_mut() {
+            text.sections[0].style.color = (color_function.background)(&theme).into();
+        }
+    }
     let theme = theme.as_ref();
     for event in theme_button_color_reader.read() {
         match event.theme {
             theme::CurrentTheme::Dark => {
-                for mut text in text_query.iter_mut() {
+                for (mut text, _color_function) in text_query.iter_mut() {
                     text.sections[0].style.color = event.color;
                 }
             }
@@ -368,14 +438,14 @@ fn dark_theme_button_text_color_change_system(
 
 fn dark_theme_button_line_color_change_system(
     mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
-    mut line_query: Query<&mut BackgroundColor, With<DarkThemeButtonLine>>,
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut line_query: Query<(&mut BackgroundColor, &ColorFunction), With<DarkThemeButtonLine>>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    let theme = theme.as_ref();
     for event in theme_button_color_reader.read() {
         match event.theme {
             theme::CurrentTheme::Dark => {
-                for mut background_color in line_query.iter_mut() {
+                for (mut background_color, _color_function) in line_query.iter_mut() {
                     *background_color = event.color.into();
                 }
             }
@@ -387,14 +457,21 @@ fn dark_theme_button_line_color_change_system(
 
 fn light_theme_button_text_color_change_system(
     mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
-    mut text_query: Query<&mut Text, With<LightThemeButtonText>>,
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut text_query: Query<(&mut Text, &theme::ColorFunction), With<LightThemeButtonText>>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    let theme = theme.as_ref();
+    
+    for event in theme_change_reader.read() {
+        for (mut text, color_function) in text_query.iter_mut() {
+            text.sections[0].style.color = (color_function.background)(&theme).into();
+        }
+    }
+
     for event in theme_button_color_reader.read() {
         match event.theme {
             theme::CurrentTheme::Light => {
-                for mut text in text_query.iter_mut() {
+                for (mut text, _color_function) in text_query.iter_mut() {
                     text.sections[0].style.color = event.color;
                 }
             }
@@ -405,24 +482,21 @@ fn light_theme_button_text_color_change_system(
 
 fn light_theme_button_line_color_change_system(
     mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
-    mut line_query: Query<&mut BackgroundColor, With<LightThemeButtonLine>>,
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut line_query: Query<(&mut BackgroundColor, &theme::ColorFunction), With<LightThemeButtonLine>>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    let theme = theme.as_ref();
     for event in theme_button_color_reader.read() {
         match event.theme {
             theme::CurrentTheme::Light => {
-                for mut background_color in line_query.iter_mut() {
-                    *background_color = event.color.into();
+                for (mut background_color, _color_function) in line_query.iter_mut() {
+                *background_color = event.color.into();
                 }
             }
             _ => {}
         }
     }
 }
-
-
-
 
 
 

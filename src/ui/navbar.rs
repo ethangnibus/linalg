@@ -1,6 +1,6 @@
 use bevy::{prelude::*, render::view::visibility, ui::FocusPolicy};
 
-use super::{sidebar, under_navbar, util::style, util::theme, option_bar};
+use super::{option_bar, sidebar, under_navbar, util::style, util::theme};
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -106,6 +106,10 @@ pub fn navbar_holder(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
 pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
     return commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::navbar_background_color,
+            },
             NodeBundle {
                 style: Style {
                     // height: Val::Percent(height),
@@ -125,7 +129,6 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) ->
                     ..default()
                 },
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: Color::rgb(0.1, 0.1, 0.1).into(),
                 ..default()
             },
             Navbar,
@@ -136,6 +139,10 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) ->
 pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
     let sidebar_button = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::sidebar_color,
+            },
             ButtonBundle {
                 style: Style {
                     // height: Val::Percent(height),
@@ -155,7 +162,7 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Block,
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::navbar_text_color(theme).into(),
+                border_color: theme::sidebar_color(theme).into(),
                 ..default()
             },
             SidebarButton,
@@ -164,11 +171,15 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
 
     let arrow_text = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::sidebar_color,
+                border: theme::sidebar_color,
+            },
             TextBundle::from_section(
                 "<",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::navbar_text_color(theme).into(),
+                    color: theme::sidebar_color(theme).into(),
                     ..default()
                 },
             ),
@@ -183,33 +194,42 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
 
 pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
     let background_banner = commands
-        .spawn((ButtonBundle {
-            style: Style {
-                // height: Val::Percent(height),
-                height: Val::Percent(100.0),
-                flex_grow: 2.0,
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                border: UiRect {
-                    left: Val::Px(0.0),
-                    right: Val::Px(0.0),
-                    top: Val::Px(0.0),
-                    bottom: Val::Px(0.0),
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::navbar_background_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    // height: Val::Percent(height),
+                    height: Val::Percent(100.0),
+                    flex_grow: 2.0,
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    border: UiRect {
+                        left: Val::Px(0.0),
+                        right: Val::Px(0.0),
+                        top: Val::Px(0.0),
+                        bottom: Val::Px(0.0),
+                    },
+                    overflow: Overflow::clip(),
+                    ..default()
                 },
-                overflow: Overflow::clip(),
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Block,
+                background_color: theme::navbar_background_color(theme).into(),
                 ..default()
             },
-            visibility: Visibility::Inherited,
-            focus_policy: bevy::ui::FocusPolicy::Block,
-            background_color: theme::navbar_background_color(theme).into(),
-            border_color: theme::navbar_text_color(theme).into(),
-            ..default()
-        },
-    NavbarBanner))
+            NavbarBanner,
+        ))
         .id();
 
     let navbar_text = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_text_color,
+                border: theme::navbar_text_color,
+            },
             TextBundle::from_section(
                 "Math 56",
                 TextStyle {
@@ -235,49 +255,59 @@ pub fn option_bar_button(
     height: f32,
 ) -> Entity {
     let background_banner = commands
-        .spawn((ButtonBundle {
-            style: Style {
-                // height: Val::Percent(height),
-                height: Val::Percent(100.0),
-                aspect_ratio: Some(1.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                border: UiRect {
-                    left: Val::Px(2.0),
-                    right: Val::Px(2.0),
-                    top: Val::Px(2.0),
-                    bottom: Val::Px(2.0),
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    // height: Val::Percent(height),
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(1.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    border: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(2.0),
+                        bottom: Val::Px(2.0),
+                    },
+                    overflow: Overflow::clip(),
+                    ..default()
                 },
-                overflow: Overflow::clip(),
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Block,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
-            visibility: Visibility::Inherited,
-            focus_policy: bevy::ui::FocusPolicy::Block,
-            background_color: theme::navbar_background_color(theme).into(),
-            border_color: theme::sidebar_collapsed_color(theme).into(),
-            ..default()
-        },
-        OptionBarButton
-    )).id();
+            OptionBarButton,
+        ))
+        .id();
 
     let text = commands
-        .spawn((TextBundle::from_section(
-            "+",
-            TextStyle {
-                font_size: 50.0,
-                color: theme::sidebar_collapsed_color(theme).into(),
-                ..default()
+        .spawn((
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
             },
-        ),
-        OptionBarButtonText,
-    )).id();
+            TextBundle::from_section(
+                "+",
+                TextStyle {
+                    font_size: 50.0,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+            OptionBarButtonText,
+        ))
+        .id();
 
     commands.entity(background_banner).push_children(&[text]);
 
     return background_banner;
 }
-
-
 
 // ==================== sidebar button ====================
 fn sidebar_button_interactions(
@@ -343,9 +373,7 @@ fn sidebar_button_interactions(
 fn sidebar_button_color_change_system(
     mut sidebar_button_query: Query<&mut BorderColor, With<SidebarButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
-    mut sidebar_collapse_reader: EventReader<
-        under_navbar::SidebarCollapseInteractionEvent,
-    >,
+    mut sidebar_collapse_reader: EventReader<under_navbar::SidebarCollapseInteractionEvent>,
 ) {
     for event in sidebar_collapse_reader.read() {
         for mut sidebar_button_border_color in &mut sidebar_button_query.iter_mut() {
@@ -383,13 +411,15 @@ fn sidebar_button_text_color_change_system(
     }
 }
 
-
-
 // ==================== navbar swiper ====================
 pub fn navbar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     let navbar_swiper = commands
         .spawn((
             NavbarSwiper,
+            theme::ColorFunction {
+                background: theme::background_color,
+                border: theme::sidebar_color,
+            },
             ButtonBundle {
                 style: Style {
                     // width: Val::Percent(1.0),
@@ -509,8 +539,6 @@ fn navbar_visibility_system(
     }
 }
 
-
-
 fn navbar_banner_text_color_change_system(
     mut text_query: Query<&mut Text, With<NavbarBannerText>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
@@ -526,8 +554,6 @@ fn navbar_banner_text_color_change_system(
         }
     }
 }
-
-
 
 // ==================== option bar button ====================
 fn option_bar_button_interactions(
@@ -553,39 +579,32 @@ fn option_bar_button_interactions(
                             .send(option_bar::OptionBarVisibilityEvent(Visibility::Inherited));
                     }
                 }
-                option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
-                    theme::NOT_A_COLOR,
-                ));
+                option_bar_swiper_color_writer
+                    .send(option_bar::OptionBarCollapseEvent(theme::NOT_A_COLOR));
                 showing_option_bar.0 = !showing_option_bar.0;
             }
             Interaction::Hovered => match showing_option_bar.0 {
                 true => {
-                    option_bar_swiper_color_writer.send(
-                        option_bar::OptionBarCollapseEvent(
-                            theme::sidebar_collapsed_color(theme),
-                        ),
-                    );
+                    option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
+                        theme::sidebar_collapsed_color(theme),
+                    ));
                 }
                 false => {
-                    option_bar_swiper_color_writer.send(
-                        option_bar::OptionBarCollapseEvent(theme::sidebar_color(theme)),
-                    );
+                    option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
+                        theme::sidebar_color(theme),
+                    ));
                 }
             },
             Interaction::None => match showing_option_bar.0 {
                 true => {
-                    option_bar_swiper_color_writer.send(
-                        option_bar::OptionBarCollapseEvent(
-                            theme::sidebar_color(theme)
-                        ),
-                    );
+                    option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
+                        theme::sidebar_color(theme),
+                    ));
                 }
                 false => {
-                    option_bar_swiper_color_writer.send(
-                        option_bar::OptionBarCollapseEvent(
-                            theme::sidebar_collapsed_color(theme),
-                        ),
-                    );
+                    option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
+                        theme::sidebar_collapsed_color(theme),
+                    ));
                 }
             },
         }
@@ -595,9 +614,7 @@ fn option_bar_button_interactions(
 fn option_bar_button_color_change_system(
     mut option_bar_button_query: Query<&mut BorderColor, With<OptionBarButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
-    mut option_bar_color_reader: EventReader<
-        option_bar::OptionBarCollapseEvent,
-    >,
+    mut option_bar_color_reader: EventReader<option_bar::OptionBarCollapseEvent>,
 ) {
     for event in option_bar_color_reader.read() {
         for mut option_bar_border_color in &mut option_bar_button_query.iter_mut() {
@@ -613,9 +630,7 @@ fn option_bar_button_text_color_change_system(
     mut option_bar_text_query: Query<&mut Text, With<OptionBarButtonText>>,
     theme: Res<theme::CurrentTheme>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
-    mut option_bar_color_reader: EventReader<
-        option_bar::OptionBarCollapseEvent,
-    >,
+    mut option_bar_color_reader: EventReader<option_bar::OptionBarCollapseEvent>,
 ) {
     let theme = theme.as_ref();
     for event in option_bar_color_reader.read() {
