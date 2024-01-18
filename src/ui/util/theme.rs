@@ -1,8 +1,12 @@
 use bevy::prelude::*;
 
 
-pub const BERKELEY_GOLD: Color = Color::rgb(1.0, 0.7, 0.1);
+// pub const BERKELEY_GOLD: Color = Color::rgb(1.0, 0.7, 0.1);
+pub const BERKELEY_GOLD: Color = Color::rgb(0.99, 0.71, 0.08);
+pub const BERKELEY_DARK_GOLD: Color = Color::rgb(0.77, 0.51, 0.05);
 pub const BERKELEY_BLUE: Color = Color::rgb(0.0, 0.19, 0.38);
+pub const BERKELEY_LIGHT_BLUE: Color = Color::rgb(0.23, 0.49, 0.63);
+pub const LIGHT_GRAY: Color = Color::rgb(0.9, 0.9, 0.9);
 pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
 
 
@@ -70,6 +74,17 @@ pub fn navbar_text_color(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn navbar_buttons_background_color(theme:&CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return BERKELEY_GOLD;
+        }
+        CurrentTheme::Dark => {
+            return BERKELEY_GOLD;
+        }
+    }
+}
+
 pub fn sidebar_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
@@ -84,7 +99,7 @@ pub fn sidebar_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return Color::GRAY;
+            return BERKELEY_GOLD;
         }
         CurrentTheme::Dark => {
             return Color::GRAY;

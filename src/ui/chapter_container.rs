@@ -4,6 +4,7 @@ use super::routes;
 use super::sidebar;
 use super::under_navbar;
 use super::util::style;
+use super::util::theme::background_color;
 use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
@@ -21,6 +22,7 @@ impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<SectionVisibilityEvent>()
             .add_event::<SubsectionVisibilityEvent>()
+            .add_event::<ChapterButtonColorEvent>()
             .add_systems(
                 Update,
                 (
@@ -31,6 +33,8 @@ impl Plugin for SystemsPlugin {
                     subsection_button_interaction,
                     sidebar_button_mouse_scroll,
                     header_button_color_change_system,
+                    chapter_button_text_color_system,
+                    chapter_button_line_color_system,
                 ),
             );
     }
@@ -99,10 +103,10 @@ pub const HIDDEN_BUTTON_BORDER: UiRect = style::NO_BORDER;
 #[derive(Component, Copy, Clone)]
 pub struct ChapterNumber(pub u32);
 
-#[derive(Component)]
+#[derive(Component, Copy, Clone)]
 pub struct SectionNumber(pub u32);
 
-#[derive(Component)]
+#[derive(Component, Copy, Clone)]
 pub struct SubsectionNumber(pub u32);
 
 #[derive(Component)]
@@ -116,6 +120,18 @@ pub struct SectionButton();
 
 #[derive(Component)]
 pub struct SubsectionButton();
+
+#[derive(Component)]
+pub struct ChapterButtonText;
+
+#[derive(Component)]
+pub struct ChapterButtonLine;
+
+#[derive(Component)]
+pub struct SectionButtonText;
+
+#[derive(Component)]
+pub struct SubsectionButtonText;
 
 #[derive(Component)]
 pub struct SidebarItem();
@@ -324,6 +340,7 @@ pub fn chapter_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            background_color: theme::background_color(theme).into(),
             focus_policy: FocusPolicy::Block,
             ..default()
         },
@@ -350,6 +367,8 @@ pub fn chapter_button(
     // let part_flag = commands.spawn(part_flag).id();
 
     let text_item = (
+        ChapterButtonText,
+        chapter_number,
         theme::ColorFunction {
             background: theme::text_color,
             border: theme::text_color,
@@ -369,6 +388,8 @@ pub fn chapter_button(
 
     let bottom_line = (
         SidebarItem(),
+        ChapterButtonLine,
+        chapter_number,
         theme::ColorFunction {
             background: theme::text_color,
             border: theme::text_color,
@@ -412,7 +433,7 @@ pub fn section_button(
     let section_button = (
         SectionButton(),
         SidebarItem(),
-        section_number,
+        section_number.clone(),
         chapter_number,
         ShowingSectionsOfThisChapter(false),
         ShowingSubsectionsOfThisSection(false),
@@ -431,6 +452,7 @@ pub fn section_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            background_color: theme::background_color(theme).into(),
             visibility: Visibility::Hidden,
             focus_policy: FocusPolicy::Block,
             ..default()
@@ -440,6 +462,9 @@ pub fn section_button(
     let section_button = commands.spawn(section_button).id();
 
     let text_item = (
+        SectionButtonText,
+        section_number,
+        chapter_number,
         theme::ColorFunction {
             background: theme::text_color,
             border: theme::text_color,
@@ -522,6 +547,7 @@ pub fn subsection_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            background_color: theme::background_color(theme).into(),
             focus_policy: FocusPolicy::Block,
             visibility: Visibility::Hidden,
             ..default()
@@ -531,6 +557,10 @@ pub fn subsection_button(
     let subsection_button = commands.spawn(subsection_button).id();
 
     let text_item = (
+        SubsectionButtonText,
+        chapter_number,
+        section_number,
+        subsection_number,
         theme::ColorFunction {
             background: theme::text_color,
             border: theme::text_color,
@@ -601,6 +631,44 @@ fn header_button_color_change_system(
 }
 
 // ---------- Chapter Interaction ----------
+#[derive(Event)]
+pub struct ChapterButtonColorEvent {
+    color: Color,
+    chapter_number: u32,
+}
+
+fn chapter_button_text_color_system(
+    mut chapter_button_text_color_reader: EventReader<ChapterButtonColorEvent>,
+    mut text_query: Query<(&mut Text, &ChapterNumber), With<ChapterButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in chapter_button_text_color_reader.read() {
+        
+        for (mut text, chapter_number) in text_query.iter_mut() {
+            // text.sections[0].style.color = theme::sidebar_color(&theme);
+            if chapter_number.0 == event.chapter_number {
+                text.sections[0].style.color = event.color;
+            }
+        }
+    }
+}
+
+fn chapter_button_line_color_system(
+    mut chapter_button_text_color_reader: EventReader<ChapterButtonColorEvent>,
+    mut text_query: Query<(&mut BackgroundColor, &ChapterNumber), With<ChapterButtonLine>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in chapter_button_text_color_reader.read() {
+        
+        for (mut background_color, chapter_number) in text_query.iter_mut() {
+            // text.sections[0].style.color = theme::sidebar_color(&theme);
+            if chapter_number.0 == event.chapter_number {
+                *background_color = event.color.into();
+            }
+        }
+    }
+}
+
 fn chapter_button_interaction(
     mut interaction_query: Query<
         (
@@ -612,7 +680,9 @@ fn chapter_button_interaction(
         ),
         (Changed<Interaction>, With<ChapterButton>),
     >,
+    mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
+    theme: Res<theme::CurrentTheme>,
 ) {
     for (
         interaction,
@@ -637,20 +707,29 @@ fn chapter_button_interaction(
 
         match *interaction {
             Interaction::Pressed => {
-                *chapter_button_background_color = pressed_color;
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // *chapter_button_background_color = pressed_color;
+                // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 section_visibility_writer.send(SectionVisibilityEvent {
                     chapter_number: chapter_number.0,
                 });
                 showing_sections.0 = !showing_sections.0;
             }
             Interaction::Hovered => {
-                *chapter_button_background_color = hovered_color;
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // *chapter_button_background_color = hovered_color;
+                // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // chapter_button_text_color_writer.send(ChapterButtonColorEvent);
+                chapter_button_text_color_writer.send(ChapterButtonColorEvent{
+                    color: theme::sidebar_collapsed_color(&theme),
+                    chapter_number: chapter_number.0,
+                });
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                chapter_button_text_color_writer.send(ChapterButtonColorEvent{
+                    color: theme::text_color(&theme),
+                    chapter_number: chapter_number.0,
+                });
             }
         }
     }
