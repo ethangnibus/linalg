@@ -35,6 +35,7 @@ impl Plugin for SystemsPlugin {
                     header_button_color_change_system,
                     chapter_button_text_color_system,
                     chapter_button_line_color_system,
+                    chapter_button_expander_text_system,
                 ),
             );
     }
@@ -126,6 +127,9 @@ pub struct ChapterButtonText;
 
 #[derive(Component)]
 pub struct ChapterButtonLine;
+
+#[derive(Component)]
+pub struct ChapterButtonExpanderText;
 
 #[derive(Component)]
 pub struct SectionButtonText;
@@ -319,7 +323,7 @@ pub fn chapter_button(
     chapter_number: u32,
 ) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
-    let chapter_button = (
+    let chapter_button = commands.spawn((
         ChapterButton(),
         SidebarItem(),
         chapter_number,
@@ -344,49 +348,54 @@ pub fn chapter_button(
             focus_policy: FocusPolicy::Block,
             ..default()
         },
-    );
+    )).id();
 
-    let chapter_button = commands.spawn(chapter_button).id();
+    let text_holder = commands.spawn((NodeBundle {
+        style: Style {
+            align_items: AlignItems::End,
+            ..default()
+        },
+        ..default()
+    })).id();
 
-    // let part_flag = (
-    //     SidebarItem(),
-    //     ButtonBundle {
-    //         style: Style {
-    //             width: Val::Px(4.0),
-    //             height: Val::Percent(100.0),
-    //             // border: HIDDEN_BUTTON_BORDER,
-    //             // padding: CHAPTER_BUTTON_BORDER,
-    //             justify_content: JustifyContent::Start,
-    //             align_content: AlignContent::Start,
-    //             ..default()
-    //         },
-    //         background_color: Color::rgb(1.0, 0.0, 0.0).into(),
-    //         ..default()
-    //     }
-    // );
-    // let part_flag = commands.spawn(part_flag).id();
-
-    let text_item = (
+    let text_item = commands.spawn((
         ChapterButtonText,
+        chapter_number,
+        theme::ColorFunction {
+            background: theme::sidebar_collapsed_color,
+            border: theme::sidebar_collapsed_color,
+        },
+        TextBundle::from_section(
+            chapter_name,
+            TextStyle {
+                font_size: CHAPTER_BUTTON_FONT_SIZE,
+                color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+        ),
+        Label,
+        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+    )).id();
+
+    let expander_text = commands.spawn((
+        ChapterButtonText,
+        ChapterButtonExpanderText,
         chapter_number,
         theme::ColorFunction {
             background: theme::text_color,
             border: theme::text_color,
         },
         TextBundle::from_section(
-            chapter_name,
+            "+ ",
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::text_color(theme).into(),
+                color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
         ),
-        Label,
-        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    );
-    let text_item = commands.spawn(text_item).id();
+    )).id();
 
-    let bottom_line = (
+    let bottom_line = commands.spawn((
         SidebarItem(),
         ChapterButtonLine,
         chapter_number,
@@ -409,13 +418,14 @@ pub fn chapter_button(
             // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
-    );
-    let bottom_line = commands.spawn(bottom_line).id();
+    )).id();
 
     // commands.entity(chapter_button).push_children(&[part_flag, text_item]);
+    commands.entity(text_holder).push_children(&[expander_text, text_item]);
+
     commands
         .entity(chapter_button)
-        .push_children(&[text_item, bottom_line]);
+        .push_children(&[text_holder, bottom_line]);
 
     return chapter_button;
 }
@@ -668,6 +678,23 @@ fn chapter_button_line_color_system(
     }
 }
 
+fn chapter_button_expander_text_system(
+    mut chapter_button_expander_text_reader: EventReader<SectionVisibilityEvent>,
+    mut expander_text_query: Query<(&mut Text, &ChapterNumber), With<ChapterButtonExpanderText>>,
+) {
+    for event in chapter_button_expander_text_reader.read() {
+        for (mut text, chapter_number) in expander_text_query.iter_mut() {
+            if chapter_number.0 != event.chapter_number { continue };
+            if text.sections[0].value == "+ " {
+                text.sections[0].value = String::from("- ");
+            } else if text.sections[0].value == "- " {
+                text.sections[0].value = String::from("+ ");
+            }
+        
+        }
+    }
+}
+
 fn chapter_button_interaction(
     mut interaction_query: Query<
         (
@@ -679,6 +706,7 @@ fn chapter_button_interaction(
         ),
         (Changed<Interaction>, With<ChapterButton>),
     >,
+    mut expander_text_query: Query<(&Text, &ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonExpanderText>>,
     mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
     theme: Res<theme::CurrentTheme>,
@@ -691,16 +719,22 @@ fn chapter_button_interaction(
         mut showing_sections,
     ) in &mut interaction_query
     {
-        let mut pressed_color: BackgroundColor = Color::default().into();
-        let mut hovered_color: BackgroundColor = Color::default().into();
-        match showing_sections.0 {
-            false => {
-                pressed_color = Color::rgb(0.45, 0.45, 0.7).into();
-                hovered_color = Color::rgb(0.6, 0.6, 0.9).into();
-            }
-            true => {
-                pressed_color = Color::rgb(0.7, 0.45, 0.45).into();
-                hovered_color = Color::rgb(0.9, 0.6, 0.6).into();
+        let mut idle_color: Color = Color::default();
+        let mut hovered_color: Color = Color::default();
+
+        for (text, query_chapter_number, mut color_function) in expander_text_query.iter_mut() {
+            if query_chapter_number.0 != chapter_number.0 { continue };
+
+            if text.sections[0].value == "+ " {
+                hovered_color = theme::sidebar_color(&theme);
+                color_function.background = theme::sidebar_collapsed_color;
+                color_function.border = theme::sidebar_collapsed_color;
+                idle_color = theme::sidebar_collapsed_color(&theme);
+            } else if text.sections[0].value == "- " {
+                hovered_color = theme::sidebar_collapsed_color(&theme);
+                color_function.background = theme::sidebar_color;
+                color_function.border = theme::sidebar_color;
+                idle_color = theme::sidebar_color(&theme);
             }
         }
 
@@ -718,7 +752,8 @@ fn chapter_button_interaction(
                 // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 // chapter_button_text_color_writer.send(ChapterButtonColorEvent);
                 chapter_button_text_color_writer.send(ChapterButtonColorEvent{
-                    color: theme::sidebar_collapsed_color(&theme),
+                    // color: theme::sidebar_collapsed_color(&theme),
+                    color: hovered_color,
                     chapter_number: chapter_number.0,
                 });
             }
@@ -726,7 +761,7 @@ fn chapter_button_interaction(
                 // *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
                 // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 chapter_button_text_color_writer.send(ChapterButtonColorEvent{
-                    color: theme::text_color(&theme),
+                    color: idle_color,
                     chapter_number: chapter_number.0,
                 });
             }

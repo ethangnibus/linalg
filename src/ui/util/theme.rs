@@ -110,7 +110,7 @@ pub fn sidebar_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_GOLD;
+            return Color::GRAY;
         }
         CurrentTheme::Dark => {
             return Color::GRAY;
