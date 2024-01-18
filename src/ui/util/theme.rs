@@ -41,6 +41,17 @@ pub fn background_color(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn swiper_background_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::rgb(0.85, 0.85, 0.85);
+        }
+        CurrentTheme::Dark => {
+            return Color::rgb(0.15, 0.15, 0.15);
+        }
+    }
+}
+
 pub fn text_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {

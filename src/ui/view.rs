@@ -21,6 +21,7 @@ use bevy::{
 };
 use bevy_prototype_lyon::prelude::*;
 use bevy_svg::prelude::*;
+use super::theme;
 
 // Marker for UI node
 #[derive(Component)]
@@ -49,12 +50,12 @@ impl Plugin for SystemsPlugin {
     }
 }
 
-pub fn setup(commands: &mut Commands) -> Entity {
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     let view = new();
     let view = commands.spawn(view).id();
 
     let page_items = page_items(commands);
-    let view_list = scrollable_page::get_page();
+    let view_list = scrollable_page::get_page(theme);
     let view_list = commands.spawn((ViewList::default(), view_list)).id();
 
     commands.entity(view_list).push_children(&page_items);

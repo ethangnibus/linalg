@@ -326,7 +326,7 @@ pub fn option_bar_swiper (commands: &mut Commands, theme: &theme::CurrentTheme) 
     return commands.spawn((
         OptionBarSwiper,
         theme::ColorFunction {
-            background: theme::background_color,
+            background: theme::swiper_background_color,
             border: theme::sidebar_color,
         },
         ButtonBundle {
@@ -346,7 +346,7 @@ pub fn option_bar_swiper (commands: &mut Commands, theme: &theme::CurrentTheme) 
                 ..default()
             },
             focus_policy: FocusPolicy::Block,
-            background_color: theme::background_color(theme).into(),
+            background_color: theme::swiper_background_color(theme).into(),
             border_color: theme::sidebar_color(theme).into(),
             ..default()
         },

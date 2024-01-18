@@ -68,7 +68,7 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, h
     let sidebar_swiper = sidebar_swiper(commands, theme);
 
 
-    let view = view::setup(commands);
+    let view = view::setup(commands, theme);
 
     let option_bar_swiper = option_bar::option_bar_swiper(commands, theme);
     let option_bar = option_bar::setup(commands, theme, SIDEBAR_WIDTH);
@@ -89,7 +89,7 @@ pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> E
     return commands.spawn((
         SidebarSwiper,
         theme::ColorFunction {
-            background: theme::background_color,
+            background: theme::swiper_background_color,
             border: theme::sidebar_color,
         },
         ButtonBundle {
@@ -109,7 +109,7 @@ pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> E
                 ..default()
             },
             focus_policy: FocusPolicy::Block,
-            background_color: theme::background_color(theme).into(),
+            background_color: theme::swiper_background_color(theme).into(),
             border_color: theme::sidebar_color(theme).into(),
             ..default()
         },
