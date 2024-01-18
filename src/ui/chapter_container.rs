@@ -661,7 +661,6 @@ fn chapter_button_line_color_system(
     for event in chapter_button_text_color_reader.read() {
         
         for (mut background_color, chapter_number) in text_query.iter_mut() {
-            // text.sections[0].style.color = theme::sidebar_color(&theme);
             if chapter_number.0 == event.chapter_number {
                 *background_color = event.color.into();
             }
