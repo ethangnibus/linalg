@@ -37,6 +37,17 @@ pub fn background_color(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn text_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Dark => {
+            return Color::WHITE;
+        }
+    }
+}
+
 pub fn navbar_background_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {

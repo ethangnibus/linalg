@@ -144,10 +144,14 @@ pub struct ShowingSubsectionsOfThisSection(bool);
 // ================================
 // ========== UI Buttons ==========
 // ================================
-pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
+pub fn header_button(commands: &mut Commands, theme: &theme::CurrentTheme, text: &String) -> Entity {
     let header_button = (
         SidebarItem(),
         HeaderButton(),
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -161,8 +165,7 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 0.7, 0.1).into(),
-            border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            background_color: theme::sidebar_color(theme).into(),
             ..default()
         },
     );
@@ -171,11 +174,15 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
     // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
 
     let text_item = (
+        theme::ColorFunction {
+            background: theme::sidebar_header_text_color,
+            border: theme::sidebar_header_text_color,
+        },
         TextBundle::from_section(
             text,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: Color::rgb(0.0, 0.0, 0.0).into(),
+                color: theme::sidebar_header_text_color(theme),
                 ..default()
             },
         ),
@@ -210,9 +217,13 @@ pub fn header_button(commands: &mut Commands, text: &String) -> Entity {
     return title_button;
 }
 
-pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
+pub fn title_button(commands: &mut Commands, theme: &theme::CurrentTheme, text: &String) -> Entity {
     let title_button = (
         SidebarItem(),
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -225,8 +236,8 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-            border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            background_color: theme::background_color(theme).into(),
+            border_color: theme::background_color(theme).into(),
             ..default()
         },
     );
@@ -235,11 +246,15 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
     // let chapter_button = chapter_button(commands, chapter_name, chapter_number);
 
     let text_item = (
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color,
+        },
         TextBundle::from_section(
             text,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: Color::rgb(1.0, 0.7, 0.1).into(),
+                color: theme::sidebar_color(theme).into(),
                 ..default()
             },
         ),
@@ -250,6 +265,10 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
 
     let bottom_line = (
         SidebarItem(),
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -261,7 +280,7 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 0.7, 0.1).into(),
+            background_color: theme::sidebar_color(theme).into(),
             // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
@@ -279,6 +298,7 @@ pub fn title_button(commands: &mut Commands, text: &String) -> Entity {
 // ---------- Chapter UI Button ----------
 pub fn chapter_button(
     commands: &mut Commands,
+    theme: &theme::CurrentTheme, 
     chapter_name: &String,
     chapter_number: u32,
 ) -> Entity {
@@ -288,6 +308,10 @@ pub fn chapter_button(
         SidebarItem(),
         chapter_number,
         ShowingSectionsOfThisChapter(false),
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -326,11 +350,15 @@ pub fn chapter_button(
     // let part_flag = commands.spawn(part_flag).id();
 
     let text_item = (
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         TextBundle::from_section(
             chapter_name,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: Color::rgb(1.0, 1.0, 1.0),
+                color: theme::text_color(theme).into(),
                 ..default()
             },
         ),
@@ -341,6 +369,10 @@ pub fn chapter_button(
 
     let bottom_line = (
         SidebarItem(),
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -352,7 +384,7 @@ pub fn chapter_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            background_color: theme::text_color(theme).into(),
             // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
@@ -370,6 +402,7 @@ pub fn chapter_button(
 // ---------- Section UI Button ----------
 pub fn section_button(
     commands: &mut Commands,
+    theme: &theme::CurrentTheme, 
     chapter_name: &String,
     chapter_number: u32,
     section_number: u32,
@@ -383,6 +416,10 @@ pub fn section_button(
         chapter_number,
         ShowingSectionsOfThisChapter(false),
         ShowingSubsectionsOfThisSection(false),
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -403,11 +440,14 @@ pub fn section_button(
     let section_button = commands.spawn(section_button).id();
 
     let text_item = (
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         TextBundle::from_section(
             chapter_name,
             TextStyle {
                 font_size: SECTION_BUTTON_FONT_SIZE,
-
                 ..default()
             },
         ),
@@ -418,6 +458,10 @@ pub fn section_button(
 
     let bottom_line = (
         SidebarItem(),
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -429,8 +473,7 @@ pub fn section_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+            background_color: theme::text_color(theme).into(),
             ..default()
         },
     );
@@ -446,6 +489,7 @@ pub fn section_button(
 // ---------- Subsection UI Button ----------
 pub fn subsection_button(
     commands: &mut Commands,
+    theme: &theme::CurrentTheme, 
     chapter_name: &String,
     chapter_number: u32,
     section_number: u32,
@@ -463,6 +507,10 @@ pub fn subsection_button(
         subsection_number,
         ShowingSectionsOfThisChapter(false),
         ShowingSubsectionsOfThisSection(false),
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         ButtonBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -483,6 +531,10 @@ pub fn subsection_button(
     let subsection_button = commands.spawn(subsection_button).id();
 
     let text_item = (
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         TextBundle::from_section(
             chapter_name,
             TextStyle {
@@ -497,6 +549,10 @@ pub fn subsection_button(
 
     let bottom_line = (
         SidebarItem(),
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -508,7 +564,7 @@ pub fn subsection_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
+            background_color: theme::text_color(theme).into(),
             // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },

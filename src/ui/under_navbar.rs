@@ -63,7 +63,7 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, h
     // Make ECS for root and navbar
     // return entities
     let under_navbar = sidebar_frame::setup(commands, width, height);
-    let sidebar = sidebar::setup(commands, SIDEBAR_WIDTH);
+    let sidebar = sidebar::setup(commands, theme, SIDEBAR_WIDTH);
 
     let sidebar_swiper = sidebar_swiper(commands, theme);
 
