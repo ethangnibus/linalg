@@ -23,6 +23,7 @@ impl Plugin for SystemsPlugin {
         app.add_event::<SectionVisibilityEvent>()
             .add_event::<SubsectionVisibilityEvent>()
             .add_event::<ChapterButtonColorEvent>()
+            .add_event::<ChapterButtonColorFunctionEvent>()
             .add_systems(
                 Update,
                 (
@@ -36,6 +37,8 @@ impl Plugin for SystemsPlugin {
                     chapter_button_text_color_system,
                     chapter_button_line_color_system,
                     chapter_button_expander_text_system,
+                    chapter_button_line_color_function_system,
+                    chapter_button_text_color_function_system,
                 ),
             );
     }
@@ -663,6 +666,21 @@ fn chapter_button_text_color_system(
     }
 }
 
+fn chapter_button_text_color_function_system(
+    mut chapter_button_color_function_reader: EventReader<ChapterButtonColorFunctionEvent>,
+    mut text_query: Query<(&mut theme::ColorFunction, &ChapterNumber), With<ChapterButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in chapter_button_color_function_reader.read() {
+        for (mut color_function, chapter_number) in text_query.iter_mut() {
+            if chapter_number.0 == event.chapter_number {
+                color_function.background = event.color_function;
+                color_function.border = event.color_function;
+            }
+        }
+    }
+}
+
 fn chapter_button_line_color_system(
     mut chapter_button_text_color_reader: EventReader<ChapterButtonColorEvent>,
     mut text_query: Query<(&mut BackgroundColor, &ChapterNumber), With<ChapterButtonLine>>,
@@ -673,6 +691,21 @@ fn chapter_button_line_color_system(
         for (mut background_color, chapter_number) in text_query.iter_mut() {
             if chapter_number.0 == event.chapter_number {
                 *background_color = event.color.into();
+            }
+        }
+    }
+}
+
+fn chapter_button_line_color_function_system(
+    mut chapter_button_color_function_reader: EventReader<ChapterButtonColorFunctionEvent>,
+    mut line_query: Query<(&mut theme::ColorFunction, &ChapterNumber), With<ChapterButtonLine>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in chapter_button_color_function_reader.read() {
+        for (mut color_function, chapter_number) in line_query.iter_mut() {
+            if chapter_number.0 == event.chapter_number {
+                color_function.background = event.color_function;
+                color_function.border = event.color_function;
             }
         }
     }
@@ -695,6 +728,13 @@ fn chapter_button_expander_text_system(
     }
 }
 
+
+#[derive(Event)]
+pub struct ChapterButtonColorFunctionEvent {
+    chapter_number: u32,
+    color_function: fn(&theme::CurrentTheme) -> Color,
+}
+
 fn chapter_button_interaction(
     mut interaction_query: Query<
         (
@@ -707,8 +747,10 @@ fn chapter_button_interaction(
         (Changed<Interaction>, With<ChapterButton>),
     >,
     mut expander_text_query: Query<(&Text, &ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonExpanderText>>,
+    // mut text_querxy: Query<(&ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonText>>,
     mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
+    mut chapter_button_color_function_writer: EventWriter<ChapterButtonColorFunctionEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
     for (
@@ -722,21 +764,59 @@ fn chapter_button_interaction(
         let mut idle_color: Color = Color::default();
         let mut hovered_color: Color = Color::default();
 
-        for (text, query_chapter_number, mut color_function) in expander_text_query.iter_mut() {
+        // Set expander text color for later use
+        for (
+            text,
+            query_chapter_number,
+            mut expander_color_function
+        ) in expander_text_query.iter_mut() {
             if query_chapter_number.0 != chapter_number.0 { continue };
 
             if text.sections[0].value == "+ " {
                 hovered_color = theme::sidebar_color(&theme);
-                color_function.background = theme::sidebar_collapsed_color;
-                color_function.border = theme::sidebar_collapsed_color;
+                expander_color_function.background = theme::sidebar_collapsed_color;
+                expander_color_function.border = theme::sidebar_collapsed_color;
                 idle_color = theme::sidebar_collapsed_color(&theme);
+                chapter_button_color_function_writer.send(
+                    ChapterButtonColorFunctionEvent {
+                        chapter_number: chapter_number.0,
+                        color_function: theme::sidebar_collapsed_color,
+                    }
+                )
             } else if text.sections[0].value == "- " {
                 hovered_color = theme::sidebar_collapsed_color(&theme);
-                color_function.background = theme::sidebar_color;
-                color_function.border = theme::sidebar_color;
+                expander_color_function.background = theme::sidebar_color;
+                expander_color_function.border = theme::sidebar_color;
                 idle_color = theme::sidebar_color(&theme);
+                chapter_button_color_function_writer.send(
+                    ChapterButtonColorFunctionEvent {
+                        chapter_number: chapter_number.0,
+                        color_function: theme::sidebar_color,
+                    }
+                )
             }
         }
+
+        // Set expander text color for later use
+        // for (
+        //     text,
+        //     query_chapter_number,
+        //     mut color_function
+        // ) in expander_text_query.iter_mut() {
+        //     if query_chapter_number.0 != chapter_number.0 { continue };
+
+        //     if text.sections[0].value == "+ " {
+        //         hovered_color = theme::sidebar_color(&theme);
+        //         color_function.background = theme::sidebar_collapsed_color;
+        //         color_function.border = theme::sidebar_collapsed_color;
+        //         idle_color = theme::sidebar_collapsed_color(&theme);
+        //     } else if text.sections[0].value == "- " {
+        //         hovered_color = theme::sidebar_collapsed_color(&theme);
+        //         color_function.background = theme::sidebar_color;
+        //         color_function.border = theme::sidebar_color;
+        //         idle_color = theme::sidebar_color(&theme);
+        //     }
+        // }
 
         match *interaction {
             Interaction::Pressed => {
