@@ -135,6 +135,9 @@ pub struct ChapterButtonLine;
 pub struct ChapterButtonExpanderText;
 
 #[derive(Component)]
+pub struct SectionButtonExpanderText;
+
+#[derive(Component)]
 pub struct SectionButtonText;
 
 #[derive(Component)]
@@ -146,6 +149,12 @@ pub struct SidebarItem();
 #[derive(Event)]
 pub struct SectionVisibilityEvent {
     pub chapter_number: u32,
+}
+
+#[derive(Event)]
+pub struct ChapterButtonColorFunctionEvent {
+    chapter_number: u32,
+    color_function: fn(&theme::CurrentTheme) -> Color,
 }
 
 #[derive(Event)]
@@ -353,14 +362,6 @@ pub fn chapter_button(
         },
     )).id();
 
-    let text_holder = commands.spawn((NodeBundle {
-        style: Style {
-            align_items: AlignItems::End,
-            ..default()
-        },
-        ..default()
-    })).id();
-
     let text_item = commands.spawn((
         ChapterButtonText,
         chapter_number,
@@ -397,6 +398,14 @@ pub fn chapter_button(
             },
         ),
     )).id();
+
+    let text_holder = commands.spawn((NodeBundle {
+        style: Style {
+            align_items: AlignItems::End,
+            ..default()
+        },
+        ..default()
+    })).id();
 
     let bottom_line = commands.spawn((
         SidebarItem(),
@@ -443,7 +452,7 @@ pub fn section_button(
 ) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
     let section_number = SectionNumber(section_number);
-    let section_button = (
+    let section_button = commands.spawn((
         SectionButton(),
         SidebarItem(),
         section_number.clone(),
@@ -470,11 +479,9 @@ pub fn section_button(
             focus_policy: FocusPolicy::Block,
             ..default()
         },
-    );
+    )).id();
 
-    let section_button = commands.spawn(section_button).id();
-
-    let text_item = (
+    let text_item = commands.spawn((
         SectionButtonText,
         section_number,
         chapter_number,
@@ -491,10 +498,36 @@ pub fn section_button(
         ),
         Label,
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    );
-    let text_item = commands.spawn(text_item).id();
+    )).id();
 
-    let bottom_line = (
+    let expander_text = commands.spawn((
+        SectionButtonText,
+        SectionButtonExpanderText,
+        chapter_number,
+        section_number,
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
+        TextBundle::from_section(
+            "+ ",
+            TextStyle {
+                font_size: CHAPTER_BUTTON_FONT_SIZE,
+                color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+        ),
+    )).id();
+
+    let text_holder = commands.spawn((NodeBundle {
+        style: Style {
+            align_items: AlignItems::End,
+            ..default()
+        },
+        ..default()
+    })).id();
+
+    let bottom_line = commands.spawn((
         SidebarItem(),
         theme::ColorFunction {
             background: theme::text_color,
@@ -514,12 +547,14 @@ pub fn section_button(
             background_color: theme::text_color(theme).into(),
             ..default()
         },
-    );
-    let bottom_line = commands.spawn(bottom_line).id();
+    )).id();
 
+    commands.entity(text_holder).push_children(&[expander_text, text_item]);
     commands
         .entity(section_button)
-        .push_children(&[text_item, bottom_line]);
+        .push_children(&[text_holder, bottom_line]);
+
+    
 
     return section_button;
 }
@@ -728,13 +763,6 @@ fn chapter_button_expander_text_system(
     }
 }
 
-
-#[derive(Event)]
-pub struct ChapterButtonColorFunctionEvent {
-    chapter_number: u32,
-    color_function: fn(&theme::CurrentTheme) -> Color,
-}
-
 fn chapter_button_interaction(
     mut interaction_query: Query<
         (
@@ -832,7 +860,6 @@ fn chapter_button_interaction(
                 // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 // chapter_button_text_color_writer.send(ChapterButtonColorEvent);
                 chapter_button_text_color_writer.send(ChapterButtonColorEvent{
-                    // color: theme::sidebar_collapsed_color(&theme),
                     color: hovered_color,
                     chapter_number: chapter_number.0,
                 });
@@ -876,24 +903,24 @@ fn section_button_interaction(
         let chapter_number: u32 = chapter_number.0;
         let section_number: u32 = section_number.0;
 
-        let mut pressed_color: BackgroundColor = Color::default().into();
-        let mut hovered_color: BackgroundColor = Color::default().into();
+        let mut idle_color: Color = Color::default();
+        let mut hovered_color: Color = Color::default();
 
         match showing_subsections.0 {
             false => {
-                pressed_color = Color::rgb(0.45, 0.45, 0.7).into();
+                idle_color = Color::rgb(0.45, 0.45, 0.7).into();
                 hovered_color = Color::rgb(0.6, 0.6, 0.9).into();
             }
             true => {
-                pressed_color = Color::rgb(0.7, 0.45, 0.45).into();
+                idle_color = Color::rgb(0.7, 0.45, 0.45).into();
                 hovered_color = Color::rgb(0.9, 0.6, 0.6).into();
             }
         }
 
         match *interaction {
             Interaction::Pressed => {
-                *chapter_button_background_color = pressed_color;
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                // *chapter_button_background_color = pressed_color;
+                // *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
                 subsection_visibility_writer.send(SubsectionVisibilityEvent {
                     chapter_number: chapter_number,
                     section_number: section_number,
@@ -902,12 +929,12 @@ fn section_button_interaction(
                 showing_subsections.0 = !showing_subsections.0;
             }
             Interaction::Hovered => {
-                *chapter_button_background_color = hovered_color;
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                *chapter_button_background_color = hovered_color.into();
+                *chapter_button_border_color = hovered_color.into();
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                *chapter_button_background_color = idle_color.into();
+                *chapter_button_border_color = idle_color.into();
             }
         }
     }
