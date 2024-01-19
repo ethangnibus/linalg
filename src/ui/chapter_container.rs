@@ -820,7 +820,7 @@ fn chapter_button_interaction(
         (Changed<Interaction>, With<ChapterButton>),
     >,
     mut expander_text_query: Query<(&Text, &ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonExpanderText>>,
-    // mut text_querxy: Query<(&ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonText>>,
+    
     mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
     mut chapter_button_color_function_writer: EventWriter<ChapterButtonColorFunctionEvent>,
@@ -902,6 +902,7 @@ fn section_button_text_color_system(
     mut text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber), With<SectionButtonText>>,
     theme: Res<theme::CurrentTheme>,
 ) {
+    // recolor button when section button is pressed
     for event in section_button_text_color_reader.read() {
         
         for (
@@ -964,10 +965,11 @@ fn section_button_line_color_function_system(
 
 fn section_button_expander_text_system(
     mut section_button_expander_text_reader: EventReader<SubsectionVisibilityEvent>,
-    mut expander_text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber), With<SectionButtonExpanderText>>,
+    mut section_expander_text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber), With<SectionButtonExpanderText>>,
 ) {
+    // change plus/minus when section button is clicked
     for event in section_button_expander_text_reader.read() {
-        for (mut text, chapter_number, section_number) in expander_text_query.iter_mut() {
+        for (mut text, chapter_number, section_number) in section_expander_text_query.iter_mut() {
             if chapter_number.0 != event.chapter_number { continue };
             if section_number.0 != event.section_number { continue };
 
