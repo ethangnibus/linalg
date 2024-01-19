@@ -645,8 +645,8 @@ pub fn subsection_button(
         section_number,
         subsection_number,
         theme::ColorFunction {
-            background: theme::text_color,
-            border: theme::text_color,
+            background: theme::sidebar_collapsed_color,
+            border: theme::sidebar_collapsed_color,
         },
         TextBundle::from_section(
             chapter_name,
@@ -667,8 +667,8 @@ pub fn subsection_button(
         section_number,
         subsection_number,
         theme::ColorFunction {
-            background: theme::text_color,
-            border: theme::text_color,
+            background: theme::sidebar_collapsed_color,
+            border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
             style: Style {
@@ -681,7 +681,7 @@ pub fn subsection_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: theme::text_color(theme).into(),
+            background_color: theme::sidebar_collapsed_color(theme).into(),
             // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
@@ -922,9 +922,6 @@ fn chapter_button_interaction(
 }
 
 // ---------- Section Interaction ----------
-
-
-
 fn section_button_text_color_system(
     mut section_button_text_color_reader: EventReader<SectionButtonColorEvent>,
     mut text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber), With<SectionButtonText>>,
@@ -944,7 +941,6 @@ fn section_button_text_color_system(
         }
     }
 }
-
 
 fn section_button_text_color_function_system(
     mut section_button_color_function_reader: EventReader<SectionButtonColorFunctionEvent>,
