@@ -48,6 +48,8 @@ impl Plugin for SystemsPlugin {
                     section_button_line_color_system,
                     section_button_line_color_function_system,
                     section_button_expander_text_system,
+                    subsection_button_line_color_system,
+                    subsection_button_text_color_system,
                 ),
             );
     }
@@ -154,6 +156,9 @@ pub struct SectionButtonText;
 
 #[derive(Component)]
 pub struct SubsectionButtonText;
+
+#[derive(Component)]
+pub struct SubsectionButtonLine;
 
 #[derive(Component)]
 pub struct SidebarItem();
@@ -658,6 +663,10 @@ pub fn subsection_button(
 
     let bottom_line = (
         SidebarItem(),
+        SubsectionButtonLine,
+        chapter_number,
+        section_number,
+        subsection_number,
         theme::ColorFunction {
             background: theme::text_color,
             border: theme::text_color,
@@ -949,11 +958,11 @@ fn section_button_text_color_function_system(
 
 fn section_button_line_color_system(
     mut section_button_text_color_reader: EventReader<SectionButtonColorEvent>,
-    mut text_query: Query<(&mut BackgroundColor, &ChapterNumber, &SectionNumber), With<SectionButtonLine>>,
+    mut line_query: Query<(&mut BackgroundColor, &ChapterNumber, &SectionNumber), With<SectionButtonLine>>,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in section_button_text_color_reader.read() {
-        for (mut background_color, chapter_number, section_number) in text_query.iter_mut() {
+        for (mut background_color, chapter_number, section_number) in line_query.iter_mut() {
             if chapter_number.0 != event.chapter_number { continue };
             if section_number.0 != event.section_number { continue };
             *background_color = event.color.into();
@@ -1100,6 +1109,36 @@ fn section_button_interaction(
 }
 
 // ---------- Subsection Interaction ----------
+fn subsection_button_line_color_system(
+    mut subsection_button_text_color_reader: EventReader<SubsectionButtonColorEvent>,
+    mut line_query: Query<(&mut BackgroundColor, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonLine>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in subsection_button_text_color_reader.read() {
+        for (mut background_color, chapter_number, section_number, subsection_number) in line_query.iter_mut() {
+            if chapter_number.0 != event.chapter_number { continue };
+            if section_number.0 != event.section_number { continue };
+            if subsection_number.0 != event.subsection_number { continue };
+            *background_color = event.color.into();
+        }
+    }
+}
+
+fn subsection_button_text_color_system(
+    mut subsection_button_text_color_reader: EventReader<SubsectionButtonColorEvent>,
+    mut text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in subsection_button_text_color_reader.read() {
+        for (mut text, chapter_number, section_number, subsection_number) in text_query.iter_mut() {
+            if chapter_number.0 != event.chapter_number { continue };
+            if section_number.0 != event.section_number { continue };
+            if subsection_number.0 != event.subsection_number { continue };
+            text.sections[0].style.color = event.color.into();
+        }
+    }
+}
+
 fn subsection_button_interaction(
     mut interaction_query: Query<
         (
@@ -1113,15 +1152,17 @@ fn subsection_button_interaction(
         (Changed<Interaction>, With<SubsectionButton>),
     >,
     mut routing_event_writer: EventWriter<routes::RoutingEvent>,
+    mut subsection_button_text_color_writer: EventWriter<SubsectionButtonColorEvent>,
     current_route: Res<routes::CurrentRoute>,
+    theme: Res<theme::CurrentTheme>,
 ) {
     for (
         interaction,
         chapter_number,
         section_number,
         subsection_number,
-        mut chapter_button_background_color,
-        mut chapter_button_border_color,
+        mut subsection_button_background_color,
+        mut subsection_button_border_color,
     ) in &mut interaction_query
     {
         let chapter_number: u32 = chapter_number.0;
@@ -1130,10 +1171,6 @@ fn subsection_button_interaction(
 
         match *interaction {
             Interaction::Pressed => {
-                *chapter_button_background_color = Color::rgb(0.45, 0.45, 0.7).into();
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
-                // section_visibility_writer.send(SectionVisibilityEvent(chapter_number.0));
-
                 if current_route.chapter_number != chapter_number
                     || current_route.section_number != section_number
                     || current_route.subsection_number != subsection_number
@@ -1146,12 +1183,20 @@ fn subsection_button_interaction(
                 }
             }
             Interaction::Hovered => {
-                *chapter_button_background_color = Color::rgb(0.6, 0.6, 0.9).into();
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                subsection_button_text_color_writer.send(SubsectionButtonColorEvent{
+                    color: theme::sidebar_color(&theme),
+                    chapter_number: chapter_number,
+                    section_number: section_number,
+                    subsection_number: subsection_number,
+                });
             }
             Interaction::None => {
-                *chapter_button_background_color = Color::rgb(0.1, 0.1, 0.1).into();
-                *chapter_button_border_color = Color::rgb(0.1, 0.1, 0.1).into();
+                subsection_button_text_color_writer.send(SubsectionButtonColorEvent{
+                    color: theme::sidebar_collapsed_color(&theme),
+                    chapter_number: chapter_number,
+                    section_number: section_number,
+                    subsection_number: subsection_number,
+                });
             }
         }
     }

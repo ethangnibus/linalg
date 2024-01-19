@@ -99,7 +99,7 @@ pub fn navbar_buttons_background_color(theme:&CurrentTheme) -> Color {
 pub fn sidebar_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_BLUE;
+            return BERKELEY_LIGHT_BLUE;
         }
         CurrentTheme::Dark => {
             return BERKELEY_GOLD;
@@ -110,7 +110,7 @@ pub fn sidebar_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_DARK_GOLD;
+            return Color::GRAY;
         }
         CurrentTheme::Dark => {
             return Color::GRAY;
