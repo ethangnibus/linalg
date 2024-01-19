@@ -822,6 +822,7 @@ fn chapter_button_interaction(
     mut expander_text_query: Query<(&Text, &ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonExpanderText>>,
     
     mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
+    mut section_button_text_color_writer: EventWriter<SectionButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
     mut chapter_button_color_function_writer: EventWriter<ChapterButtonColorFunctionEvent>,
     mut section_button_color_function_writer: EventWriter<SectionButtonColorFunctionEvent>,
@@ -876,6 +877,18 @@ fn chapter_button_interaction(
                 section_visibility_writer.send(SectionVisibilityEvent {
                     chapter_number: chapter_number.0,
                 });
+
+                let num_sections_in_chapter: u32 =
+                            NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_number.0 as usize];
+                for section_number in 1..num_sections_in_chapter + 1 {
+                   
+                    section_button_text_color_writer.send(SectionButtonColorEvent{
+                        color: theme::sidebar_collapsed_color(&theme),
+                        chapter_number: chapter_number.0,
+                        section_number: section_number,
+                    });
+                }
+
                 showing_sections.0 = !showing_sections.0;
             }
             Interaction::Hovered => {
@@ -1059,17 +1072,6 @@ fn section_button_interaction(
             }
         }
 
-        // match showing_subsections.0 {
-        //     false => {
-        //         idle_color = Color::rgb(0.45, 0.45, 0.7).into();
-        //         hovered_color = Color::rgb(0.6, 0.6, 0.9).into();
-        //     }
-        //     true => {
-        //         idle_color = Color::rgb(0.7, 0.45, 0.45).into();
-        //         hovered_color = Color::rgb(0.9, 0.6, 0.6).into();
-        //     }
-        // }
-
         match *interaction {
             Interaction::Pressed => {
                 subsection_visibility_writer.send(SubsectionVisibilityEvent {
@@ -1087,8 +1089,6 @@ fn section_button_interaction(
                 });
             }
             Interaction::None => {
-                // *chapter_button_background_color = idle_color.into();
-                // *chapter_button_border_color = idle_color.into();
                 section_button_text_color_writer.send(SectionButtonColorEvent{
                     color: idle_color,
                     chapter_number: chapter_number,
@@ -1114,7 +1114,6 @@ fn subsection_button_interaction(
     >,
     mut routing_event_writer: EventWriter<routes::RoutingEvent>,
     current_route: Res<routes::CurrentRoute>,
-    // mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
 ) {
     for (
         interaction,
