@@ -459,11 +459,10 @@ pub fn chapter_button(
                 ..default()
             },
             background_color: theme::sidebar_collapsed_color(theme).into(),
-            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
             ..default()
         },
     )).id();
-
+    
     // commands.entity(chapter_button).push_children(&[part_flag, text_item]);
     commands.entity(text_holder).push_children(&[expander_text, text_item]);
 
@@ -721,7 +720,9 @@ fn header_button_color_change_system(
 // ---------- Chapter Interaction ----------
 #[derive(Event)]
 pub struct ChapterButtonColorEvent {
-    color: Color,
+    expander_color: Color,
+    text_color: Color,
+    line_color: Color,
     chapter_number: u32,
 }
 
@@ -750,7 +751,7 @@ fn chapter_button_text_color_system(
         for (mut text, chapter_number) in text_query.iter_mut() {
             // text.sections[0].style.color = theme::sidebar_color(&theme);
             if chapter_number.0 != event.chapter_number { continue }
-            text.sections[0].style.color = event.color;
+            text.sections[0].style.color = event.text_color;
         }
     }
 }
@@ -779,7 +780,7 @@ fn chapter_button_line_color_system(
         
         for (mut background_color, chapter_number) in text_query.iter_mut() {
             if chapter_number.0 == event.chapter_number {
-                *background_color = event.color.into();
+                *background_color = event.line_color.into();
             }
         }
     }
@@ -902,13 +903,17 @@ fn chapter_button_interaction(
             }
             Interaction::Hovered => {
                 chapter_button_text_color_writer.send(ChapterButtonColorEvent{
-                    color: hovered_color,
+                    expander_color: hovered_color,
+                    text_color: hovered_color,
+                    line_color: hovered_color,
                     chapter_number: chapter_number.0,
                 });
             }
             Interaction::None => {
                 chapter_button_text_color_writer.send(ChapterButtonColorEvent{
-                    color: idle_color,
+                    expander_color: idle_color,
+                    text_color: idle_color,
+                    line_color: idle_color,
                     chapter_number: chapter_number.0,
                 });
             }
