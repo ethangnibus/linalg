@@ -824,6 +824,7 @@ fn chapter_button_interaction(
     mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
     mut chapter_button_color_function_writer: EventWriter<ChapterButtonColorFunctionEvent>,
+    mut section_button_color_function_writer: EventWriter<SectionButtonColorFunctionEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
     for (
@@ -845,7 +846,7 @@ fn chapter_button_interaction(
         ) in expander_text_query.iter_mut() {
             if query_chapter_number.0 != chapter_number.0 { continue };
 
-            if text.sections[0].value == "+ " {
+            if showing_sections.0 == false { // +
                 hovered_color = theme::sidebar_color(&theme);
                 expander_color_function.background = theme::sidebar_collapsed_color;
                 expander_color_function.border = theme::sidebar_collapsed_color;
@@ -856,7 +857,7 @@ fn chapter_button_interaction(
                         color_function: theme::sidebar_collapsed_color,
                     }
                 )
-            } else if text.sections[0].value == "- " {
+            } else if showing_sections.0 == true { // -
                 hovered_color = theme::sidebar_collapsed_color(&theme);
                 expander_color_function.background = theme::sidebar_color;
                 expander_color_function.border = theme::sidebar_color;
@@ -866,7 +867,7 @@ fn chapter_button_interaction(
                         chapter_number: chapter_number.0,
                         color_function: theme::sidebar_color,
                     }
-                )
+                );
             }
         }
 
@@ -942,7 +943,6 @@ fn section_button_line_color_system(
         for (mut background_color, chapter_number, section_number) in text_query.iter_mut() {
             if chapter_number.0 != event.chapter_number { continue };
             if section_number.0 != event.section_number { continue };
-            println!("in section_button_line_color_system");
             *background_color = event.color.into();
         }
     }
@@ -966,19 +966,25 @@ fn section_button_line_color_function_system(
 fn section_button_expander_text_system(
     mut section_button_expander_text_reader: EventReader<SubsectionVisibilityEvent>,
     mut section_expander_text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber), With<SectionButtonExpanderText>>,
+    section_button_query: Query<(&ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber), With<SectionButton>>,
 ) {
     // change plus/minus when section button is clicked
     for event in section_button_expander_text_reader.read() {
-        for (mut text, chapter_number, section_number) in section_expander_text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
+        for (mut text, expander_chapter_number, expander_section_number) in section_expander_text_query.iter_mut() {
+            if expander_chapter_number.0 != event.chapter_number { continue };
+            if expander_section_number.0 != event.section_number { continue };
 
-            if text.sections[0].value == "+ " {
-                text.sections[0].value = String::from("- ");
-            } else if text.sections[0].value == "- " {
-                text.sections[0].value = String::from("+ ");
+            for (showing_subsections, button_chapter_number, button_section_number) in section_button_query.iter() {
+                if expander_chapter_number.0 != button_chapter_number.0 { continue };
+                if expander_section_number.0 != button_section_number.0 { continue };
+
+                
+                if showing_subsections.0 == true { // +
+                    text.sections[0].value = String::from("- ");
+                } else if showing_subsections.0 == false { // -
+                    text.sections[0].value = String::from("+ ");
+                }
             }
-        
         }
     }
 }
@@ -1026,8 +1032,7 @@ fn section_button_interaction(
             if query_chapter_number.0 != chapter_number { continue };
             if query_section_number.0 != section_number { continue };
 
-            if text.sections[0].value == "+ " {
-                println!("Sending minus");
+            if showing_subsections.0 == false { // +
                 hovered_color = theme::sidebar_color(&theme);
                 expander_color_function.background = theme::sidebar_collapsed_color;
                 expander_color_function.border = theme::sidebar_collapsed_color;
@@ -1039,8 +1044,7 @@ fn section_button_interaction(
                         color_function: theme::sidebar_collapsed_color,
                     }
                 )
-            } else if text.sections[0].value == "- " {
-                println!("Sending plus");
+            } else if showing_subsections.0 == true { // -
                 hovered_color = theme::sidebar_collapsed_color(&theme);
                 expander_color_function.background = theme::sidebar_color;
                 expander_color_function.border = theme::sidebar_color;
@@ -1212,6 +1216,17 @@ fn section_button_visibility_system(
                         style.height = SIDEBAR_BUTTON_HEIGHT;
                         style.border = SECTION_BUTTON_BORDER;
                         style.padding = SECTION_BUTTON_BORDER;
+
+                        // let num_sections_in_chapter: u32 =
+                        //     NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_button_chapter_number as usize];
+                        // for section_number in 1..num_sections_in_chapter + 1 {
+                        //     subsection_visibility_writer.send(SubsectionVisibilityEvent {
+                        //         chapter_number: chapter_button_chapter_number,
+                        //         section_number: section_number,
+                        //         showing_sections: true,
+                        //     });
+                        // }
+                        // showing_subsections.0 = true;
                     }
                 }
                 showing_sections.0 = !showing_sections.0;
