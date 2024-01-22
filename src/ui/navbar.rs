@@ -227,14 +227,14 @@ pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
     let navbar_text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_text_color,
-                border: theme::navbar_text_color,
+                background: theme::sidebar_color,
+                border: theme::sidebar_color,
             },
             TextBundle::from_section(
                 "Math 56",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::navbar_text_color(theme).into(),
+                    color: theme::sidebar_color(theme).into(),
                     ..default()
                 },
             ),

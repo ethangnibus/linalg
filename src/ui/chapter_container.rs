@@ -5,8 +5,10 @@ use super::routes;
 use super::sidebar;
 use super::under_navbar;
 use super::util::style;
-use super::util::theme::ColorFunction;
+use super::util::theme;
 use super::util::theme::background_color;
+use super::util::theme::not_a_color;
+use super::util::theme::ColorFunction;
 use bevy::render::view::visibility;
 use bevy::{
     a11y::{
@@ -18,7 +20,6 @@ use bevy::{
     ui::FocusPolicy,
     // winit::WinitSettings,
 };
-use super::util::theme;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -34,26 +35,28 @@ impl Plugin for SystemsPlugin {
             .add_systems(
                 Update,
                 (
-                    (section_button_visibility_system,
-                    subsection_button_visibility_system,
-                    chapter_button_interaction,
-                    section_button_interaction,
-                    subsection_button_interaction,
-                    sidebar_button_mouse_scroll,
-                    header_button_color_change_system,
-                    chapter_button_text_color_system,
-                    chapter_button_line_color_system,
-                    chapter_button_expander_text_system,
-                    chapter_button_line_color_function_system,
-                    chapter_button_text_color_function_system,
-                    section_button_text_color_system,
-                    section_button_text_color_function_system,
-                    section_button_line_color_system,
-                    section_button_line_color_function_system,
-                    section_button_expander_text_system,
-                    subsection_button_line_color_system,
-                    subsection_button_text_color_system,
-                    subsection_button_selection_color_system),
+                    (
+                        section_button_visibility_system,
+                        subsection_button_visibility_system,
+                        chapter_button_interaction,
+                        section_button_interaction,
+                        subsection_button_interaction,
+                        sidebar_button_mouse_scroll,
+                        header_button_color_change_system,
+                        chapter_button_text_color_system,
+                        chapter_button_line_color_system,
+                        chapter_button_expander_text_system,
+                        chapter_button_line_color_function_system,
+                        chapter_button_text_color_function_system,
+                        section_button_text_color_system,
+                        section_button_text_color_function_system,
+                        section_button_line_color_system,
+                        section_button_line_color_function_system,
+                        section_button_expander_text_system,
+                        subsection_button_line_color_system,
+                        subsection_button_text_color_system,
+                        subsection_button_selection_color_system,
+                    ),
                     subsection_button_selection_color_function_system,
                 ),
             );
@@ -214,11 +217,14 @@ pub struct ShowingSectionsOfThisChapter(bool);
 #[derive(Component)]
 pub struct ShowingSubsectionsOfThisSection(bool);
 
-
 // ================================
 // ========== UI Buttons ==========
 // ================================
-pub fn header_button(commands: &mut Commands, theme: &theme::CurrentTheme, text: &String) -> Entity {
+pub fn header_button(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    text: &String,
+) -> Entity {
     let header_button = (
         SidebarItem(),
         HeaderButton(),
@@ -361,7 +367,9 @@ pub fn title_button(commands: &mut Commands, theme: &theme::CurrentTheme, text: 
     );
     let bottom_line = commands.spawn(bottom_line).id();
 
-    // commands.entity(title_button).push_children(&[text_item, bottom_line]);
+    commands
+        .entity(title_button)
+        .push_children(&[text_item, bottom_line]);
     commands
         .entity(title_button)
         .push_children(&[text_item, bottom_line]);
@@ -372,109 +380,123 @@ pub fn title_button(commands: &mut Commands, theme: &theme::CurrentTheme, text: 
 // ---------- Chapter UI Button ----------
 pub fn chapter_button(
     commands: &mut Commands,
-    theme: &theme::CurrentTheme, 
+    theme: &theme::CurrentTheme,
     chapter_name: &String,
     chapter_number: u32,
 ) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
-    let chapter_button = commands.spawn((
-        ChapterButton(),
-        SidebarItem(),
-        chapter_number,
-        ShowingSectionsOfThisChapter(false),
-        theme::ColorFunction {
-            background: theme::background_color,
-            border: theme::background_color,
-        },
-        ButtonBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Auto,
-                min_height: SIDEBAR_BUTTON_HEIGHT,
-                border: CHAPTER_BUTTON_BORDER,
-                padding: CHAPTER_BUTTON_BORDER,
-                justify_content: JustifyContent::End,
-                align_items: AlignItems::Start,
-                flex_direction: FlexDirection::Column,
+    let chapter_button = commands
+        .spawn((
+            ChapterButton(),
+            SidebarItem(),
+            chapter_number,
+            ShowingSectionsOfThisChapter(false),
+            theme::ColorFunction {
+                background: theme::background_color,
+                border: theme::background_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Auto,
+                    min_height: SIDEBAR_BUTTON_HEIGHT,
+                    border: CHAPTER_BUTTON_BORDER,
+                    padding: CHAPTER_BUTTON_BORDER,
+                    justify_content: JustifyContent::End,
+                    align_items: AlignItems::Start,
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                background_color: theme::background_color(theme).into(),
+                focus_policy: FocusPolicy::Block,
                 ..default()
             },
-            background_color: theme::background_color(theme).into(),
-            focus_policy: FocusPolicy::Block,
-            ..default()
-        },
-    )).id();
+        ))
+        .id();
 
-    let text_item = commands.spawn((
-        ChapterButtonText,
-        chapter_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        TextBundle::from_section(
-            chapter_name,
-            TextStyle {
-                font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::sidebar_collapsed_color(theme).into(),
+    let text_item = commands
+        .spawn((
+            ChapterButtonText,
+            chapter_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            TextBundle::from_section(
+                chapter_name,
+                TextStyle {
+                    font_size: CHAPTER_BUTTON_FONT_SIZE,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+            Label,
+            AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+        ))
+        .id();
+
+    let expander_text = commands
+        .spawn((
+            ChapterButtonText,
+            ChapterButtonExpanderText,
+            chapter_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            TextBundle::from_section(
+                "+ ",
+                TextStyle {
+                    font_size: CHAPTER_BUTTON_FONT_SIZE,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+        ))
+        .id();
+
+    let text_holder = commands
+        .spawn(
+            (NodeBundle {
+                style: Style {
+                    align_items: AlignItems::End,
+                    ..default()
+                },
+                ..default()
+            }),
+        )
+        .id();
+
+    let bottom_line = commands
+        .spawn((
+            SidebarItem(),
+            ChapterButtonLine,
+            chapter_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Px(2.0),
+                    border: HIDDEN_BUTTON_BORDER,
+                    padding: HIDDEN_BUTTON_BORDER,
+                    justify_content: JustifyContent::End,
+                    align_items: AlignItems::Start,
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                background_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
-        ),
-        Label,
-        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    )).id();
+        ))
+        .id();
 
-    let expander_text = commands.spawn((
-        ChapterButtonText,
-        ChapterButtonExpanderText,
-        chapter_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        TextBundle::from_section(
-            "+ ",
-            TextStyle {
-                font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::sidebar_collapsed_color(theme).into(),
-                ..default()
-            },
-        ),
-    )).id();
-
-    let text_holder = commands.spawn((NodeBundle {
-        style: Style {
-            align_items: AlignItems::End,
-            ..default()
-        },
-        ..default()
-    })).id();
-
-    let bottom_line = commands.spawn((
-        SidebarItem(),
-        ChapterButtonLine,
-        chapter_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        ButtonBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Px(2.0),
-                border: HIDDEN_BUTTON_BORDER,
-                padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::End,
-                align_items: AlignItems::Start,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-            background_color: theme::sidebar_collapsed_color(theme).into(),
-            ..default()
-        },
-    )).id();
-    
     // commands.entity(chapter_button).push_children(&[part_flag, text_item]);
-    commands.entity(text_holder).push_children(&[expander_text, text_item]);
+    commands
+        .entity(text_holder)
+        .push_children(&[expander_text, text_item]);
 
     commands
         .entity(chapter_button)
@@ -486,115 +508,129 @@ pub fn chapter_button(
 // ---------- Section UI Button ----------
 pub fn section_button(
     commands: &mut Commands,
-    theme: &theme::CurrentTheme, 
+    theme: &theme::CurrentTheme,
     chapter_name: &String,
     chapter_number: u32,
     section_number: u32,
 ) -> Entity {
     let chapter_number = ChapterNumber(chapter_number);
     let section_number = SectionNumber(section_number);
-    let section_button = commands.spawn((
-        SectionButton(),
-        SidebarItem(),
-        section_number.clone(),
-        chapter_number,
-        ShowingSectionsOfThisChapter(false),
-        ShowingSubsectionsOfThisSection(false),
-        theme::ColorFunction {
-            background: theme::background_color,
-            border: theme::background_color,
-        },
-        ButtonBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: HIDDEN_SIDEBAR_BUTTON_HEIGHT,
-                border: HIDDEN_BUTTON_BORDER,
-                padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::End,
-                align_items: AlignItems::Start,
-                flex_direction: FlexDirection::Column,
+    let section_button = commands
+        .spawn((
+            SectionButton(),
+            SidebarItem(),
+            section_number.clone(),
+            chapter_number,
+            ShowingSectionsOfThisChapter(false),
+            ShowingSubsectionsOfThisSection(false),
+            theme::ColorFunction {
+                background: theme::background_color,
+                border: theme::background_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: HIDDEN_SIDEBAR_BUTTON_HEIGHT,
+                    border: HIDDEN_BUTTON_BORDER,
+                    padding: HIDDEN_BUTTON_BORDER,
+                    justify_content: JustifyContent::End,
+                    align_items: AlignItems::Start,
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                background_color: theme::background_color(theme).into(),
+                visibility: Visibility::Hidden,
+                focus_policy: FocusPolicy::Block,
                 ..default()
             },
-            background_color: theme::background_color(theme).into(),
-            visibility: Visibility::Hidden,
-            focus_policy: FocusPolicy::Block,
-            ..default()
-        },
-    )).id();
+        ))
+        .id();
 
-    let text_item = commands.spawn((
-        SectionButtonText,
-        section_number,
-        chapter_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        TextBundle::from_section(
-            chapter_name,
-            TextStyle {
-                font_size: SECTION_BUTTON_FONT_SIZE,
-                color: theme::sidebar_collapsed_color(theme).into(),
+    let text_item = commands
+        .spawn((
+            SectionButtonText,
+            section_number,
+            chapter_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            TextBundle::from_section(
+                chapter_name,
+                TextStyle {
+                    font_size: SECTION_BUTTON_FONT_SIZE,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+            Label,
+            AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+        ))
+        .id();
+
+    let expander_text = commands
+        .spawn((
+            SectionButtonText,
+            SectionButtonExpanderText,
+            chapter_number,
+            section_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            TextBundle::from_section(
+                "+ ",
+                TextStyle {
+                    font_size: CHAPTER_BUTTON_FONT_SIZE,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+        ))
+        .id();
+
+    let text_holder = commands
+        .spawn(
+            (NodeBundle {
+                style: Style {
+                    align_items: AlignItems::End,
+                    ..default()
+                },
+                ..default()
+            }),
+        )
+        .id();
+
+    let bottom_line = commands
+        .spawn((
+            SidebarItem(),
+            SectionButtonLine,
+            chapter_number,
+            section_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            NodeBundle {
+                style: Style {
+                    width: Val::Percent(100.0),
+                    height: Val::Px(1.0),
+                    border: HIDDEN_BUTTON_BORDER,
+                    padding: HIDDEN_BUTTON_BORDER,
+                    justify_content: JustifyContent::Center,
+                    align_content: AlignContent::Center,
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                background_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
-        ),
-        Label,
-        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    )).id();
+        ))
+        .id();
 
-    let expander_text = commands.spawn((
-        SectionButtonText,
-        SectionButtonExpanderText,
-        chapter_number,
-        section_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        TextBundle::from_section(
-            "+ ",
-            TextStyle {
-                font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::sidebar_collapsed_color(theme).into(),
-                ..default()
-            },
-        ),
-    )).id();
-
-    let text_holder = commands.spawn((NodeBundle {
-        style: Style {
-            align_items: AlignItems::End,
-            ..default()
-        },
-        ..default()
-    })).id();
-
-    let bottom_line = commands.spawn((
-        SidebarItem(),
-        SectionButtonLine,
-        chapter_number,
-        section_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Px(1.0),
-                border: HIDDEN_BUTTON_BORDER,
-                padding: HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::Center,
-                align_content: AlignContent::Center,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-            background_color: theme::sidebar_collapsed_color(theme).into(),
-            ..default()
-        },
-    )).id();
-
-    commands.entity(text_holder).push_children(&[expander_text, text_item]);
+    commands
+        .entity(text_holder)
+        .push_children(&[expander_text, text_item]);
     commands
         .entity(section_button)
         .push_children(&[text_holder, bottom_line]);
@@ -605,7 +641,7 @@ pub fn section_button(
 // ---------- Subsection UI Button ----------
 pub fn subsection_button(
     commands: &mut Commands,
-    theme: &theme::CurrentTheme, 
+    theme: &theme::CurrentTheme,
     chapter_name: &String,
     chapter_number: u32,
     section_number: u32,
@@ -647,55 +683,61 @@ pub fn subsection_button(
 
     let subsection_button = commands.spawn(subsection_button).id();
 
-    let text_item = commands.spawn((
-        SubsectionButtonText,
-        chapter_number,
-        section_number,
-        subsection_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        TextBundle::from_section(
-            chapter_name,
-            TextStyle {
-                font_size: SUBSECTION_BUTTON_FONT_SIZE,
-                ..default()
+    let text_item = commands
+        .spawn((
+            SubsectionButtonText,
+            chapter_number,
+            section_number,
+            subsection_number,
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
             },
-        ),
-        Label,
-        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    )).id();
+            TextBundle::from_section(
+                chapter_name,
+                TextStyle {
+                    font_size: SUBSECTION_BUTTON_FONT_SIZE,
+                    ..default()
+                },
+            ),
+            Label,
+            AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+        ))
+        .id();
 
-    let selection_text = commands.spawn((
-        // SubsectionButtonText,
-        SubsectionButtonSelectionText {
-            is_selected: false
-        },
-        chapter_number,
-        section_number,
-        subsection_number,
-        theme::ColorFunction {
-            background: theme::sidebar_collapsed_color,
-            border: theme::sidebar_collapsed_color,
-        },
-        TextBundle::from_section(
-            " *",
-            TextStyle {
-                font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::background_color(theme).into(),
-                ..default()
+    let selection_text = commands
+        .spawn((
+            // SubsectionButtonText,
+            SubsectionButtonSelectionText { is_selected: false },
+            chapter_number,
+            section_number,
+            subsection_number,
+            theme::ColorFunction {
+                background: theme::background_color,
+                border: theme::background_color,
             },
-        ),
-    )).id();
+            TextBundle::from_section(
+                " *",
+                TextStyle {
+                    font_size: CHAPTER_BUTTON_FONT_SIZE,
+                    color: theme::background_color(theme).into(),
+                    ..default()
+                },
+            ),
+        ))
+        .id();
 
-    let text_holder = commands.spawn((NodeBundle {
-        style: Style {
-            align_items: AlignItems::End,
-            ..default()
-        },
-        ..default()
-    })).id();
+    let text_holder = commands
+        .spawn(
+            (NodeBundle {
+                style: Style {
+                    align_items: AlignItems::End,
+                    ..default()
+                },
+                ..default()
+            }),
+        )
+        .id();
 
     let bottom_line = (
         SidebarItem(),
@@ -725,7 +767,9 @@ pub fn subsection_button(
     );
     let bottom_line = commands.spawn(bottom_line).id();
 
-    commands.entity(text_holder).push_children(&[text_item, selection_text]);
+    commands
+        .entity(text_holder)
+        .push_children(&[text_item, selection_text]);
     commands
         .entity(subsection_button)
         .push_children(&[text_holder, bottom_line]);
@@ -737,12 +781,13 @@ pub fn subsection_button(
 // ========== Interaction Systems ==========
 // =========================================
 
-
 // ---------- Header Button ----------
 fn header_button_color_change_system(
     mut header_button_query: Query<&mut BackgroundColor, With<HeaderButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
-    mut sidebar_swiper_color_event_reader: EventReader<under_navbar::SidebarCollapseInteractionEvent>,
+    mut sidebar_swiper_color_event_reader: EventReader<
+        under_navbar::SidebarCollapseInteractionEvent,
+    >,
 ) {
     for event in sidebar_swiper_color_event_reader.read() {
         for mut header_button_color in &mut header_button_query.iter_mut() {
@@ -751,7 +796,6 @@ fn header_button_color_change_system(
                 *header_button_color = color.into();
             }
         }
-
     }
 }
 
@@ -787,10 +831,11 @@ fn chapter_button_text_color_system(
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in chapter_button_text_color_reader.read() {
-        
         for (mut text, chapter_number) in text_query.iter_mut() {
             // text.sections[0].style.color = theme::sidebar_color(&theme);
-            if chapter_number.0 != event.chapter_number { continue }
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            }
             text.sections[0].style.color = event.text_color;
         }
     }
@@ -817,7 +862,6 @@ fn chapter_button_line_color_system(
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in chapter_button_text_color_reader.read() {
-        
         for (mut background_color, chapter_number) in text_query.iter_mut() {
             if chapter_number.0 == event.chapter_number {
                 *background_color = event.line_color.into();
@@ -847,13 +891,14 @@ fn chapter_button_expander_text_system(
 ) {
     for event in chapter_button_expander_text_reader.read() {
         for (mut text, chapter_number) in expander_text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
             if text.sections[0].value == "+ " {
                 text.sections[0].value = String::from("- ");
             } else if text.sections[0].value == "- " {
                 text.sections[0].value = String::from("+ ");
             }
-        
         }
     }
 }
@@ -869,8 +914,11 @@ fn chapter_button_interaction(
         ),
         (Changed<Interaction>, With<ChapterButton>),
     >,
-    mut expander_text_query: Query<(&Text, &ChapterNumber, &mut theme::ColorFunction), With<ChapterButtonExpanderText>>,
-    
+    mut expander_text_query: Query<
+        (&Text, &ChapterNumber, &mut theme::ColorFunction),
+        With<ChapterButtonExpanderText>,
+    >,
+
     mut chapter_button_text_color_writer: EventWriter<ChapterButtonColorEvent>,
     mut section_button_text_color_writer: EventWriter<SectionButtonColorEvent>,
     mut section_visibility_writer: EventWriter<SectionVisibilityEvent>,
@@ -890,35 +938,33 @@ fn chapter_button_interaction(
         let mut hovered_color: Color = Color::default();
 
         // Set expander text color for later use
-        for (
-            text,
-            query_chapter_number,
-            mut expander_color_function
-        ) in expander_text_query.iter_mut() {
-            if query_chapter_number.0 != chapter_number.0 { continue };
+        for (text, query_chapter_number, mut expander_color_function) in
+            expander_text_query.iter_mut()
+        {
+            if query_chapter_number.0 != chapter_number.0 {
+                continue;
+            };
 
-            if showing_sections.0 == false { // +
+            if showing_sections.0 == false {
+                // +
                 hovered_color = theme::sidebar_color(&theme);
                 expander_color_function.background = theme::sidebar_collapsed_color;
                 expander_color_function.border = theme::sidebar_collapsed_color;
                 idle_color = theme::sidebar_collapsed_color(&theme);
-                chapter_button_color_function_writer.send(
-                    ChapterButtonColorFunctionEvent {
-                        chapter_number: chapter_number.0,
-                        color_function: theme::sidebar_collapsed_color,
-                    }
-                )
-            } else if showing_sections.0 == true { // -
+                chapter_button_color_function_writer.send(ChapterButtonColorFunctionEvent {
+                    chapter_number: chapter_number.0,
+                    color_function: theme::sidebar_collapsed_color,
+                })
+            } else if showing_sections.0 == true {
+                // -
                 hovered_color = theme::sidebar_collapsed_color(&theme);
                 expander_color_function.background = theme::sidebar_color;
                 expander_color_function.border = theme::sidebar_color;
                 idle_color = theme::sidebar_color(&theme);
-                chapter_button_color_function_writer.send(
-                    ChapterButtonColorFunctionEvent {
-                        chapter_number: chapter_number.0,
-                        color_function: theme::sidebar_color,
-                    }
-                );
+                chapter_button_color_function_writer.send(ChapterButtonColorFunctionEvent {
+                    chapter_number: chapter_number.0,
+                    color_function: theme::sidebar_color,
+                });
             }
         }
 
@@ -929,10 +975,9 @@ fn chapter_button_interaction(
                 });
 
                 let num_sections_in_chapter: u32 =
-                            NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_number.0 as usize];
+                    NUMBER_OF_SECTIONS_IN_CHAPTER[chapter_number.0 as usize];
                 for section_number in 1..num_sections_in_chapter + 1 {
-                   
-                    section_button_text_color_writer.send(SectionButtonColorEvent{
+                    section_button_text_color_writer.send(SectionButtonColorEvent {
                         color: theme::sidebar_collapsed_color(&theme),
                         chapter_number: chapter_number.0,
                         section_number: section_number,
@@ -942,7 +987,7 @@ fn chapter_button_interaction(
                 showing_sections.0 = !showing_sections.0;
             }
             Interaction::Hovered => {
-                chapter_button_text_color_writer.send(ChapterButtonColorEvent{
+                chapter_button_text_color_writer.send(ChapterButtonColorEvent {
                     expander_color: hovered_color,
                     text_color: hovered_color,
                     line_color: hovered_color,
@@ -950,7 +995,7 @@ fn chapter_button_interaction(
                 });
             }
             Interaction::None => {
-                chapter_button_text_color_writer.send(ChapterButtonColorEvent{
+                chapter_button_text_color_writer.send(ChapterButtonColorEvent {
                     expander_color: idle_color,
                     text_color: idle_color,
                     line_color: idle_color,
@@ -969,14 +1014,13 @@ fn section_button_text_color_system(
 ) {
     // recolor button when section button is pressed
     for event in section_button_text_color_reader.read() {
-        
-        for (
-            mut text,
-            chapter_number,
-            section_number
-        ) in text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
+        for (mut text, chapter_number, section_number) in text_query.iter_mut() {
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
             text.sections[0].style.color = event.color;
         }
     }
@@ -984,13 +1028,20 @@ fn section_button_text_color_system(
 
 fn section_button_text_color_function_system(
     mut section_button_color_function_reader: EventReader<SectionButtonColorFunctionEvent>,
-    mut text_query: Query<(&mut theme::ColorFunction, &ChapterNumber, &SectionNumber), With<SectionButtonText>>,
+    mut text_query: Query<
+        (&mut theme::ColorFunction, &ChapterNumber, &SectionNumber),
+        With<SectionButtonText>,
+    >,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in section_button_color_function_reader.read() {
         for (mut color_function, chapter_number, section_number) in text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
             color_function.background = event.color_function;
             color_function.border = event.color_function;
         }
@@ -999,13 +1050,20 @@ fn section_button_text_color_function_system(
 
 fn section_button_line_color_system(
     mut section_button_text_color_reader: EventReader<SectionButtonColorEvent>,
-    mut line_query: Query<(&mut BackgroundColor, &ChapterNumber, &SectionNumber), With<SectionButtonLine>>,
+    mut line_query: Query<
+        (&mut BackgroundColor, &ChapterNumber, &SectionNumber),
+        With<SectionButtonLine>,
+    >,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in section_button_text_color_reader.read() {
         for (mut background_color, chapter_number, section_number) in line_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
             *background_color = event.color.into();
         }
     }
@@ -1013,13 +1071,20 @@ fn section_button_line_color_system(
 
 fn section_button_line_color_function_system(
     mut section_button_color_function_reader: EventReader<SectionButtonColorFunctionEvent>,
-    mut line_query: Query<(&mut theme::ColorFunction, &ChapterNumber, &SectionNumber), With<SectionButtonLine>>,
+    mut line_query: Query<
+        (&mut theme::ColorFunction, &ChapterNumber, &SectionNumber),
+        With<SectionButtonLine>,
+    >,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in section_button_color_function_reader.read() {
         for (mut color_function, chapter_number, section_number) in line_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
             color_function.background = event.color_function;
             color_function.border = event.color_function;
         }
@@ -1028,23 +1093,46 @@ fn section_button_line_color_function_system(
 
 fn section_button_expander_text_system(
     mut section_button_expander_text_reader: EventReader<SubsectionVisibilityEvent>,
-    mut section_expander_text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber), With<SectionButtonExpanderText>>,
-    section_button_query: Query<(&ShowingSubsectionsOfThisSection, &ChapterNumber, &SectionNumber), With<SectionButton>>,
+    mut section_expander_text_query: Query<
+        (&mut Text, &ChapterNumber, &SectionNumber),
+        With<SectionButtonExpanderText>,
+    >,
+    section_button_query: Query<
+        (
+            &ShowingSubsectionsOfThisSection,
+            &ChapterNumber,
+            &SectionNumber,
+        ),
+        With<SectionButton>,
+    >,
 ) {
     // change plus/minus when section button is clicked
     for event in section_button_expander_text_reader.read() {
-        for (mut text, expander_chapter_number, expander_section_number) in section_expander_text_query.iter_mut() {
-            if expander_chapter_number.0 != event.chapter_number { continue };
-            if expander_section_number.0 != event.section_number { continue };
+        for (mut text, expander_chapter_number, expander_section_number) in
+            section_expander_text_query.iter_mut()
+        {
+            if expander_chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if expander_section_number.0 != event.section_number {
+                continue;
+            };
 
-            for (showing_subsections, button_chapter_number, button_section_number) in section_button_query.iter() {
-                if expander_chapter_number.0 != button_chapter_number.0 { continue };
-                if expander_section_number.0 != button_section_number.0 { continue };
+            for (showing_subsections, button_chapter_number, button_section_number) in
+                section_button_query.iter()
+            {
+                if expander_chapter_number.0 != button_chapter_number.0 {
+                    continue;
+                };
+                if expander_section_number.0 != button_section_number.0 {
+                    continue;
+                };
 
-                
-                if showing_subsections.0 == true { // +
+                if showing_subsections.0 == true {
+                    // +
                     text.sections[0].value = String::from("- ");
-                } else if showing_subsections.0 == false { // -
+                } else if showing_subsections.0 == false {
+                    // -
                     text.sections[0].value = String::from("+ ");
                 }
             }
@@ -1064,7 +1152,15 @@ fn section_button_interaction(
         ),
         (Changed<Interaction>, With<SectionButton>),
     >,
-    mut expander_text_query: Query<(&Text, &ChapterNumber, &SectionNumber, &mut theme::ColorFunction), With<SectionButtonExpanderText>>,
+    mut expander_text_query: Query<
+        (
+            &Text,
+            &ChapterNumber,
+            &SectionNumber,
+            &mut theme::ColorFunction,
+        ),
+        With<SectionButtonExpanderText>,
+    >,
     mut section_button_text_color_writer: EventWriter<SectionButtonColorEvent>,
     mut subsection_visibility_writer: EventWriter<SubsectionVisibilityEvent>,
     mut section_button_color_function_writer: EventWriter<SectionButtonColorFunctionEvent>,
@@ -1086,39 +1182,38 @@ fn section_button_interaction(
         let mut hovered_color: Color = Color::default();
 
         // Set expander text color for later use
-        for (
-            text,
-            query_chapter_number,
-            query_section_number,
-            mut expander_color_function
-        ) in expander_text_query.iter_mut() {
-            if query_chapter_number.0 != chapter_number { continue };
-            if query_section_number.0 != section_number { continue };
+        for (text, query_chapter_number, query_section_number, mut expander_color_function) in
+            expander_text_query.iter_mut()
+        {
+            if query_chapter_number.0 != chapter_number {
+                continue;
+            };
+            if query_section_number.0 != section_number {
+                continue;
+            };
 
-            if showing_subsections.0 == false { // +
+            if showing_subsections.0 == false {
+                // +
                 hovered_color = theme::sidebar_color(&theme);
                 expander_color_function.background = theme::sidebar_collapsed_color;
                 expander_color_function.border = theme::sidebar_collapsed_color;
                 idle_color = theme::sidebar_collapsed_color(&theme);
-                section_button_color_function_writer.send(
-                    SectionButtonColorFunctionEvent {
-                        chapter_number: chapter_number,
-                        section_number: section_number,
-                        color_function: theme::sidebar_collapsed_color,
-                    }
-                )
-            } else if showing_subsections.0 == true { // -
+                section_button_color_function_writer.send(SectionButtonColorFunctionEvent {
+                    chapter_number: chapter_number,
+                    section_number: section_number,
+                    color_function: theme::sidebar_collapsed_color,
+                })
+            } else if showing_subsections.0 == true {
+                // -
                 hovered_color = theme::sidebar_collapsed_color(&theme);
                 expander_color_function.background = theme::sidebar_color;
                 expander_color_function.border = theme::sidebar_color;
                 idle_color = theme::sidebar_color(&theme);
-                section_button_color_function_writer.send(
-                    SectionButtonColorFunctionEvent {
-                        chapter_number: chapter_number,
-                        section_number: section_number,
-                        color_function: theme::sidebar_color,
-                    }
-                )
+                section_button_color_function_writer.send(SectionButtonColorFunctionEvent {
+                    chapter_number: chapter_number,
+                    section_number: section_number,
+                    color_function: theme::sidebar_color,
+                })
             }
         }
 
@@ -1132,14 +1227,14 @@ fn section_button_interaction(
                 showing_subsections.0 = !showing_subsections.0;
             }
             Interaction::Hovered => {
-                section_button_text_color_writer.send(SectionButtonColorEvent{
+                section_button_text_color_writer.send(SectionButtonColorEvent {
                     color: hovered_color,
                     chapter_number: chapter_number,
                     section_number: section_number,
                 });
             }
             Interaction::None => {
-                section_button_text_color_writer.send(SectionButtonColorEvent{
+                section_button_text_color_writer.send(SectionButtonColorEvent {
                     color: idle_color,
                     chapter_number: chapter_number,
                     section_number: section_number,
@@ -1152,14 +1247,30 @@ fn section_button_interaction(
 // ---------- Subsection Interaction ----------
 fn subsection_button_line_color_system(
     mut subsection_button_text_color_reader: EventReader<SubsectionButtonColorEvent>,
-    mut line_query: Query<(&mut BackgroundColor, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonLine>>,
+    mut line_query: Query<
+        (
+            &mut BackgroundColor,
+            &ChapterNumber,
+            &SectionNumber,
+            &SubsectionNumber,
+        ),
+        With<SubsectionButtonLine>,
+    >,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in subsection_button_text_color_reader.read() {
-        for (mut background_color, chapter_number, section_number, subsection_number) in line_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
-            if subsection_number.0 != event.subsection_number { continue };
+        for (mut background_color, chapter_number, section_number, subsection_number) in
+            line_query.iter_mut()
+        {
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
+            if subsection_number.0 != event.subsection_number {
+                continue;
+            };
             *background_color = event.line_color.into();
         }
     }
@@ -1167,14 +1278,23 @@ fn subsection_button_line_color_system(
 
 fn subsection_button_text_color_system(
     mut subsection_button_text_color_reader: EventReader<SubsectionButtonColorEvent>,
-    mut text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonText>>,
+    mut text_query: Query<
+        (&mut Text, &ChapterNumber, &SectionNumber, &SubsectionNumber),
+        With<SubsectionButtonText>,
+    >,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in subsection_button_text_color_reader.read() {
         for (mut text, chapter_number, section_number, subsection_number) in text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
-            if subsection_number.0 != event.subsection_number { continue };
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
+            if subsection_number.0 != event.subsection_number {
+                continue;
+            };
             text.sections[0].style.color = event.text_color.into();
         }
     }
@@ -1182,14 +1302,23 @@ fn subsection_button_text_color_system(
 
 fn subsection_button_selection_color_system(
     mut subsection_button_text_color_reader: EventReader<SubsectionButtonColorEvent>,
-    mut text_query: Query<(&mut Text, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonSelectionText>>,
+    mut text_query: Query<
+        (&mut Text, &ChapterNumber, &SectionNumber, &SubsectionNumber),
+        With<SubsectionButtonSelectionText>,
+    >,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in subsection_button_text_color_reader.read() {
         for (mut text, chapter_number, section_number, subsection_number) in text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
-            if subsection_number.0 != event.subsection_number { continue };
+            if chapter_number.0 != event.chapter_number {
+                continue;
+            };
+            if section_number.0 != event.section_number {
+                continue;
+            };
+            if subsection_number.0 != event.subsection_number {
+                continue;
+            };
             text.sections[0].style.color = event.selection_color.into();
         }
     }
@@ -1197,31 +1326,43 @@ fn subsection_button_selection_color_system(
 
 fn subsection_button_selection_color_function_system(
     mut routing_reader: EventReader<routes::RoutingEvent>,
-    mut text_query: Query<(&mut SubsectionButtonSelectionText, &mut ColorFunction, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonSelectionText>>,
+    mut text_query: Query<
+        (
+            &mut Text,
+            &mut SubsectionButtonSelectionText,
+            &mut ColorFunction,
+            &ChapterNumber,
+            &SectionNumber,
+            &SubsectionNumber,
+        ),
+        With<SubsectionButtonSelectionText>,
+    >,
+    theme: Res<theme::CurrentTheme>,
 ) {
     for event in routing_reader.read() {
-        for (mut subsection_button, mut color_function, chapter_number, section_number, subsection_number) in text_query.iter_mut() {
-            color_function.background = theme::background_color;
-            color_function.border = theme::background_color;
-            subsection_button.is_selected = false;
-        }
+        for (
+            mut text,
+            mut subsection_button_selection_text,
+            mut color_function,
+            chapter_number,
+            section_number,
+            subsection_number,
+        ) in text_query.iter_mut()
+        {
+            if chapter_number.0 == event.chapter_number
+                && section_number.0 == event.section_number
+                && subsection_number.0 == event.subsection_number
+            {
+                color_function.background = theme::sidebar_color;
+                color_function.border = theme::sidebar_color;
+                subsection_button_selection_text.is_selected = true;
+            } else {
+                text.sections[0].style.color = theme::background_color(&theme);
+                color_function.background = theme::background_color;
+                color_function.border = theme::background_color;
 
-        for (mut subsection_button_selection_text, mut color_function, chapter_number, section_number, subsection_number) in text_query.iter_mut() {
-            color_function.background = theme::background_color;
-            color_function.border = theme::background_color;
-
-            subsection_button_selection_text.is_selected = false;
-        }
-
-        for (mut subsection_button_selection_text, mut color_function, chapter_number, section_number, subsection_number) in text_query.iter_mut() {
-            if chapter_number.0 != event.chapter_number { continue };
-            if section_number.0 != event.section_number { continue };
-            if subsection_number.0 != event.subsection_number { continue };
-            
-            color_function.background = theme::sidebar_color;
-            color_function.border = theme::sidebar_color;
-
-            subsection_button_selection_text.is_selected = true;
+                subsection_button_selection_text.is_selected = false;
+            }
         }
     }
 }
@@ -1238,7 +1379,16 @@ fn subsection_button_interaction(
         ),
         (Changed<Interaction>, With<SubsectionButton>),
     >,
-    mut selection_text_query: Query<(&mut SubsectionButtonSelectionText, &ColorFunction, &ChapterNumber, &SectionNumber, &SubsectionNumber), With<SubsectionButtonSelectionText>>,
+    mut selection_text_query: Query<
+        (
+            &mut SubsectionButtonSelectionText,
+            &ColorFunction,
+            &ChapterNumber,
+            &SectionNumber,
+            &SubsectionNumber,
+        ),
+        With<SubsectionButtonSelectionText>,
+    >,
     mut routing_event_writer: EventWriter<routes::RoutingEvent>,
     mut subsection_button_text_color_writer: EventWriter<SubsectionButtonColorEvent>,
     current_route: Res<routes::CurrentRoute>,
@@ -1257,28 +1407,49 @@ fn subsection_button_interaction(
         let section_number: u32 = section_number.0;
         let subsection_number: u32 = subsection_number.0;
 
-        let mut selection_hovered_color = Color::RED;
-        let mut selection_idle_color = Color::RED;
+        let mut cf = ColorFunction {
+            background: theme::not_a_color,
+            border: theme::not_a_color,
+        };
 
-        for (mut subsection_button, mut selection_color_function, selection_chapter_number, selection_section_number, selection_subsection_number) in selection_text_query.iter_mut() {
-            selection_hovered_color = Color::GREEN;
-            selection_idle_color = Color::GREEN;
-
-            if selection_chapter_number.0 != chapter_number { continue };
-            if selection_section_number.0 != section_number { continue };
-            if selection_section_number.0 != subsection_number { continue };
-            
-            // selection_hovered_color = (selection_color_function.background)(&theme);
-            // selection_idle_color = (selection_color_function.background)(&theme);
-
-            selection_hovered_color = Color::RED;
-            selection_idle_color = Color::RED;
+        for (
+            mode,
+            color_function,
+            star_chapter_number,
+            star_section_number,
+            star_subsection_number,
+        ) in selection_text_query.iter_mut()
+        {
+            if chapter_number != star_chapter_number.0 {
+                continue;
+            };
+            if section_number != star_section_number.0 {
+                continue;
+            };
+            if subsection_number != star_subsection_number.0 {
+                continue;
+            };
+            cf = *color_function;
         }
+
+        let selection_hovered_color = (cf.background)(&theme);
+        let selection_idle_color = (cf.background)(&theme);
+
+        // let mut selection_hovered_color = theme::sidebar_color(&theme);
+        // let mut selection_idle_color = theme::background_color(&theme);
+
+        // if current_route.chapter_number == chapter_number
+        //     && current_route.section_number == section_number
+        //     && current_route.subsection_number == subsection_number
+        // {
+        //     selection_hovered_color = theme::sidebar_color(&theme);
+        //     selection_idle_color = theme::sidebar_color(&theme);
+        // }
 
         match *interaction {
             Interaction::Pressed => {
-                if current_route.chapter_number != chapter_number
-                    || current_route.section_number != section_number
+                if current_route.chapter_number != chapter_number // if the current route isn't the same 
+                    || current_route.section_number != section_number // route as the button
                     || current_route.subsection_number != subsection_number
                 {
                     routing_event_writer.send(routes::RoutingEvent {
@@ -1289,7 +1460,7 @@ fn subsection_button_interaction(
                 }
             }
             Interaction::Hovered => {
-                subsection_button_text_color_writer.send(SubsectionButtonColorEvent{
+                subsection_button_text_color_writer.send(SubsectionButtonColorEvent {
                     selection_color: selection_hovered_color,
                     text_color: theme::sidebar_color(&theme),
                     line_color: theme::sidebar_color(&theme),
@@ -1299,7 +1470,7 @@ fn subsection_button_interaction(
                 });
             }
             Interaction::None => {
-                subsection_button_text_color_writer.send(SubsectionButtonColorEvent{
+                subsection_button_text_color_writer.send(SubsectionButtonColorEvent {
                     selection_color: selection_idle_color,
                     text_color: theme::sidebar_collapsed_color(&theme),
                     line_color: theme::sidebar_collapsed_color(&theme),
