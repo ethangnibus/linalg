@@ -234,6 +234,7 @@ mod pages {
     pub mod chapter14section3subsection0;
     pub mod chapter15section0subsection0;
     pub mod page_not_found;
+    pub mod splash_page;
 }
 
 mod components{
@@ -410,30 +411,21 @@ impl Plugin for SetupUiPlugin {
 }
 
 
-// #[derive(Component)]
-// struct SidebarUI;
-
-// fn sidebar_already_exists(q: Query<&SidebarUI>) -> bool {
-//     println!("Running sidebar_already exists");
-//     return q.get_single().is_ok();
-// }
-
-// fn spawn_button() {
-//     println!("Spawning button");
-// }
-
-// fn when_colony_exists(q: Query<&Colony>) -> bool {
-//     // q.get_single().is_ok()
-//     return true;
-// }
 
 // Define your setup_ui and toggle resolution systems here
 fn setup(
     mut commands: Commands,
+    mut routing_event_writer: EventWriter<routes::RoutingEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
     let theme = theme.as_ref();
     root::setup(&mut commands, theme);
+    routing_event_writer.send(routes::RoutingEvent {
+        chapter_number: 1,
+        section_number: 2,
+        subsection_number: 3,
+    });
 }
+
 
 fn temp() {}

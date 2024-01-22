@@ -1376,7 +1376,6 @@ fn subsection_button_interaction(
     >,
     mut selection_text_query: Query<
         (
-            &mut SubsectionButtonSelectionText,
             &ColorFunction,
             &ChapterNumber,
             &SectionNumber,
@@ -1408,38 +1407,22 @@ fn subsection_button_interaction(
         };
 
         for (
-            mode,
             color_function,
             star_chapter_number,
             star_section_number,
             star_subsection_number,
         ) in selection_text_query.iter_mut()
         {
-            if chapter_number != star_chapter_number.0 {
-                continue;
-            };
-            if section_number != star_section_number.0 {
-                continue;
-            };
-            if subsection_number != star_subsection_number.0 {
-                continue;
-            };
-            cf = *color_function;
+            if chapter_number == star_chapter_number.0
+                && section_number == star_section_number.0
+                && subsection_number == star_subsection_number.0
+            {
+                cf = *color_function;
+            }
         }
 
         let selection_hovered_color = (cf.background)(&theme);
         let selection_idle_color = (cf.background)(&theme);
-
-        // let mut selection_hovered_color = theme::sidebar_color(&theme);
-        // let mut selection_idle_color = theme::background_color(&theme);
-
-        // if current_route.chapter_number == chapter_number
-        //     && current_route.section_number == section_number
-        //     && current_route.subsection_number == subsection_number
-        // {
-        //     selection_hovered_color = theme::sidebar_color(&theme);
-        //     selection_idle_color = theme::sidebar_color(&theme);
-        // }
 
         match *interaction {
             Interaction::Pressed => {

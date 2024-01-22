@@ -74,7 +74,7 @@ fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 0, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
+                                0 => {splash_page::get(&mut commands, &mut svg_load_writer, &mut page_entities)}, // FIXME
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
@@ -174,7 +174,7 @@ fn routing_system(
                                 0 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
-                                3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
+                                3 => {chapter1section2subsection3::get(&mut commands, &mut svg_load_writer, &mut page_entities)}, // FIXME
                                 4 => {chapter1section2subsection4::get(&mut commands, &asset_server, &mut svg_load_writer, &mut page_entities)}, // FIXME
                                 5 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 6 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME

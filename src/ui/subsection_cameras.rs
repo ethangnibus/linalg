@@ -56,6 +56,7 @@ fn setup_new_camera (
     mut images: ResMut<Assets<Image>>,
     mut new_camera_event: EventReader<SvgLoadEvent>,
     minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
+    // mut world: &mut World,
     
 ) {
     for (entity, node) in minimap_query.iter() {

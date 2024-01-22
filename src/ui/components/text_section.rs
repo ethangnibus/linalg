@@ -118,39 +118,10 @@ pub fn image(
 
 pub fn camera(
     commands: &mut Commands,
-    asset_server: &Res<AssetServer>,
     svg_load_writer: &mut EventWriter<SvgLoadEvent>,
     image_path: &String,
     ratio: f32,
 ) -> Entity {
-    // let size = Extent3d {
-    //     width: 512,
-    //     height: 512,
-    //     ..default()
-    // };
-
-    // // This is the texture that will be rendered to.
-    // let mut image = Image {
-    //     texture_descriptor: TextureDescriptor {
-    //         label: None,
-    //         size,
-    //         dimension: TextureDimension::D2,
-    //         format: TextureFormat::Bgra8UnormSrgb,
-    //         mip_level_count: 1,
-    //         sample_count: 1,
-    //         usage: TextureUsages::TEXTURE_BINDING
-    //             | TextureUsages::COPY_DST
-    //             | TextureUsages::RENDER_ATTACHMENT,
-    //         view_formats: &[],
-    //     },
-    //     ..default()
-    // };
-
-    // // fill image.data with zeroes
-    // image.resize(size);
-
-    // let ui_image: UiImage = UiImage { texture: image, flip_x: false, flip_y: false };
-
     // make banner behind the text
     let background_banner = commands
         .spawn((

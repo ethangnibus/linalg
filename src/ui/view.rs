@@ -19,9 +19,10 @@ use bevy::{
     ui,
     // winit::WinitSettings,
 };
-use bevy_prototype_lyon::prelude::*;
+// use bevy_prototype_lyon::prelude::*;
 use bevy_svg::prelude::*;
 use super::theme;
+use super::pages::splash_page;
 
 // Marker for UI node
 #[derive(Component)]
@@ -45,7 +46,7 @@ impl Plugin for SystemsPlugin {
             .add_plugins(subsection_cameras::SystemsPlugin)
             .add_event::<UiResizeEvent>()
             // .add_systems(Startup, spawn_svg)
-            .add_plugins(ShapePlugin)
+            // .add_plugins(ShapePlugin)
             .add_systems(Update, (mouse_scroll));
     }
 }
@@ -53,11 +54,16 @@ impl Plugin for SystemsPlugin {
 pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     let view = new(commands, theme);
 
-    let page_items = page_items(commands);
+    // let mut page_entities: Vec<Entity> = Vec::new();
+    let page_entities = page_items(commands);
+    // splash_page::get(commands, svg_load_writer, &mut page_entities);
+
     let view_list = scrollable_page::get_page(theme);
     let view_list = commands.spawn((ViewList::default(), view_list)).id();
 
-    commands.entity(view_list).push_children(&page_items);
+    for entity in page_entities {
+        commands.entity(view_list).push_children(&[entity]);
+    }
     commands.entity(view).push_children(&[view_list]);
 
     return view;
