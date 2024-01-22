@@ -160,9 +160,7 @@ pub struct ChapterButtonExpanderText;
 pub struct SectionButtonExpanderText;
 
 #[derive(Component)]
-pub struct SubsectionButtonSelectionText {
-    pub is_selected: bool,
-}
+pub struct SubsectionButtonSelectionText;
 
 #[derive(Component)]
 pub struct SectionButtonText;
@@ -708,7 +706,7 @@ pub fn subsection_button(
     let selection_text = commands
         .spawn((
             // SubsectionButtonText,
-            SubsectionButtonSelectionText { is_selected: false },
+            SubsectionButtonSelectionText,
             chapter_number,
             section_number,
             subsection_number,
@@ -1355,13 +1353,10 @@ fn subsection_button_selection_color_function_system(
             {
                 color_function.background = theme::sidebar_color;
                 color_function.border = theme::sidebar_color;
-                subsection_button_selection_text.is_selected = true;
             } else {
                 text.sections[0].style.color = theme::background_color(&theme);
                 color_function.background = theme::background_color;
                 color_function.border = theme::background_color;
-
-                subsection_button_selection_text.is_selected = false;
             }
         }
     }

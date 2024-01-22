@@ -51,8 +51,7 @@ impl Plugin for SystemsPlugin {
 }
 
 pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
-    let view = new();
-    let view = commands.spawn(view).id();
+    let view = new(commands, theme);
 
     let page_items = page_items(commands);
     let view_list = scrollable_page::get_page(theme);
@@ -64,9 +63,13 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
     return view;
 }
 
-pub fn new() -> (View, ButtonBundle) {
-    return (
+pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
+    return commands.spawn((
         View,
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         ButtonBundle {
             style: Style {
                 flex_direction: FlexDirection::Column,
@@ -79,10 +82,10 @@ pub fn new() -> (View, ButtonBundle) {
                 overflow: Overflow::clip(),
                 ..default()
             },
-            background_color: Color::rgb(0.0, 1.0, 0.0).into(),
+            background_color: theme::background_color(theme).into(),
             ..default()
         },
-    );
+    )).id();
 }
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
