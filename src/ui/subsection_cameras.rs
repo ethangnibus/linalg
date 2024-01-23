@@ -27,6 +27,7 @@ impl Plugin for SystemsPlugin {
             rotator_system,
             theme_change_node_color_change_system,
             delete_camera_system,
+            delete_camera_texture_system,
         ));
     }
 }
@@ -107,10 +108,8 @@ fn setup_new_camera (
             
             let image_handle = images.add(image);
 
-            println!("before inserting ui_image");
             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
             commands.entity(entity).insert(ui_image);
-            println!("after inserting ui_image");
 
             let first_pass_layer = RenderLayers::layer(1);
             // The cube that will be rendered to the texture.
@@ -190,6 +189,18 @@ fn delete_camera_system(
     }
 }
 
+fn delete_camera_texture_system(
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    mut routing_reader: EventReader<RoutingEvent>,
+) {
+    // for event in routing_reader.read() {
+    //     for (id, image) in images.iter_mut() {
+    //         images.remove(id);
+    //     }
+    // }
+}
+
 fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
@@ -215,6 +226,10 @@ fn resize_camera_system (
 
                 // remove old UiImage
                 commands.entity(minimap_entity).remove::<UiImage>();
+
+                // delete old UiImage
+                
+
 
                 // remove old Camera
                 commands.entity(camera_entity).despawn();
