@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::view::visibility, ui::FocusPolicy};
+use bevy::{prelude::*, render::{view::visibility, color}, ui::FocusPolicy};
 
 use super::{option_bar, sidebar, under_navbar, util::style, util::theme};
 
@@ -501,12 +501,18 @@ fn navbar_swiper_interactions(
 
 fn navbar_swiper_color_change_system(
     mut navbar_collapse_event_reader: EventReader<NavbarCollapseEvent>,
-    mut navbar_swiper_query: Query<&mut BorderColor, With<NavbarSwiper>>,
+    mut navbar_swiper_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<NavbarSwiper>>,
 ) {
     for event in navbar_collapse_event_reader.read() {
-        for mut navbar_swiper_border_color in navbar_swiper_query.iter_mut() {
+        for (mut navbar_swiper_border_color, mut color_function) in navbar_swiper_query.iter_mut() {
             if event.color != theme::NOT_A_COLOR {
                 *navbar_swiper_border_color = event.color.into();
+            } else {
+                if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::sidebar_color;
+                } else if color_function.border == theme::sidebar_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                }
             }
         }
     }
