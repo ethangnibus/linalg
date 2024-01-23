@@ -13,14 +13,21 @@ use bevy::{
         view::RenderLayers,
     },
 };
-use super::view::UiResizeEvent;
+use super::{routes::RoutingEvent, view::UiResizeEvent};
 use super::util::subsection::SubsectionGameEntity;
+use super::theme;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<SvgLoadEvent>()
-        .add_systems(Update, (setup_new_camera, resize_camera_system, rotator_system));
+        .add_systems(Update, (
+            setup_new_camera,
+            resize_camera_system,
+            rotator_system,
+            theme_change_node_color_change_system,
+            delete_camera_system,
+        ));
     }
 }
 
@@ -56,7 +63,7 @@ fn setup_new_camera (
     mut images: ResMut<Assets<Image>>,
     mut new_camera_event: EventReader<SvgLoadEvent>,
     minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
-    // mut world: &mut World,
+    theme: Res<theme::CurrentTheme>,
     
 ) {
     for (entity, node) in minimap_query.iter() {
@@ -137,7 +144,7 @@ fn setup_new_camera (
                 (
                 Camera3dBundle {
                     camera_3d: Camera3d {
-                        clear_color: ClearColorConfig::Custom(Color::WHITE),
+                        clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
                         ..default()
                     },
                     camera: Camera {
@@ -171,16 +178,30 @@ fn setup_new_camera (
     }
 }
 
+fn delete_camera_system(
+    mut commands: Commands,
+    mini_camera_query: Query<(Entity), With<MiniCamera>>,
+    mut routing_reader: EventReader<RoutingEvent>,
+) {
+    for event in routing_reader.read() {
+        for entity in mini_camera_query.iter() {
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
 fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     mut mini_camera_query: Query<(Entity, &Camera), With<MiniCamera>>,
     mut minimap_query: Query<(Entity, &Node, &UiImage), (With<MyMinimapCamera>, Changed<Node>)>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
+    theme: Res<theme::CurrentTheme>,
 ) {
     for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
         for (camera_entity, camera) in mini_camera_query.iter_mut() {
             for ev in ui_resize_reader.read() {
+                println!("UI RESIZE");
                 // make size for new image
                 let size = node.size();
                 let size = Extent3d {
@@ -228,7 +249,7 @@ fn resize_camera_system (
                     (
                     Camera3dBundle {
                         camera_3d: Camera3d {
-                            clear_color: ClearColorConfig::Custom(Color::WHITE),
+                            clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
                             ..default()
                         },
                         camera: Camera {
@@ -258,6 +279,20 @@ fn resize_camera_system (
                 ));
 
             }
+        }
+    }
+}
+
+
+fn theme_change_node_color_change_system(
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut camera_3d_query: Query<(&mut Camera3d), With<Camera3d>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in theme_change_reader.read() {
+        println!("theme change");
+        for (mut camera) in camera_3d_query.iter_mut() {
+            camera.clear_color = ClearColorConfig::Custom(theme::background_color(&theme))
         }
     }
 }

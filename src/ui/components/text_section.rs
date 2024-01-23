@@ -1,3 +1,6 @@
+use crate::ui::util::style;
+use crate::ui::util::theme;
+
 use super::super::subsection_cameras::MyMinimapCamera;
 use super::super::subsection_cameras::SvgLoadEvent;
 use super::super::view::SvgHolder;
@@ -20,7 +23,7 @@ use bevy::{
     },
     window::WindowRef,
 };
-use bevy_svg::prelude::*;
+// use bevy_svg::prelude::*;
 
 pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
     // make banner behind the text
@@ -118,6 +121,7 @@ pub fn image(
 
 pub fn camera(
     commands: &mut Commands,
+    theme: &theme::CurrentTheme,
     svg_load_writer: &mut EventWriter<SvgLoadEvent>,
     image_path: &String,
     ratio: f32,
@@ -126,28 +130,21 @@ pub fn camera(
     // make banner behind the text
     let background_banner = commands
         .spawn((
+            // theme::ColorFunction {
+            //     background: theme::background_color,
+            //     border: theme::background_color,
+            // },
             NodeBundle {
                 style: Style {
                     width: Val::Percent(100.0),
                     height: height,
-                    padding: UiRect {
-                        left: Val::Px(0.0),
-                        right: Val::Px(0.0),
-                        top: Val::Px(0.0),
-                        bottom: Val::Px(4.0),
-                    },
-                    border: UiRect {
-                        left: Val::Px(0.0),
-                        right: Val::Px(0.0),
-                        top: Val::Px(0.0),
-                        bottom: Val::Px(4.0),
-                    },
+                    padding: style::NO_BORDER,
+                    border: style::NO_BORDER,
                     justify_items: JustifyItems::Start,
                     align_items: AlignItems::Center,
                     ..default()
                 },
-                background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-                border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+                background_color: Color::WHITE.into(),
                 ..default()
             },
             MyMinimapCamera,

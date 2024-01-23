@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use super::util::subsection::SubsectionGameEntity;
+use super::util::theme;
 use super::view::ViewList;
 use super::subsection_cameras::SvgLoadEvent;
 use super::pages::*;
@@ -42,6 +43,7 @@ fn routing_system(
     mut routing_event_reader: EventReader<RoutingEvent>,
     asset_server: Res<AssetServer>,
     mut current_route: ResMut<CurrentRoute>,
+    theme: Res<theme::CurrentTheme>,
 ) {
     for event in routing_event_reader.read() {
         for (view_list, view_list_children) in view_list_query.iter() {
@@ -74,7 +76,7 @@ fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 0, Section 0
                             match event.subsection_number {
-                                0 => {splash_page::get(&mut commands, &mut svg_load_writer, &mut page_entities)}, // FIXME
+                                0 => {splash_page::get(&mut commands, &theme, &mut svg_load_writer, &mut page_entities)}, // FIXME
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
@@ -175,7 +177,7 @@ fn routing_system(
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
-                                4 => {chapter1section2subsection4::get(&mut commands, &asset_server, &mut svg_load_writer, &mut page_entities)}, // FIXME
+                                4 => {chapter1section2subsection4::get(&mut commands, &theme, &asset_server, &mut svg_load_writer, &mut page_entities)}, // FIXME
                                 5 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 6 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 7 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME

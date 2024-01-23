@@ -18,10 +18,11 @@ use super::super::components::{
     solution_header,
 };
 use super::super::subsection_cameras::SvgLoadEvent;
+use super::super::theme;
 
 
 
-pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_writer: &mut EventWriter<SvgLoadEvent>, page_entities: &mut Vec<Entity>) {
+pub fn get(commands: &mut Commands, theme: &theme::CurrentTheme, asset_server: & Res<AssetServer>, svg_load_writer: &mut EventWriter<SvgLoadEvent>, page_entities: &mut Vec<Entity>) {
     page_entities.push(
         page_header::spawn(commands, "1.2.4 Spans")
     );
@@ -37,7 +38,7 @@ pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_w
     );
 
     page_entities.push(
-        text_section::camera(commands, svg_load_writer, &"3.png".into(), 5.5, Val::Px(500.0))
+        text_section::camera(commands, theme, svg_load_writer, &"3.png".into(), 5.5, Val::Px(500.0))
     );
 
     page_entities.push(

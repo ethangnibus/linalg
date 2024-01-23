@@ -20,7 +20,7 @@ use bevy::{
     // winit::WinitSettings,
 };
 // use bevy_prototype_lyon::prelude::*;
-use bevy_svg::prelude::*;
+// use bevy_svg::prelude::*;
 use super::theme;
 use super::pages::splash_page;
 

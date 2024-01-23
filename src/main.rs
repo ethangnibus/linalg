@@ -4,12 +4,13 @@ use bevy::window::WindowResized;
 mod ui;
 
 use ui::view::UiResizeEvent;
-
+use bevy_inspector_egui::quick::WorldInspectorPlugin; // FIXME: REMOVE IN PROD
 
 
 fn main() {
     App::new()
-        .insert_resource(Msaa::Sample4)
+        .insert_resource(Msaa::Sample8)
+        // .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 fit_canvas_to_parent: true,
@@ -18,7 +19,8 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugins(bevy_svg::prelude::SvgPlugin)
+        .add_plugins(WorldInspectorPlugin::new()) // FIXME: REMOVE IN PROD
+        // .add_plugins(bevy_svg::prelude::SvgPlugin)
         .add_plugins(ui::SetupUiPlugin)
         .add_systems(Startup, setup_camera)
         .add_systems(Update, on_resize_system)

@@ -362,14 +362,13 @@ fn theme_button_interaction(
     mut theme_button_color_writer: EventWriter<ThemeButtonColorEvent>,
     mut theme_change_writer: EventWriter<theme::ThemeChangeEvent>,
     mut theme: ResMut<theme::CurrentTheme>,
-
 ) {
     
     for (mut interaction, mut theme_button) in interaction_query.iter_mut() {
         match *interaction {
             Interaction::Pressed => {
                 *theme = theme_button.next_theme;
-                theme_change_writer.send(theme::ThemeChangeEvent)
+                theme_change_writer.send(theme::ThemeChangeEvent);
             }
             Interaction::Hovered => {
                 theme_button_color_writer.send(ThemeButtonColorEvent {
