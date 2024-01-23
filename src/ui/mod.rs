@@ -421,9 +421,9 @@ fn setup(
     let theme = theme.as_ref();
     root::setup(&mut commands, theme);
     routing_event_writer.send(routes::RoutingEvent {
-        chapter_number: 1,
-        section_number: 2,
-        subsection_number: 3,
+        chapter_number: 0,
+        section_number: 0,
+        subsection_number: 0,
     });
 }
 

@@ -19,6 +19,19 @@ pub fn page_items(commands: &mut Commands, theme: &theme::CurrentTheme) -> Vec<E
     // ============================= //
     // **** PART 1 ***************** //
     // ============================= //
+    page_items.push(chapter_container::chapter_button(
+        commands,  theme, &"Home".into(), 0));
+    
+    // 0.0
+    page_items.push(chapter_container::section_button(
+        commands,  theme, &"Index".into(), 0, 0));
+    
+    page_items.push(chapter_container::subsection_button(
+        commands,  theme, &"Splash Screen".into(), 0, 0, 0));
+    page_items.push(chapter_container::subsection_button(
+        commands,  theme, &"Credits".into(), 0, 0, 1));
+
+
     page_items.push(chapter_container::title_button(
         commands,  theme, &"Part 1. Euclidean space R^n (FIXME)".into()));
         

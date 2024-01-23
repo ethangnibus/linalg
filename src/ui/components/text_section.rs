@@ -121,6 +121,7 @@ pub fn camera(
     svg_load_writer: &mut EventWriter<SvgLoadEvent>,
     image_path: &String,
     ratio: f32,
+    height: Val,
 ) -> Entity {
     // make banner behind the text
     let background_banner = commands
@@ -128,7 +129,7 @@ pub fn camera(
             NodeBundle {
                 style: Style {
                     width: Val::Percent(100.0),
-                    height: Val::Px(500.0),
+                    height: height,
                     padding: UiRect {
                         left: Val::Px(0.0),
                         right: Val::Px(0.0),

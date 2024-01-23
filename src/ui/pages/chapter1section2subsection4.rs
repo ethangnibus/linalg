@@ -37,7 +37,7 @@ pub fn get(commands: &mut Commands, asset_server: & Res<AssetServer>, svg_load_w
     );
 
     page_entities.push(
-        text_section::camera(commands, svg_load_writer, &"3.png".into(), 5.5)
+        text_section::camera(commands, svg_load_writer, &"3.png".into(), 5.5, Val::Px(500.0))
     );
 
     page_entities.push(
