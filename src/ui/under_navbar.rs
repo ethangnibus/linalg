@@ -3,6 +3,7 @@ use super::navbar;
 use super::sidebar;
 use super::sidebar_frame;
 use super::option_bar;
+use super::util::theme::background_color;
 use super::util::{
     theme,
     style,
@@ -174,21 +175,24 @@ fn sidebar_swiper_interactions(
 
 // In another system that handles the event
 fn sidebar_swiper_color_change_system(
-    mut sidebar_swiper_query: Query<&mut BorderColor, With<SidebarSwiper>>,
+    mut sidebar_swiper_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<SidebarSwiper>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut sidebar_swiper_color_event_reader: EventReader<SidebarCollapseInteractionEvent>,
 ) {
     for event in sidebar_swiper_color_event_reader.read() {
-        for mut sidebar_swiper_border_color in &mut sidebar_swiper_query.iter_mut() {
+        for (mut sidebar_swiper_border_color, mut color_function) in &mut sidebar_swiper_query.iter_mut() {
             let color = event.0;
 
             if color != theme::NOT_A_COLOR {
                 *sidebar_swiper_border_color = event.0.into();
+            } else {
+                if color_function.border == theme::sidebar_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                } else if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::sidebar_color;
+                }
             }
         }
-        // for mut sidebar_button_border_color in &mut sidebar_button_query.iter_mut() {
-        //     *sidebar_button_border_color = event.0.into();
-        // }
     }
 }
 
