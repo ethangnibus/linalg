@@ -1,21 +1,18 @@
 use bevy::{
-    prelude::*,
-    core_pipeline::clear_color::ClearColorConfig,
-    render::{
+    core_pipeline::clear_color::ClearColorConfig, prelude::*, render::{
         camera::{
-            ComputedCameraValues,
-            RenderTarget,
-            Viewport,
+            ComputedCameraValues, RenderTarget, ScalingMode, Viewport
         },
         render_resource::{
             Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
         },
         view::RenderLayers,
-    },
+    }, ui
 };
 use super::{routes::RoutingEvent, view::UiResizeEvent};
 use super::util::subsection::SubsectionGameEntity;
 use super::theme;
+// use rand::Rng;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -62,13 +59,18 @@ fn setup_new_camera (
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut images: ResMut<Assets<Image>>,
+    mini_camera_query: Query<(Entity), With<MiniCamera>>,
     mut new_camera_event: EventReader<SvgLoadEvent>,
     minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
     theme: Res<theme::CurrentTheme>,
     
 ) {
+
     for (entity, node) in minimap_query.iter() {
         for ev in new_camera_event.read() {
+            for entity in mini_camera_query.iter() {
+                commands.entity(entity).despawn();
+            }
             println!("entity id: {:?}", entity);
             let size = node.size();
             let size = Extent3d {
@@ -105,7 +107,7 @@ fn setup_new_camera (
                 unlit: false,
                 ..default()
             });
-            
+
             let image_handle = images.add(image);
 
             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
@@ -162,6 +164,19 @@ fn setup_new_camera (
                     },
                     transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
                         .looking_at(Vec3::ZERO, Vec3::Y),
+                    // projection: Projection::Perspective(
+                    //     PerspectiveProjection {
+                    //         aspect_ratio: 0.003,
+                    //         ..default()
+                    //     }
+                    // ),
+                    // projection: Projection::Orthographic(
+                    //     OrthographicProjection {
+                    //         scale: 0.1,
+                    //         scaling_mode: ScalingMode::AutoMax {max_width: 100.0, max_height: 100.0},
+                    //         ..default()
+                    //     }
+                    // ),
                     ..default()
                 },
                 // UI config is a separate component
@@ -192,13 +207,15 @@ fn delete_camera_system(
 fn delete_camera_texture_system(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
+    minimap_query: Query<(&UiImage), With<MyMinimapCamera>>,
     mut routing_reader: EventReader<RoutingEvent>,
 ) {
-    // for event in routing_reader.read() {
-    //     for (id, image) in images.iter_mut() {
-    //         images.remove(id);
-    //     }
-    // }
+    for event in routing_reader.read() {
+        for ui_image in minimap_query.iter() {
+            println!("Removing texture: {:?}", ui_image.texture.clone());
+            images.remove(ui_image.texture.clone());
+        }
+    }
 }
 
 fn resize_camera_system (
@@ -206,12 +223,18 @@ fn resize_camera_system (
     mut images: ResMut<Assets<Image>>,
     mut mini_camera_query: Query<(Entity, &Camera), With<MiniCamera>>,
     mut minimap_query: Query<(Entity, &Node, &UiImage), (With<MyMinimapCamera>, Changed<Node>)>,
+    // mut proj_query: Query<&bevy::render::camera::OrthographicProjection, With<bevy::render::camera::OrthographicProjection>>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
     for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
         for (camera_entity, camera) in mini_camera_query.iter_mut() {
             for ev in ui_resize_reader.read() {
+
+                // for q in proj_query.iter_mut() {
+                //     println!("got the projection!");
+                //     q.
+                // }
                 println!("UI RESIZE");
                 // make size for new image
                 let size = node.size();
@@ -228,7 +251,7 @@ fn resize_camera_system (
                 commands.entity(minimap_entity).remove::<UiImage>();
 
                 // delete old UiImage
-                
+
 
 
                 // remove old Camera
