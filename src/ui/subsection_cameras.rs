@@ -36,7 +36,7 @@ pub struct SvgLoadEvent{
 }
 
 #[derive(Component)]
-pub struct MyMinimapCamera;
+pub struct CameraBackgroundBanner;
 
 // Marks the first pass cube (rendered to a texture.)
 #[derive(Component)]
@@ -61,12 +61,12 @@ fn setup_new_camera (
     mut images: ResMut<Assets<Image>>,
     mini_camera_query: Query<(Entity), With<MiniCamera>>,
     mut new_camera_event: EventReader<SvgLoadEvent>,
-    minimap_query: Query<(Entity, &Node), With<MyMinimapCamera>>,
+    camera_banner_query: Query<(Entity, &Node), With<CameraBackgroundBanner>>,
     theme: Res<theme::CurrentTheme>,
     
 ) {
 
-    for (entity, node) in minimap_query.iter() {
+    for (entity, node) in camera_banner_query.iter() {
         for ev in new_camera_event.read() {
             for entity in mini_camera_query.iter() {
                 commands.entity(entity).despawn();
@@ -207,11 +207,11 @@ fn delete_camera_system(
 fn delete_camera_texture_system(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
-    minimap_query: Query<(&UiImage), With<MyMinimapCamera>>,
+    camera_banner_query: Query<(&UiImage), With<CameraBackgroundBanner>>,
     mut routing_reader: EventReader<RoutingEvent>,
 ) {
     for event in routing_reader.read() {
-        for ui_image in minimap_query.iter() {
+        for ui_image in camera_banner_query.iter() {
             println!("Removing texture: {:?}", ui_image.texture.clone());
             images.remove(ui_image.texture.clone());
         }
@@ -222,12 +222,12 @@ fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     mut mini_camera_query: Query<(Entity, &Camera), With<MiniCamera>>,
-    mut minimap_query: Query<(Entity, &Node, &UiImage), (With<MyMinimapCamera>, Changed<Node>)>,
+    mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>, Changed<Node>)>,
     // mut proj_query: Query<&bevy::render::camera::OrthographicProjection, With<bevy::render::camera::OrthographicProjection>>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    for (minimap_entity, node, ui_image) in minimap_query.iter_mut() {
+    for (minimap_entity, node, ui_image) in camera_banner_query.iter_mut() {
         for (camera_entity, camera) in mini_camera_query.iter_mut() {
             for ev in ui_resize_reader.read() {
 

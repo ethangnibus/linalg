@@ -1,7 +1,7 @@
 use crate::ui::util::style;
 use crate::ui::util::theme;
 
-use super::super::subsection_cameras::MyMinimapCamera;
+use super::super::subsection_cameras::CameraBackgroundBanner;
 use super::super::subsection_cameras::SvgLoadEvent;
 use super::super::view::SvgHolder;
 use bevy::render::camera::Viewport;
@@ -147,7 +147,7 @@ pub fn camera(
                 background_color: Color::WHITE.into(),
                 ..default()
             },
-            MyMinimapCamera,
+            CameraBackgroundBanner,
             // image,
         ))
         .id();
