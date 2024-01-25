@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use super::util::subsection::SubsectionGameEntity;
 use super::util::theme;
 use super::view::ViewList;
-use super::subsection_cameras::SvgLoadEvent;
+use super::subsection_cameras::CameraSetupEvent;
 use super::pages::*;
 
 pub struct SystemsPlugin;
@@ -39,7 +39,7 @@ fn routing_system(
     mut commands: Commands,
     view_list_query: Query<(Entity, &Children), With<ViewList>>,
     subsection_game_entity_query: Query<Entity, With<SubsectionGameEntity>>,
-    mut svg_load_writer: EventWriter<SvgLoadEvent>,
+    mut camera_setup_writer: EventWriter<CameraSetupEvent>,
     mut routing_event_reader: EventReader<RoutingEvent>,
     asset_server: Res<AssetServer>,
     mut current_route: ResMut<CurrentRoute>,
@@ -76,7 +76,7 @@ fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 0, Section 0
                             match event.subsection_number {
-                                0 => {splash_page::get(&mut commands, &theme, &mut svg_load_writer, &mut page_entities)}, // FIXME
+                                0 => {splash_page::get(&mut commands, &theme, &mut camera_setup_writer, &mut page_entities)}, // FIXME
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
@@ -177,7 +177,7 @@ fn routing_system(
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
-                                4 => {chapter1section2subsection4::get(&mut commands, &theme, &asset_server, &mut svg_load_writer, &mut page_entities)}, // FIXME
+                                4 => {chapter1section2subsection4::get(&mut commands, &theme, &asset_server, &mut camera_setup_writer, &mut page_entities)}, // FIXME
                                 5 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 6 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 7 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME

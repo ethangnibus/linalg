@@ -2,7 +2,7 @@ use crate::ui::util::style;
 use crate::ui::util::theme;
 
 use super::super::subsection_cameras::CameraBackgroundBanner;
-use super::super::subsection_cameras::SvgLoadEvent;
+use super::super::subsection_cameras;
 use super::super::view::SvgHolder;
 use bevy::render::camera::Viewport;
 use bevy::{
@@ -81,7 +81,7 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
 pub fn image(
     commands: &mut Commands,
     asset_server: &Res<AssetServer>,
-    svg_load_writer: &mut EventWriter<SvgLoadEvent>,
+    svg_load_writer: &mut EventWriter<subsection_cameras::CameraSetupEvent>,
     image_path: String,
     ratio: f32,
 ) -> Entity {
@@ -122,7 +122,7 @@ pub fn image(
 pub fn camera(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
-    svg_load_writer: &mut EventWriter<SvgLoadEvent>,
+    camera_setup_writer: &mut EventWriter<subsection_cameras::CameraSetupEvent>,
     image_path: &String,
     ratio: f32,
     height: Val,
@@ -144,7 +144,7 @@ pub fn camera(
                     align_items: AlignItems::Center,
                     ..default()
                 },
-                background_color: Color::WHITE.into(),
+                background_color: Color::WHITE.into(), // FIXME: Change to background color and change to white when camera loads
                 ..default()
             },
             CameraBackgroundBanner,
@@ -154,7 +154,7 @@ pub fn camera(
 
     println!("Background_banner id: {:?}", background_banner);
 
-    svg_load_writer.send(SvgLoadEvent {
+    camera_setup_writer.send(subsection_cameras::CameraSetupEvent {
         entity: background_banner,
         file_name: image_path.to_string(),
     });

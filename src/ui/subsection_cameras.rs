@@ -17,7 +17,7 @@ use super::theme;
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<SvgLoadEvent>()
+        app.add_event::<CameraSetupEvent>()
         .add_systems(Update, (
             setup_new_camera,
             resize_camera_system,
@@ -30,7 +30,7 @@ impl Plugin for SystemsPlugin {
 }
 
 #[derive(Event)]
-pub struct SvgLoadEvent{
+pub struct CameraSetupEvent {
     pub entity: Entity,
     pub file_name: String,
 }
@@ -60,14 +60,14 @@ fn setup_new_camera (
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut images: ResMut<Assets<Image>>,
     mini_camera_query: Query<(Entity), With<MiniCamera>>,
-    mut new_camera_event: EventReader<SvgLoadEvent>,
+    mut camera_setup_reader: EventReader<CameraSetupEvent>,
     camera_banner_query: Query<(Entity, &Node), With<CameraBackgroundBanner>>,
     theme: Res<theme::CurrentTheme>,
     
 ) {
 
     for (entity, node) in camera_banner_query.iter() {
-        for ev in new_camera_event.read() {
+        for ev in camera_setup_reader.read() {
             for entity in mini_camera_query.iter() {
                 commands.entity(entity).despawn();
             }
