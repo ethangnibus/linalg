@@ -169,9 +169,9 @@ fn mouse_scroll(
 
                         let max_scroll = (items_height - container_height).max(0.);
 
-                        println!("items_height {:?}", items_height);
-                        println!("container_height {:?}", container_height);
-                        println!("max_scroll {:?}\n", max_scroll);
+                        // println!("items_height {:?}", items_height);
+                        // println!("container_height {:?}", container_height);
+                        // println!("max_scroll {:?}\n", max_scroll);
 
                         let dy = match mouse_wheel_event.unit {
                             MouseScrollUnit::Line => mouse_wheel_event.y * 20.,

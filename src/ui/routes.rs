@@ -2,14 +2,14 @@ use bevy::prelude::*;
 use super::util::subsection::SubsectionGameEntity;
 use super::util::theme;
 use super::view::ViewList;
-use super::subsection_cameras::CameraSetupEvent;
+use super::subsection_cameras;
 use super::pages::*;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<RoutingEvent>()
-            .add_systems(Update, routing_system)
+            .add_systems(Update, routing_system.before(subsection_cameras::setup_new_camera))
             .insert_resource(CurrentRoute {
                 chapter_number: 0,
                 section_number: 0,
@@ -35,11 +35,13 @@ pub struct RoutingEvent {
 
 
 
-fn routing_system(
+pub fn routing_system(
     mut commands: Commands,
     view_list_query: Query<(Entity, &Children), With<ViewList>>,
     subsection_game_entity_query: Query<Entity, With<SubsectionGameEntity>>,
-    mut camera_setup_writer: EventWriter<CameraSetupEvent>,
+    // mut camera_query: Query<Entity, With<subsection_cameras::MiniCamera>>, // replaced with film crew query
+    mut film_crew_query: Query<Entity, With<subsection_cameras::FilmCrew>>,
+    mut camera_setup_writer: EventWriter<subsection_cameras::CameraSetupEvent>,
     mut routing_event_reader: EventReader<RoutingEvent>,
     asset_server: Res<AssetServer>,
     mut current_route: ResMut<CurrentRoute>,
@@ -50,19 +52,29 @@ fn routing_system(
             current_route.chapter_number = event.chapter_number;
             current_route.section_number = event.section_number;
             current_route.subsection_number = event.subsection_number;
-
+            // println!("entities removed:");
             // remove all current page ui
-            for &child in view_list_children.iter() {
-                commands.entity(child).despawn_recursive();
-                commands.entity(view_list).remove_children(&[child]);
+            // for &child in view_list_children.iter() {
                 
-            }
+            //     println!("{:?}", child);
+            //     // commands.entity(child).despawn_descendants();
+            //     commands.entity(child).despawn_recursive();
+                
+            //     // commands.entity(child).despawn_descendants();
+            //     commands.entity(view_list).remove_children(&[child]);
+                
+            // }
+            commands.entity(view_list).despawn_descendants();
+            
+            // for film_crew in film_crew_query.iter() {
+            //     commands.entity(film_crew).despawn_recursive();
+            // }
 
-            // remove all current objects from this subsection
-            // lights, cubes, etc.
-            for game_entity in subsection_game_entity_query.iter() {
-                commands.entity(game_entity).despawn();
-            }
+            // // remove all current objects from this subsection
+            // // lights, cubes, etc.
+            // for game_entity in subsection_game_entity_query.iter() {
+            //     commands.entity(game_entity).despawn();
+            // }
 
             // Fixme: remember to also remove meshes!!!
 

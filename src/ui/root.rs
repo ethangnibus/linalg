@@ -1,6 +1,5 @@
 use super::navbar;
 use super::navbar_frame;
-use super::subsection_cameras::CameraSetupEvent;
 use super::under_navbar;
 use super::util::theme;
 use bevy::{

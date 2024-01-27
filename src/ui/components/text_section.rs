@@ -154,10 +154,7 @@ pub fn camera(
 
     println!("Background_banner id: {:?}", background_banner);
 
-    camera_setup_writer.send(subsection_cameras::CameraSetupEvent {
-        entity: background_banner,
-        file_name: image_path.to_string(),
-    });
+    camera_setup_writer.send(subsection_cameras::CameraSetupEvent);
 
     return background_banner;
 }
