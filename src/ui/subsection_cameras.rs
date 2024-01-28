@@ -477,14 +477,17 @@ fn resize_camera_system (
     mut mini_camera_query: Query<(Entity, &Camera, &mut Projection), With<MiniCamera>>,
     mut film_crew_query: Query<(Entity, &mut FilmCrew), With<FilmCrew>>,
 
-    mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>, Changed<Node>)>,
+    // mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>, Changed<Node>)>,
+    mut camera_banner_query: Query<(Entity, &Node, &UiImage), With<CameraBackgroundBanner>>,
     // mut proj_query: Query<&bevy::render::camera::OrthographicProjection, With<bevy::render::camera::OrthographicProjection>>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    for ev in ui_resize_reader.read() {
-        for (minimap_entity, node, ui_image) in camera_banner_query.iter_mut() {
-            for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
+    
+        
+    for (minimap_entity, node, ui_image) in camera_banner_query.iter_mut() {
+        for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
+            for ev in ui_resize_reader.read() {
             
                 // let size = node.size();
                 // projection.update(size.y, size.x);
