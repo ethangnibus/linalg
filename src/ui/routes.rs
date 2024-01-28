@@ -60,7 +60,7 @@ pub fn routing_system(
             current_route.subsection_number = event.subsection_number;
 
             for film_crew_entity in film_crew_query.iter_mut() {
-                println!("Despawning film crew here!");
+                // println!("Despawning film crew here!");
                 commands.entity(film_crew_entity).despawn_recursive();
             }
             // println!("entities removed:");
