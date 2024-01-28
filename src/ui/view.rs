@@ -185,7 +185,7 @@ fn mouse_scroll(
                 }
             },
             Interaction::Pressed => {
-                println!("interacted");
+                // println!("interacted");
             },
             _ => {}
         }

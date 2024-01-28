@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use super::util::subsection::SubsectionGameEntity;
 use super::util::theme;
 use super::view::ViewList;
+use super::view::UiResizeEvent;
 use super::subsection_cameras;
 use super::pages::*;
 
@@ -9,7 +10,7 @@ pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<RoutingEvent>()
-            .add_systems(Update, routing_system.before(subsection_cameras::setup_new_camera))
+            .add_systems(Update, routing_system)
             .insert_resource(CurrentRoute {
                 chapter_number: 0,
                 section_number: 0,
@@ -43,15 +44,25 @@ pub fn routing_system(
     mut film_crew_query: Query<Entity, With<subsection_cameras::FilmCrew>>,
     mut camera_setup_writer: EventWriter<subsection_cameras::CameraSetupEvent>,
     mut routing_event_reader: EventReader<RoutingEvent>,
+    mut ui_resize_writer: EventWriter<UiResizeEvent>,
     asset_server: Res<AssetServer>,
     mut current_route: ResMut<CurrentRoute>,
     theme: Res<theme::CurrentTheme>,
+
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut images: ResMut<Assets<Image>>,
 ) {
     for event in routing_event_reader.read() {
         for (view_list, view_list_children) in view_list_query.iter() {
             current_route.chapter_number = event.chapter_number;
             current_route.section_number = event.section_number;
             current_route.subsection_number = event.subsection_number;
+
+            for film_crew_entity in film_crew_query.iter_mut() {
+                println!("Despawning film crew here!");
+                commands.entity(film_crew_entity).despawn_recursive();
+            }
             // println!("entities removed:");
             // remove all current page ui
             // for &child in view_list_children.iter() {
@@ -88,7 +99,7 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 0, Section 0
                             match event.subsection_number {
-                                0 => {splash_page::get(&mut commands, &theme, &mut camera_setup_writer, &mut page_entities)}, // FIXME
+                                0 => {splash_page::get(&mut commands, &theme, &mut camera_setup_writer, &mut page_entities, &mut meshes, &mut materials, &mut images)}, // FIXME
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
@@ -189,7 +200,7 @@ pub fn routing_system(
                                 1 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 2 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 3 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
-                                4 => {chapter1section2subsection4::get(&mut commands, &theme, &asset_server, &mut camera_setup_writer, &mut page_entities)}, // FIXME
+                                4 => {chapter1section2subsection4::get(&mut commands, &theme, &asset_server, &mut camera_setup_writer, &mut page_entities, &mut meshes, &mut materials, &mut images)}, // FIXME
                                 5 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 6 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
                                 7 => {page_not_found::get(&mut commands, &mut page_entities)}, // FIXME
@@ -1224,7 +1235,9 @@ pub fn routing_system(
             for entity in page_entities {
                 commands.entity(view_list).push_children(&[entity]);
             }
+            // ui_resize_writer.send(UiResizeEvent);
         }
+        camera_setup_writer.send(subsection_cameras::CameraSetupEvent);
     }
     // add new page
 }

@@ -22,7 +22,16 @@ use super::super::theme;
 
 
 
-pub fn get(commands: &mut Commands, theme: &theme::CurrentTheme, asset_server: & Res<AssetServer>, camera_setup_writer: &mut EventWriter<CameraSetupEvent>, page_entities: &mut Vec<Entity>) {
+pub fn get(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    asset_server: & Res<AssetServer>,
+    camera_setup_writer: &mut EventWriter<CameraSetupEvent>,
+    page_entities: &mut Vec<Entity>,
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    mut images: &mut ResMut<Assets<Image>>
+) {
     page_entities.push(
         page_header::spawn(commands, "1.2.4 Spans")
     );
@@ -38,7 +47,16 @@ pub fn get(commands: &mut Commands, theme: &theme::CurrentTheme, asset_server: &
     );
 
     page_entities.push(
-        text_section::camera(commands, theme, camera_setup_writer, &"3.png".into(), 5.5, Val::Px(500.0))
+        text_section::camera(
+            commands,
+            theme,
+            camera_setup_writer,
+            &"3.png".into(),
+            5.5, Val::Px(500.0),
+            meshes,
+            materials,
+            images,
+        )
     );
 
     page_entities.push(

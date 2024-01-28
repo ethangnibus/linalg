@@ -11,8 +11,16 @@ use super::super::components::{
 use super::super::subsection_cameras::CameraSetupEvent;
 use super::super::theme;
 
-pub fn get(commands: &mut Commands, theme: &theme::CurrentTheme, camera_setup_writer: &mut EventWriter<CameraSetupEvent>, page_entities: &mut Vec<Entity>) {
+pub fn get(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    camera_setup_writer: &mut EventWriter<CameraSetupEvent>,
+    page_entities: &mut Vec<Entity>,
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    mut images: &mut ResMut<Assets<Image>>
+) {
     page_entities.push(
-        text_section::camera(commands, theme, camera_setup_writer, &"3.png".into(), 5.5, Val::Vh(100.0))
+        text_section::camera(commands, theme, camera_setup_writer, &"3.png".into(), 5.5, Val::Vh(100.0), meshes, materials, images)
     );
 }
