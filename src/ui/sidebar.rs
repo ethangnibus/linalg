@@ -31,8 +31,8 @@ impl Plugin for SystemsPlugin {
     }
 }
 
-pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -> Entity {
-    let sidebar = commands.spawn(new(theme, width)).id();
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, sidebar_entity: Entity) -> Entity {
+    let sidebar = sidebar_entity;
 
     let page_items = sidebar_routes::page_items(commands, theme);
     let scrollable_page = commands
@@ -48,8 +48,8 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -
     return sidebar;
 }
 
-pub fn new(theme: &theme::CurrentTheme, width: f32) -> (Sidebar, ButtonBundle) {
-    return (
+pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -> Entity {
+    return commands.spawn((
         Sidebar,
         ButtonBundle {
             style: Style {
@@ -64,5 +64,5 @@ pub fn new(theme: &theme::CurrentTheme, width: f32) -> (Sidebar, ButtonBundle) {
             },
             ..default()
         },
-    );
+    )).id();
 }

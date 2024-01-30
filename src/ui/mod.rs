@@ -3,7 +3,6 @@ use bevy::prelude::*;
 
 use self::util::theme;
 pub mod navbar;
-pub mod navbar_frame;
 mod root;
 pub mod scrollable_page;
 pub mod sidebar;

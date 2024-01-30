@@ -130,7 +130,8 @@ pub fn camera(
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     mut images: &mut ResMut<Assets<Image>>,
-) -> Entity {
+    view_list_entity: Entity,
+) {
     // make banner behind the text
     let background_banner = commands
         .spawn((
@@ -155,6 +156,7 @@ pub fn camera(
             // image,
         )
     ).id();
+    
 
     println!("Background_banner id: {:?}", background_banner);
 
@@ -166,6 +168,7 @@ pub fn camera(
     //     height: size.y.ceil() as u32,
     //     ..default()
     // };
+    commands.entity(view_list_entity).push_children(&[background_banner]);
     let size = Extent3d {
         width: 1000,
         height: 1000,
@@ -297,6 +300,4 @@ pub fn camera(
         },
     )).id();
     commands.entity(film_crew).push_children(&[camera, cube, light]);
-
-    return background_banner;
 }

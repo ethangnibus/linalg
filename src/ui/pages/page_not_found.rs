@@ -6,7 +6,7 @@ use bevy::{
     },
 };
 
-pub fn get(commands: &mut Commands, page_entities: &mut Vec<Entity>) {
+pub fn get(commands: &mut Commands, view_list_entity: Entity) {
     let text_item = (
         TextBundle::from_section(
             format!("TODO: Remember to implement this page!"),
@@ -46,6 +46,5 @@ pub fn get(commands: &mut Commands, page_entities: &mut Vec<Entity>) {
     let page_item = commands.spawn(page_item).id();
 
     commands.entity(page_item).push_children(&[text_item]);
-
-    page_entities.push(page_item);
+    commands.entity(view_list_entity).push_children(&[page_item]);
 }

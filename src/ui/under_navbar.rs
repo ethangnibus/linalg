@@ -62,19 +62,20 @@ impl Plugin for SystemsPlugin {
 }
 
 // Returns root node
-pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, height: f32) -> Entity {
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, under_navbar_entity: Entity) {
     // Make ECS for root and navbar
     // return entities
-    let under_navbar = sidebar_frame::setup(commands, width, height);
-    let sidebar = sidebar::setup(commands, theme, SIDEBAR_WIDTH);
+    let under_navbar = under_navbar_entity;
 
+    let sidebar = sidebar::new(commands, theme, SIDEBAR_WIDTH);
     let sidebar_swiper = sidebar_swiper(commands, theme);
-
-
-    let view = view::setup(commands, theme);
-
+    let view = view::new(commands, theme);
     let option_bar_swiper = option_bar::option_bar_swiper(commands, theme);
-    let option_bar = option_bar::setup(commands, theme, SIDEBAR_WIDTH);
+    let option_bar = option_bar::option_bar(commands, theme, SIDEBAR_WIDTH);
+
+    sidebar::setup(commands, theme, SIDEBAR_WIDTH, sidebar);
+    view::setup(commands, theme, view);
+    option_bar::setup(commands, theme, SIDEBAR_WIDTH, option_bar);
 
     // make under_navbar parent of sidebar and scrollable_page
     commands.entity(under_navbar).push_children(&[
@@ -85,7 +86,23 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, h
         option_bar,
     ]);
 
-    return under_navbar;
+
+
+
+}
+
+pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
+    return commands.spawn(NodeBundle {
+        style: Style {
+            width: Val::Percent(width),
+            height: Val::Percent(100.0),
+            flex_grow: 1.0,
+            flex_direction: FlexDirection::Row,
+            ..default()
+        },
+        background_color: Color::rgb(0.0, 0.0, 1.0).into(),
+        ..default()
+    }).id()
 }
 
 pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {

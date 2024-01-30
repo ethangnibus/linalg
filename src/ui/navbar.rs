@@ -71,10 +71,13 @@ pub struct NavbarBannerText;
 //     println!("navbar.rs");
 // }
 
-pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
-    let navbar_holder = navbar_holder(commands, theme, height);
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32, navbar_holder_entity: Entity) {
+    let navbar_holder = navbar_holder_entity;
     let navbar = new(commands, theme, height);
     let navbar_swiper = navbar_swiper(commands, theme);
+    commands
+        .entity(navbar_holder)
+        .push_children(&[navbar, navbar_swiper]);
 
     let sidebar_button = sidebar_button(commands, theme, height);
     let navbar_banner = navbar_banner(commands, theme, height);
@@ -83,11 +86,6 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) 
     commands
         .entity(navbar)
         .push_children(&[sidebar_button, navbar_banner, option_bar_button]);
-    commands
-        .entity(navbar_holder)
-        .push_children(&[navbar, navbar_swiper]);
-
-    return navbar_holder;
 }
 
 pub fn navbar_holder(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {

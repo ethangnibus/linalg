@@ -27,130 +27,101 @@ pub fn get(
     theme: &theme::CurrentTheme,
     asset_server: & Res<AssetServer>,
     camera_setup_writer: &mut EventWriter<CameraSetupEvent>,
-    page_entities: &mut Vec<Entity>,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
-    mut images: &mut ResMut<Assets<Image>>
+    mut images: &mut ResMut<Assets<Image>>,
+    view_list_entity: Entity,
 ) {
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
 
-    page_entities.push(
-        text_section::image(commands, asset_server, camera_setup_writer, "1_black.png".into(), 8.0)
-    );
+    let next_item = text_section::image(commands, asset_server, camera_setup_writer, "1_black.png".into(), 8.0);
+    commands.entity(view_list_entity).push_children(&[next_item]);
 
     let span_of_vectors_left = definition_text_section::spawn(commands, "Given a collection of vectors v1, . . . , vk ∈ Rn, their span\nSpan {v1,...,vk} ⊂ Rn\nis the set of all their linear combinations. In other words, Span {v1,...,vk} consists of all v ∈ Rn that can be expressed in the form\nv=a1v1 +···+akvk\nfor some weights a1,...,ak ∈ R.\nGeometrically, the span of a collection of vectors is the set of all vectors that can be reached by trav- eling along scales of each of the individual vectors in turn.");
     let span_of_vectors_right = span_of_vectors_renderer::spawn(commands);
-    page_entities.push(
-        definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right)
+    let next_item = definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    text_section::camera(
+        commands,
+        theme,
+        camera_setup_writer,
+        &"3.png".into(),
+        5.5, Val::Px(500.0),
+        meshes,
+        materials,
+        images,
+        view_list_entity,
     );
 
-    page_entities.push(
-        text_section::camera(
-            commands,
-            theme,
-            camera_setup_writer,
-            &"3.png".into(),
-            5.5, Val::Px(500.0),
-            meshes,
-            materials,
-            images,
-        )
-    );
+    let next_item = example_header::spawn(commands, "Example 16");
+    commands.entity(view_list_entity).push_children(&[next_item]);
 
-    page_entities.push(
-        example_header::spawn(commands, "Example 16")
-    );
+    let next_item = text_section::spawn(commands, "Consider the vectors
+    1 −1 v1=1,v2= 2
+    Give a geometric description of their span Span {v1,v2}.");
+    commands.entity(view_list_entity).push_children(&[next_item]);
 
-    page_entities.push(
-        text_section::spawn(commands, "Consider the vectors
-        1 −1 v1=1,v2= 2
-        Give a geometric description of their span Span {v1,v2}.")
-    );
+    let next_item = solution_header::spawn(commands, "SOLUTION");
+    commands.entity(view_list_entity).push_children(&[next_item]);
 
-    page_entities.push(
-        solution_header::spawn(commands, "SOLUTION")
-    );
-
-    page_entities.push(
-        text_section::spawn(commands, "Let’s think about the set inside R2 of all linear
-        combinations of our vectors 1 −1
-        a1v1+a2v2=a1 1 +a2 2 foranya1,a2∈R
-        To understand what this set looks like, we will build up the linear combinations
-        in several steps.
-        • Setting a2 = 0, we get all scales of the first vector 1
-        a1v1 =a1 1 foranya1 ∈R
-        This gives Span {v1}, the straight line through the origin containing v1.
-        • Similarly, setting a1 = 0, we get all scales of the second vector −1
-        a2v2 =a2 2 foranya2 ∈R
-        This gives Span {v2}, the straight line through the origin containing v2.
-        • Finally observe that Span {v1,v2} consists of all vectors formed by adding
-        vectors along these
-        two straight lines. Since any vector in the plane can be reached in this way,
-        we conclude that Span {v1, v2} = R2")
-    );
+    let next_item = text_section::spawn(commands, "Let’s think about the set inside R2 of all linear
+    combinations of our vectors 1 −1
+    a1v1+a2v2=a1 1 +a2 2 foranya1,a2∈R
+    To understand what this set looks like, we will build up the linear combinations
+    in several steps.
+    • Setting a2 = 0, we get all scales of the first vector 1
+    a1v1 =a1 1 foranya1 ∈R
+    This gives Span {v1}, the straight line through the origin containing v1.
+    • Similarly, setting a1 = 0, we get all scales of the second vector −1
+    a2v2 =a2 2 foranya2 ∈R
+    This gives Span {v2}, the straight line through the origin containing v2.
+    • Finally observe that Span {v1,v2} consists of all vectors formed by adding
+    vectors along these
+    two straight lines. Since any vector in the plane can be reached in this way,
+    we conclude that Span {v1, v2} = R2");
+    commands.entity(view_list_entity).push_children(&[next_item]);
 
     // page_entities.push(
     //     definition_body::spawn(commands, "Span of vectors", content)
     // );
 
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
-    page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );page_entities.push(
-        page_header::spawn(commands, "1.2.4 Spans")
-    );
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+    
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+    
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    let next_item = page_header::spawn(commands, "1.2.4 Spans");
+    commands.entity(view_list_entity).push_children(&[next_item]);
     
     
 }

@@ -85,9 +85,9 @@ impl Plugin for SystemsPlugin {
     }
 }
 
-pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -> Entity {
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, option_bar_entity: Entity) -> Entity {
     // let option_bar_holder = option_bar_holder(commands);
-    let option_bar = option_bar(commands, theme, width);
+    let option_bar = option_bar_entity;
 
     let themes_header = themes_header(commands, theme);
     let light_theme_button = light_theme_button(commands, theme);

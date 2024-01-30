@@ -73,97 +73,99 @@ pub fn setup_new_camera (
 ) {
 
     
-    for (camera_banner_entity, node, ui_image) in camera_banner_query.iter() {
-        for event in camera_setup_reader.read() {
-            for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
-                let size = node.size();
-                let size = Extent3d {
-                    width: size.x.ceil() as u32,
-                    height: size.y.ceil() as u32,
-                    ..default()
-                };
+    // for (camera_banner_entity, node, ui_image) in camera_banner_query.iter() {
+    //     for event in camera_setup_reader.read() {
+    //         for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
+    //             let size = node.size();
+    //             let size = Extent3d {
+    //                 width: size.x.ceil() as u32,
+    //                 height: size.y.ceil() as u32,
+    //                 ..default()
+    //             };
 
-                // remove old image handle from images
-                images.remove(ui_image.texture.clone());
+    //             // remove old image handle from images
+    //             images.remove(ui_image.texture.clone());
 
-                // remove old UiImage
-                commands.entity(camera_banner_entity).remove::<UiImage>();
+    //             // remove old UiImage
+    //             commands.entity(camera_banner_entity).remove::<UiImage>();
 
-                // delete old UiImage
+    //             // delete old UiImage
 
 
-                // remove old Camera
-                println!("Film_crew_entity: {:?}", film_crew_entity);
-                let camera_entity = film_crew.camera_entity;
-                commands.entity(film_crew_entity).remove_children(&[camera_entity]);
-                commands.entity(camera_entity).despawn_recursive();
-                film_crew.camera_entity = Entity::PLACEHOLDER;
+    //             // remove old Camera
+    //             println!("Film_crew_entity: {:?}", film_crew_entity);
+    //             let camera_entity = film_crew.camera_entity;
+    //             commands.entity(film_crew_entity).remove_children(&[camera_entity]);
+    //             commands.entity(camera_entity).despawn_recursive();
+    //             film_crew.camera_entity = Entity::PLACEHOLDER;
                 
 
 
 
-                // create new image handle
-                let mut image = Image {
-                    texture_descriptor: TextureDescriptor {
-                        label: None,
-                        size: size.clone(),
-                        dimension: TextureDimension::D2,
-                        format: TextureFormat::Bgra8UnormSrgb,
-                        mip_level_count: 1,
-                        sample_count: 1,
-                        usage: TextureUsages::TEXTURE_BINDING
-                            | TextureUsages::COPY_DST
-                            | TextureUsages::RENDER_ATTACHMENT,
-                        view_formats: &[],
-                    },
-                    ..default()
-                };
-                image.resize(size.clone()); // fill image.data with zeroes and change it's size to the correct size
-                let image_handle = images.add(image);
+    //             // create new image handle
+    //             let mut image = Image {
+    //                 texture_descriptor: TextureDescriptor {
+    //                     label: None,
+    //                     size: size.clone(),
+    //                     dimension: TextureDimension::D2,
+    //                     format: TextureFormat::Bgra8UnormSrgb,
+    //                     mip_level_count: 1,
+    //                     sample_count: 1,
+    //                     usage: TextureUsages::TEXTURE_BINDING
+    //                         | TextureUsages::COPY_DST
+    //                         | TextureUsages::RENDER_ATTACHMENT,
+    //                     view_formats: &[],
+    //                 },
+    //                 ..default()
+    //             };
+    //             image.resize(size.clone()); // fill image.data with zeroes and change it's size to the correct size
+    //             let image_handle = images.add(image);
 
-                // create new UiImage
-                let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
-                commands.entity(camera_banner_entity).insert(ui_image);
+    //             // create new UiImage
+    //             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
+    //             commands.entity(camera_banner_entity).insert(ui_image);
                 
-                // create new Camera
-                let new_camera = commands.spawn(
-                    (
-                    Camera3dBundle {
-                        camera_3d: Camera3d {
-                            clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
-                            ..default()
-                        },
-                        camera: Camera {
-                            viewport: Some(Viewport {
-                                physical_position: UVec2::new(0, 0),
-                                physical_size: UVec2::new(
-                                    size.width.clone(),
-                                    size.height.clone(),
-                                ),
-                                ..default()
-                            }),
-                            // render before the "main pass" camera
-                            order: 1,
-                            target: RenderTarget::Image(image_handle),
-                            ..default()
-                        },
-                        transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
-                            .looking_at(Vec3::ZERO, Vec3::Y),
-                        ..default()
-                    },
-                    // UI config is a separate component
-                    UiCameraConfig {
-                        show_ui: false,
-                    },
-                    RenderLayers::layer(1),
-                    MiniCamera{number: 0},
-                )).id();
+    //             // create new Camera
+    //             let new_camera = commands.spawn(
+    //                 (
+    //                 Camera3dBundle {
+    //                     camera_3d: Camera3d {
+    //                         clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
+    //                         ..default()
+    //                     },
+    //                     camera: Camera {
+    //                         viewport: Some(Viewport {
+    //                             physical_position: UVec2::new(0, 0),
+    //                             physical_size: UVec2::new(
+    //                                 size.width.clone(),
+    //                                 size.height.clone(),
+    //                             ),
+    //                             ..default()
+    //                         }),
+    //                         // render before the "main pass" camera
+    //                         order: 1,
+    //                         target: RenderTarget::Image(image_handle),
+    //                         ..default()
+    //                     },
+    //                     transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
+    //                         .looking_at(Vec3::ZERO, Vec3::Y),
+    //                     ..default()
+    //                 },
+    //                 // UI config is a separate component
+    //                 UiCameraConfig {
+    //                     show_ui: false,
+    //                 },
+    //                 RenderLayers::layer(1),
+    //                 MiniCamera{number: 0},
+    //             )).id();
 
-                film_crew.camera_entity = new_camera;
-                commands.entity(film_crew_entity).push_children(&[new_camera]);
-            }
-        }
-    }
+    //             film_crew.camera_entity = new_camera;
+    //             commands.entity(film_crew_entity).push_children(&[new_camera]);
+    //         }
+    //     }
+    // }
+
+    // =========== ^^^^^^NEW
     //         println!("===== Current Banners =====");
     //         println!("Banner:");
     //         println!("   entity: {:?}", camera_banner_entity);
@@ -442,9 +444,9 @@ pub fn setup_new_camera (
 }
 
 fn delete_camera_system(
-    mut commands: Commands,
-    mini_camera_query: Query<(Entity), With<MiniCamera>>,
-    mut routing_reader: EventReader<RoutingEvent>,
+    // mut commands: Commands,
+    // mini_camera_query: Query<(Entity), With<MiniCamera>>,
+    // mut routing_reader: EventReader<RoutingEvent>,
 ) {
     // for event in routing_reader.read() {
     //     for entity in mini_camera_query.iter() {
@@ -454,10 +456,10 @@ fn delete_camera_system(
 }
 
 fn delete_camera_texture_system(
-    mut commands: Commands,
-    mut images: ResMut<Assets<Image>>,
-    camera_banner_query: Query<(&UiImage), With<CameraBackgroundBanner>>,
-    mut routing_reader: EventReader<RoutingEvent>,
+    // mut commands: Commands,
+    // mut images: ResMut<Assets<Image>>,
+    // camera_banner_query: Query<(&UiImage), With<CameraBackgroundBanner>>,
+    // mut routing_reader: EventReader<RoutingEvent>,
 ) {
     // for event in routing_reader.read() {
     //     for ui_image in camera_banner_query.iter() {
@@ -488,7 +490,7 @@ fn resize_camera_system (
     for (minimap_entity, node, ui_image) in camera_banner_query.iter_mut() {
         for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
             for ev in ui_resize_reader.read() {
-            
+                println!("Image resized");
                 // let size = node.size();
                 // projection.update(size.y, size.x);
                 // println!("Projection updated to {:?}", projection);

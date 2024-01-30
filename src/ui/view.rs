@@ -51,8 +51,8 @@ impl Plugin for SystemsPlugin {
     }
 }
 
-pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
-    let view = new(commands, theme);
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, view_entity: Entity) -> Entity {
+    let view = view_entity;
 
     // let mut page_entities: Vec<Entity> = Vec::new();
     let page_entities = page_items(commands);
