@@ -64,10 +64,10 @@ pub fn routing_system(
                 println!("\nView size before: {:?}\n", size);
             }
 
-            // for film_crew_entity in film_crew_query.iter_mut() {
-            //     // println!("Despawning film crew here!");
-            //     commands.entity(film_crew_entity).despawn_recursive();
-            // }
+            for film_crew_entity in film_crew_query.iter_mut() {
+                // println!("Despawning film crew here!");
+                commands.entity(film_crew_entity).despawn_recursive();
+            }
             
             // println!("entities removed:");
             // remove all current page ui
