@@ -38,6 +38,9 @@ pub const NAVBAR_PADDING: UiRect = UiRect {
 #[derive(Component)]
 pub struct Navbar;
 
+#[derive(Component)]
+pub struct NavbarHolder;
+
 // Marker
 #[derive(Component)]
 pub struct SidebarButton;
@@ -90,7 +93,9 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32, 
 
 pub fn navbar_holder(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
     return commands
-        .spawn(NodeBundle {
+        .spawn((
+            NavbarHolder,
+            NodeBundle {
             style: Style {
                 height: Val::Px(300.0),
                 flex_direction: FlexDirection::Column,
@@ -98,8 +103,7 @@ pub fn navbar_holder(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
                 ..default()
             },
             ..default()
-        })
-        .id();
+        })).id();
 }
 pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme, height: f32) -> Entity {
     return commands

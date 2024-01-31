@@ -51,6 +51,7 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) {
 pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
     return commands.spawn((
         NavbarFrame,
+        Root,
         NodeBundle {
             style: Style {
                 width: Val::Percent(width),

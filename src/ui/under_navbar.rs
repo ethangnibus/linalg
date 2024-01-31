@@ -91,8 +91,11 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, under_navbar_
 
 }
 
+
 pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
-    return commands.spawn(NodeBundle {
+    return commands.spawn((
+        UnderNavbar,
+        NodeBundle {
         style: Style {
             width: Val::Percent(width),
             height: Val::Percent(100.0),
@@ -102,7 +105,7 @@ pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
         },
         background_color: Color::rgb(0.0, 0.0, 1.0).into(),
         ..default()
-    }).id()
+    })).id()
 }
 
 pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {

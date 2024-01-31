@@ -600,7 +600,6 @@ fn resize_camera_system (
                 film_crew.camera_entity = new_camera;
                 println!("New camera entity: {:?}", new_camera);
                 commands.entity(film_crew_entity).push_children(&[new_camera]);
-
             }
         }
     }
