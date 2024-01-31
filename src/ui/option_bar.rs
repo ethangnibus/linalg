@@ -15,6 +15,7 @@ use super::util::{
 use super::view;
 use super::under_navbar;
 use super::chapter_container;
+use super::subsection_cameras;
 
 const OPTION_BAR_WIDTH: f32 = 500.0;
 
@@ -72,7 +73,7 @@ impl Plugin for SystemsPlugin {
             (
                 option_bar_swiper_interacitons,
                 option_bar_swiper_color_change_system,
-                option_bar_visibility_system,
+                option_bar_visibility_system.after(subsection_cameras::resize_camera_system),
                 themes_header_color_change_system,
                 theme_button_interaction,
                 theme_change_node_color_change_system,

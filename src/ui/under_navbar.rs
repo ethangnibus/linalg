@@ -55,7 +55,7 @@ impl Plugin for SystemsPlugin {
                 (
                     sidebar_swiper_interactions,
                     sidebar_swiper_color_change_system,
-                    sidebar_visibility_system,
+                    sidebar_visibility_system.after(subsection_cameras::resize_camera_system),
                 ),
             );
     }
@@ -217,7 +217,7 @@ fn sidebar_swiper_color_change_system(
     }
 }
 
-fn sidebar_visibility_system(
+pub fn sidebar_visibility_system(
     mut sidebar_query: Query<(&mut Visibility, &mut Style), With<sidebar::Sidebar>>,
     mut sidebar_visibility_event: EventReader<SidebarVisibilityEvent>,
     mut ui_resize_writer: EventWriter<view::UiResizeEvent>,

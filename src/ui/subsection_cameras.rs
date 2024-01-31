@@ -11,6 +11,8 @@ use super::{routes::RoutingEvent, view::UiResizeEvent};
 use super::util::subsection::SubsectionGameEntity;
 use super::theme;
 use super::routes;
+use super::under_navbar;
+use super::option_bar;
 // use rand::Rng;
 
 pub struct SystemsPlugin;
@@ -472,7 +474,7 @@ fn delete_camera_texture_system(
 
 use bevy::render::view::visibility::update_frusta;
 
-fn resize_camera_system (
+pub fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     // mut mini_camera_query: Query<(Entity, &Camera, &mut Projection, &mut Frustum), With<MiniCamera>>,
