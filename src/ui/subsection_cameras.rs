@@ -501,12 +501,12 @@ pub fn resize_camera_system (
                 // resize image
                 let image = images.get_mut(ui_image.texture.clone()).unwrap(); // FIXME: Change this from unwrap so there's no panic
                 image.resize(size);
-                println!("image aspect ratio {:?}", image.aspect_ratio());
-                println!("image size: width: {:?}, height: {:?}", image.width(), image.height());
+                // println!("image aspect ratio {:?}", image.aspect_ratio());
+                // println!("image size: width: {:?}, height: {:?}", image.width(), image.height());
 
                 // update projection's aspect ratio
                 projection.update(size.height as f32, size.width as f32);
-                println!("Projection aspect ratio \n{:?}", projection);
+                // println!("Projection aspect ratio \n{:?}", projection);
 
                 // resize viewport's physical size
                 let mut viewport = camera.viewport.as_mut().unwrap();
