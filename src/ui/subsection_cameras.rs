@@ -476,8 +476,8 @@ fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     // mut mini_camera_query: Query<(Entity, &Camera, &mut Projection, &mut Frustum), With<MiniCamera>>,
-    mut mini_camera_query: Query<(Entity, &Camera, &mut Projection), With<MiniCamera>>,
-    mut film_crew_query: Query<(Entity, &mut FilmCrew), With<FilmCrew>>,
+    mut mini_camera_query: Query<(Entity, &mut Camera, &mut Projection), With<MiniCamera>>,
+    // mut film_crew_query: Query<(Entity, &mut FilmCrew), With<FilmCrew>>,
 
     // mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>, Changed<Node>)>,
     mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>)>,
@@ -485,31 +485,10 @@ fn resize_camera_system (
     mut ui_resize_reader: EventReader<UiResizeEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    
-        
-    for (minimap_entity, node, ui_image) in camera_banner_query.iter_mut() {
-        for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
+    for (entity, node, mut ui_image) in camera_banner_query.iter_mut() {
+        for (mini_camera_entity, mut camera, mut projection) in mini_camera_query.iter_mut() {
             for ev in ui_resize_reader.read() {
-                println!("Image resized");
-                // let size = node.size();
-                // projection.update(size.y, size.x);
-                // println!("Projection updated to {:?}", projection);
-                // println!("x: {:?}, y: {:?}", size.x, size.y);
-
-                // projection.update();
-                // projection.aspect_ratio = 1.0;
-                // println!("Aspect ratio: {:?}", projection.aspect_ratio);
-                // projection.get_projection_matrix();
-
-                // update_frusta(views); //Continue down this path ...
-                // println!("Projection: {:?}", );
-                
-                // // for q in proj_query.iter_mut() {
-                // //     println!("got the projection!");
-                // //     q.
-                // // }
-                // // println!("UI RESIZE");
-                // // make size for new image
+                // get size of the node that the camera renders to                
                 let size = node.size();
                 let size = Extent3d {
                     width: size.x.ceil() as u32,
@@ -517,92 +496,140 @@ fn resize_camera_system (
                     ..default()
                 };
 
-                // remove old image handle from images
-                images.remove(ui_image.texture.clone());
+                // resize image
+                let image = images.get_mut(ui_image.texture.clone()).unwrap(); // FIXME: Change this from unwrap so there's no panic
+                image.resize(size);
+                println!("image aspect ratio {:?}", image.aspect_ratio());
+                println!("image size: width: {:?}, height: {:?}", image.width(), image.height());
 
-                // remove old UiImage
-                commands.entity(minimap_entity).remove::<UiImage>();
+                // update projection's aspect ratio
+                projection.update(size.height as f32, size.width as f32);
+                println!("Projection aspect ratio \n{:?}", projection);
 
-                // delete old UiImage
-
-
-                // remove old Camera
-                // println!("Film_crew_entity: {:?}", film_crew_entity);
-                // commands.entity(film_crew.camera_entity).despawn_recursive();
-                // film_crew.camera_entity = Entity::PLACEHOLDER;
-
-                let camera_entity = film_crew.camera_entity;
-
-                println!("Film Crew Entity: {:?},\n Camera Entity: {:?}", film_crew_entity, camera_entity);
-                commands.entity(camera_entity).despawn_recursive();
-                commands.entity(film_crew_entity).remove_children(&[camera_entity]);
-                
-                film_crew.camera_entity = Entity::PLACEHOLDER;
-
-
-
-                // create new image handle
-                let mut image = Image {
-                    texture_descriptor: TextureDescriptor {
-                        label: None,
-                        size: size.clone(),
-                        dimension: TextureDimension::D2,
-                        format: TextureFormat::Bgra8UnormSrgb,
-                        mip_level_count: 1,
-                        sample_count: 1,
-                        usage: TextureUsages::TEXTURE_BINDING
-                            | TextureUsages::COPY_DST
-                            | TextureUsages::RENDER_ATTACHMENT,
-                        view_formats: &[],
-                    },
-                    ..default()
-                };
-                image.resize(size.clone()); // fill image.data with zeroes and change it's size to the correct size
-                let image_handle = images.add(image);
-
-                // create new UiImage
-                let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
-                commands.entity(minimap_entity).insert(ui_image);
-                
-                // create new Camera
-                let new_camera = commands.spawn(
-                    (
-                    Camera3dBundle {
-                        camera_3d: Camera3d {
-                            clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
-                            ..default()
-                        },
-                        camera: Camera {
-                            viewport: Some(Viewport {
-                                physical_position: UVec2::new(0, 0),
-                                physical_size: UVec2::new(
-                                    size.width.clone(),
-                                    size.height.clone(),
-                                ),
-                                ..default()
-                            }),
-                            // render before the "main pass" camera
-                            order: 1,
-                            target: RenderTarget::Image(image_handle),
-                            ..default()
-                        },
-                        transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
-                            .looking_at(Vec3::ZERO, Vec3::Y),
-                        ..default()
-                    },
-                    // UI config is a separate component
-                    UiCameraConfig {
-                        show_ui: false,
-                    },
-                    RenderLayers::layer(1),
-                    MiniCamera{number: 0},
-                )).id();
-                film_crew.camera_entity = new_camera;
-                println!("New camera entity: {:?}", new_camera);
-                commands.entity(film_crew_entity).push_children(&[new_camera]);
+                // resize viewport's physical size
+                let mut viewport = camera.viewport.as_mut().unwrap();
+                viewport.physical_size.x = size.width;
+                viewport.physical_size.y = size.height;
             }
         }
     }
+        
+    // for (minimap_entity, node, ui_image) in camera_banner_query.iter_mut() {
+    //     for (film_crew_entity, mut film_crew) in film_crew_query.iter_mut() {
+    //         for ev in ui_resize_reader.read() {
+    //             println!("Image resized");
+    //             // let size = node.size();
+    //             // projection.update(size.y, size.x);
+    //             // println!("Projection updated to {:?}", projection);
+    //             // println!("x: {:?}, y: {:?}", size.x, size.y);
+
+    //             // projection.update();
+    //             // projection.aspect_ratio = 1.0;
+    //             // println!("Aspect ratio: {:?}", projection.aspect_ratio);
+    //             // projection.get_projection_matrix();
+
+    //             // update_frusta(views); //Continue down this path ...
+    //             // println!("Projection: {:?}", );
+                
+    //             // // for q in proj_query.iter_mut() {
+    //             // //     println!("got the projection!");
+    //             // //     q.
+    //             // // }
+    //             // // println!("UI RESIZE");
+    //             // // make size for new image
+    //             let size = node.size();
+    //             let size = Extent3d {
+    //                 width: size.x.ceil() as u32,
+    //                 height: size.y.ceil() as u32,
+    //                 ..default()
+    //             };
+
+    //             // remove old image handle from images
+    //             images.remove(ui_image.texture.clone());
+
+    //             // remove old UiImage
+    //             commands.entity(minimap_entity).remove::<UiImage>();
+
+    //             // delete old UiImage
+
+
+    //             // remove old Camera
+    //             // println!("Film_crew_entity: {:?}", film_crew_entity);
+    //             // commands.entity(film_crew.camera_entity).despawn_recursive();
+    //             // film_crew.camera_entity = Entity::PLACEHOLDER;
+
+    //             let camera_entity = film_crew.camera_entity;
+
+    //             println!("Film Crew Entity: {:?},\n Camera Entity: {:?}", film_crew_entity, camera_entity);
+    //             commands.entity(camera_entity).despawn_recursive();
+    //             commands.entity(film_crew_entity).remove_children(&[camera_entity]);
+                
+    //             film_crew.camera_entity = Entity::PLACEHOLDER;
+
+
+
+    //             // create new image handle
+    //             let mut image = Image {
+    //                 texture_descriptor: TextureDescriptor {
+    //                     label: None,
+    //                     size: size.clone(),
+    //                     dimension: TextureDimension::D2,
+    //                     format: TextureFormat::Bgra8UnormSrgb,
+    //                     mip_level_count: 1,
+    //                     sample_count: 1,
+    //                     usage: TextureUsages::TEXTURE_BINDING
+    //                         | TextureUsages::COPY_DST
+    //                         | TextureUsages::RENDER_ATTACHMENT,
+    //                     view_formats: &[],
+    //                 },
+    //                 ..default()
+    //             };
+    //             image.resize(size.clone()); // fill image.data with zeroes and change it's size to the correct size
+    //             let image_handle = images.add(image);
+
+    //             // create new UiImage
+    //             let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
+    //             commands.entity(minimap_entity).insert(ui_image);
+                
+    //             // create new Camera
+    //             let new_camera = commands.spawn(
+    //                 (
+    //                 Camera3dBundle {
+    //                     camera_3d: Camera3d {
+    //                         clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
+    //                         ..default()
+    //                     },
+    //                     camera: Camera {
+    //                         viewport: Some(Viewport {
+    //                             physical_position: UVec2::new(0, 0),
+    //                             physical_size: UVec2::new(
+    //                                 size.width.clone(),
+    //                                 size.height.clone(),
+    //                             ),
+    //                             ..default()
+    //                         }),
+    //                         // render before the "main pass" camera
+    //                         order: 1,
+    //                         target: RenderTarget::Image(image_handle),
+    //                         ..default()
+    //                     },
+    //                     transform: Transform::from_translation(Vec3::new(0.0, 0.0, 15.0))
+    //                         .looking_at(Vec3::ZERO, Vec3::Y),
+    //                     ..default()
+    //                 },
+    //                 // UI config is a separate component
+    //                 UiCameraConfig {
+    //                     show_ui: false,
+    //                 },
+    //                 RenderLayers::layer(1),
+    //                 MiniCamera{number: 0},
+    //             )).id();
+    //             film_crew.camera_entity = new_camera;
+    //             println!("New camera entity: {:?}", new_camera);
+    //             commands.entity(film_crew_entity).push_children(&[new_camera]);
+    //         }
+    //     }
+    // }
 }
 
 
