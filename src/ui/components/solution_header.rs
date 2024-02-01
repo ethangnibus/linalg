@@ -7,11 +7,16 @@ use bevy::{
     prelude::*,
     // winit::WinitSettings,
 };
+use super::super::theme;
 
-pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
+pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, text: &str) -> Entity {
 
     // make banner behind the text
-    let background_banner = commands.spawn(
+    let background_banner = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
@@ -34,19 +39,23 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             align_items: AlignItems::Start,
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        background_color: theme::background_color(theme).into(),
+        border_color: theme::background_color(theme).into(),
         ..default()
-    }).id();
+    })).id();
 
     // make the text that appears on the banner
     let text_bundle = commands.spawn((
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::sidebar_color,
+        },
         TextBundle::from_section(
             // format!(text),
             text,
             TextStyle {
                 font_size: 24.,
-                color: Color::rgb(1.0, 0.7, 0.1).into(),
+                color: theme::sidebar_color(theme).into(),
                 ..default()
             },
         ),
@@ -54,7 +63,11 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     )).id();
 
-    let horizontal_bar = commands.spawn(
+    let horizontal_bar = commands.spawn((
+        theme::ColorFunction {
+            background: theme::text_color,
+            border: theme::text_color,
+        },
         NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
@@ -75,10 +88,10 @@ pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
             align_items: AlignItems::Center,
             ..default()
         },
-        background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
+        background_color: theme::text_color(theme).into(),
+        border_color: theme::text_color(theme).into(),
         ..default()
-    }).id();
+    })).id();
 
     commands.entity(background_banner).push_children(&[horizontal_bar, text_bundle]);
     

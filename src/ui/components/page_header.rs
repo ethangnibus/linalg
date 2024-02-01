@@ -8,43 +8,55 @@ use bevy::{
     // winit::WinitSettings,
 };
 
-pub fn spawn(commands: &mut Commands, text: &str) -> Entity {
+use crate::ui::util::theme;
+
+pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, text: &str) -> Entity {
 
     // make banner behind the text
-    let background_banner = commands.spawn(
+    let background_banner = commands.spawn((
+        theme::ColorFunction {
+            background: theme::sidebar_color,
+            border: theme::background_color,
+        },
         NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Auto,
-            min_height: Val::Px(54.0),
-            padding: UiRect {
-                left: Val::Px(4.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Auto,
+                min_height: Val::Px(54.0),
+                padding: UiRect {
+                    left: Val::Px(4.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(4.0),
+                },
+                border: UiRect {
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(4.0),
+                },
+                justify_items: JustifyItems::Start,
+                align_items: AlignItems::Center,
+                ..default()
             },
-            border: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
-            },
-            justify_items: JustifyItems::Start,
-            align_items: AlignItems::Center,
+            background_color: theme::sidebar_color(theme).into(),
+            border_color: theme::background_color(theme).into(),
             ..default()
         },
-        background_color: Color::rgb(0.0, 0.196, 0.384).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    }).id();
+    )).id();
 
     // make the text that appears on the banner
     let text_bundle = commands.spawn((
+        theme::ColorFunction {
+            background: theme::sidebar_header_text_color,
+            border: theme::sidebar_header_text_color,
+        },
         TextBundle::from_section(
             // format!(text),
             text,
             TextStyle {
                 font_size: 30.,
+                color: theme::sidebar_header_text_color(theme).into(),
                 ..default()
             },
         ),

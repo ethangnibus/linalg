@@ -9,7 +9,7 @@ pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<RoutingEvent>()
-            .add_systems(Update, routing_system)
+            .add_systems(Update, routing_system.after(subsection_cameras::resize_camera_system))
             .insert_resource(CurrentRoute {
                 chapter_number: 0,
                 section_number: 0,
@@ -37,7 +37,7 @@ pub struct RoutingEvent {
 
 pub fn routing_system(
     mut commands: Commands,
-    view_list_query: Query<(Entity, &Children), With<view::ViewList>>,
+    mut view_list_query: Query<(Entity, &Children, &mut view::ViewList, &mut Style), With<view::ViewList>>,
     subsection_game_entity_query: Query<Entity, With<SubsectionGameEntity>>,
     // mut camera_query: Query<Entity, With<subsection_cameras::MiniCamera>>, // replaced with film crew query
     mut film_crew_query: Query<Entity, With<subsection_cameras::FilmCrew>>,
@@ -49,12 +49,20 @@ pub fn routing_system(
     theme: Res<theme::CurrentTheme>,
     view_query: Query<&Node, With<view::View>>,
 
+
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut images: ResMut<Assets<Image>>,
 ) {
     for event in routing_event_reader.read() {
-        for (view_list, view_list_children) in view_list_query.iter() {
+        
+
+        for (view_list, view_list_children, mut scrolling_list, mut style) in view_list_query.iter_mut() {
+            // Scroll back to the top of the view
+            scrolling_list.position = 0.0;
+            style.top = Val::Px(scrolling_list.position);
+
+
             current_route.chapter_number = event.chapter_number;
             current_route.section_number = event.section_number;
             current_route.subsection_number = event.subsection_number;
