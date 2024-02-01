@@ -50,7 +50,7 @@ struct MainPassCube;
 // Shows us which mini camera this is
 #[derive(Component)]
 pub struct MiniCamera {
-    pub number: u8,
+    pub crew_id: u8,
 }
 
 
@@ -76,9 +76,9 @@ pub fn setup_camera(
     crew_id: u8,
 ) {
     // make banner behind the text
-    let background_banner = commands
+    let camera_banner = commands
         .spawn((
-            // theme::ColorFunction {
+            // theme::ColorFunction { // lol don't use this it makes everything pitch black in dark mode
             //     background: theme::background_color,
             //     border: theme::background_color,
             // },
@@ -102,7 +102,7 @@ pub fn setup_camera(
         )
     ).id();
 
-    commands.entity(view_list_entity).push_children(&[background_banner]);
+    commands.entity(view_list_entity).push_children(&[camera_banner]);
     let size = Extent3d {
         width: 1000,
         height: 1000,
@@ -132,7 +132,7 @@ pub fn setup_camera(
 
     let ui_image = UiImage { texture: image_handle.clone(), flip_x: false, flip_y: false };
     
-    commands.entity(background_banner).insert(ui_image); // FIXME: this gets added multiple times.. bad
+    commands.entity(camera_banner).insert(ui_image); // FIXME: this gets added multiple times.. bad
 
     let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
     let cube_material_handle = if crew_id == 0 {
@@ -185,7 +185,7 @@ pub fn setup_camera(
             show_ui: false,
         },
         crew_render_layer,
-        MiniCamera{number: crew_id},
+        MiniCamera{crew_id: crew_id},
     )).id();
 
     // commands.entity(camera_banner_entity).push_children(&[camera]);
@@ -238,18 +238,20 @@ pub fn resize_camera_system (
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     // mut mini_camera_query: Query<(Entity, &Camera, &mut Projection, &mut Frustum), With<MiniCamera>>,
-    mut mini_camera_query: Query<(Entity, &mut Camera, &mut Projection), With<MiniCamera>>,
+    mut mini_camera_query: Query<(Entity, &mut Camera, &MiniCamera, &mut Projection), With<MiniCamera>>,
     // mut film_crew_query: Query<(Entity, &mut FilmCrew), With<FilmCrew>>,
 
     // mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>, Changed<Node>)>,
-    mut camera_banner_query: Query<(Entity, &Node, &UiImage), (With<CameraBackgroundBanner>)>,
+    mut camera_banner_query: Query<(Entity, &Node, &UiImage, &CameraBackgroundBanner), (With<CameraBackgroundBanner>)>,
     // mut proj_query: Query<&bevy::render::camera::OrthographicProjection, With<bevy::render::camera::OrthographicProjection>>,
     mut ui_resize_reader: EventReader<UiResizeEvent>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    for (entity, node, mut ui_image) in camera_banner_query.iter_mut() {
-        for (mini_camera_entity, mut camera, mut projection) in mini_camera_query.iter_mut() {
-            for ev in ui_resize_reader.read() {
+    for ev in ui_resize_reader.read() {
+        for (entity, node, mut ui_image, camera_background_banner) in camera_banner_query.iter_mut() {
+            for (mini_camera_entity, mut camera, mini_camera, mut projection) in mini_camera_query.iter_mut() {
+            
+                if mini_camera.crew_id != camera_background_banner.crew_id {continue}
                 // get size of the node that the camera renders to                
                 let size = node.size();
                 let size = Extent3d {
