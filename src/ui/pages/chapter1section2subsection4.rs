@@ -17,7 +17,7 @@ use super::super::components::{
     example_header,
     solution_header,
 };
-use super::super::subsection_cameras::CameraSetupEvent;
+use super::super::subsection_cameras;
 use super::super::theme;
 
 
@@ -26,7 +26,7 @@ pub fn get(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
     asset_server: & Res<AssetServer>,
-    camera_setup_writer: &mut EventWriter<CameraSetupEvent>,
+    camera_setup_writer: &mut EventWriter<subsection_cameras::CameraSetupEvent>,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     mut images: &mut ResMut<Assets<Image>>,
@@ -38,12 +38,7 @@ pub fn get(
     let next_item = text_section::image(commands, asset_server, camera_setup_writer, "1_black.png".into(), 8.0);
     commands.entity(view_list_entity).push_children(&[next_item]);
 
-    let span_of_vectors_left = definition_text_section::spawn(commands, "Given a collection of vectors v1, . . . , vk ∈ Rn, their span\nSpan {v1,...,vk} ⊂ Rn\nis the set of all their linear combinations. In other words, Span {v1,...,vk} consists of all v ∈ Rn that can be expressed in the form\nv=a1v1 +···+akvk\nfor some weights a1,...,ak ∈ R.\nGeometrically, the span of a collection of vectors is the set of all vectors that can be reached by trav- eling along scales of each of the individual vectors in turn.");
-    let span_of_vectors_right = span_of_vectors_renderer::spawn(commands);
-    let next_item = definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
-    commands.entity(view_list_entity).push_children(&[next_item]);
-
-    text_section::camera(
+    subsection_cameras::setup_camera(
         commands,
         theme,
         camera_setup_writer,
@@ -53,6 +48,25 @@ pub fn get(
         materials,
         images,
         view_list_entity,
+        0,
+    );
+
+    let span_of_vectors_left = definition_text_section::spawn(commands, "Given a collection of vectors v1, . . . , vk ∈ Rn, their span\nSpan {v1,...,vk} ⊂ Rn\nis the set of all their linear combinations. In other words, Span {v1,...,vk} consists of all v ∈ Rn that can be expressed in the form\nv=a1v1 +···+akvk\nfor some weights a1,...,ak ∈ R.\nGeometrically, the span of a collection of vectors is the set of all vectors that can be reached by trav- eling along scales of each of the individual vectors in turn.");
+    let span_of_vectors_right = span_of_vectors_renderer::spawn(commands);
+    let next_item = definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
+    commands.entity(view_list_entity).push_children(&[next_item]);
+
+    subsection_cameras::setup_camera(
+        commands,
+        theme,
+        camera_setup_writer,
+        &"3.png".into(),
+        5.5, Val::Px(500.0),
+        meshes,
+        materials,
+        images,
+        view_list_entity,
+        1,
     );
 
     let next_item = example_header::spawn(commands, "Example 16");
