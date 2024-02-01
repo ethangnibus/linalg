@@ -1241,13 +1241,13 @@ pub fn routing_system(
             // for entity in page_entities {
             //     commands.entity(view_list).push_children(&[entity]);
             // }
-            ui_resize_writer.send(view::UiResizeEvent);
+            
         }
         for view_node in view_query.iter() {
             let size = view_node.size();
             // println!("\nView size after: {:?}\n", size);
         }
-
+        ui_resize_writer.send(view::UiResizeEvent);
         // camera_setup_writer.send(subsection_cameras::CameraSetupEvent);
     }
     // add new page
