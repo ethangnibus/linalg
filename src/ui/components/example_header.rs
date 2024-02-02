@@ -2,15 +2,13 @@ use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
         AccessibilityNode,
-    },
-    input::mouse::{MouseScrollUnit, MouseWheel},
-    prelude::*,
+    }, input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*, render::view
     // winit::WinitSettings,
 };
 
 use crate::ui::util::theme;
 
-pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, text: &str) -> Entity {
+pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, text: &str) {
 
     // make banner behind the text
     let background_banner = commands.spawn((
@@ -64,6 +62,5 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, text: &str) -
     )).id();
 
     commands.entity(background_banner).push_children(&[text_bundle]);
-    
-    return background_banner;
+    commands.entity(view_list_entity).push_children(&[background_banner]);
 }
