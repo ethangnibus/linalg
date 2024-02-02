@@ -14,6 +14,7 @@ use super::super::components::{
     span_of_vectors_renderer,
     example_header,
     solution_header,
+    sub_header,
 };
 use super::super::subsection_cameras;
 use super::super::theme;
@@ -146,7 +147,7 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Case 1: Our set of vectors contains no vectors");
+    sub_header::spawn(commands, theme, view_list_entity, "Case 1: Our set of vectors contains no vectors");
     
 
     text_section::spawn(

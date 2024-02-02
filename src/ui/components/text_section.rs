@@ -38,8 +38,8 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 width: Val::Percent(100.0), // FIXME: fix so navbar isnt weird when going to 1.2.4
                 height: Val::Auto,
                 padding: UiRect {
-                    left: Val::Px(4.0),
-                    right: Val::Px(0.0),
+                    left: Val::Px(16.0),
+                    right: Val::Px(16.0),
                     top: Val::Px(14.0),
                     bottom: Val::Px(14.0),
                 },
@@ -47,7 +47,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                     left: Val::Px(0.0),
                     right: Val::Px(0.0),
                     top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
+                    bottom: Val::Px(0.0),
                 },
                 justify_items: JustifyItems::Start,
                 align_items: AlignItems::Center,

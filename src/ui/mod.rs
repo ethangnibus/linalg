@@ -244,6 +244,7 @@ mod components{
     pub mod span_of_vectors_renderer;
     pub mod example_header;
     pub mod example_footer;
+    pub mod sub_header;
     pub mod solution_header;
     pub mod example_block;
 }

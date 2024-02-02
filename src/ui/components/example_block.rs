@@ -33,7 +33,7 @@ pub fn spawn(
     subsection_cameras::setup_camera(
         commands,
         theme,
-        Val::Px(500.0),
+        Val::Px(400.0),
         meshes,
         materials,
         images,
