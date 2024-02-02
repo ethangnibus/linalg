@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-
 // pub const BERKELEY_GOLD: Color = Color::rgb(1.0, 0.7, 0.1);
 pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
 pub const BERKELEY_GOLD: Color = Color::rgb(0.99, 0.71, 0.08);
@@ -14,12 +13,18 @@ pub const MATRIX_LIGHT_GREEN: Color = Color::rgb(0.0, 0.56, 0.06);
 pub const MATRIX_GREEN: Color = Color::rgb(0.0, 0.23, 0.0);
 pub const MATRIX_DARK_GREEN: Color = Color::rgb(0.0, 0.1, 0.0);
 
+// Cyberpunk theme
+pub const CYBERPUNK_YELLOW: Color = Color::rgb(0.952, 0.901, 0.0);
+pub const CYBERPUNK_BLUE: Color = Color::rgb(0.015, 0.855, 0.965);
+pub const CYBERPUNK_RED: Color = Color::rgb(1.0, 0.0, 0.235);
+pub const CYBERPUNK_GREY: Color = Color::rgb(0.333, 0.294, 0.255);
 
 #[derive(Resource, Clone, Copy, PartialEq)]
 pub enum CurrentTheme {
     Light,
     Dark,
     Matrix,
+    Cyberpunk,
 }
 
 #[derive(Event)]
@@ -31,7 +36,7 @@ pub struct ThemeButton {
 }
 
 #[derive(Component)]
-pub struct ThemeButtonText{
+pub struct ThemeButtonText {
     pub next_theme: CurrentTheme,
 }
 
@@ -61,6 +66,9 @@ pub fn background_color(theme: &CurrentTheme) -> Color {
         CurrentTheme::Matrix => {
             return Color::BLACK;
         }
+        CurrentTheme::Cyberpunk => {
+            return Color::BLACK;
+        }
     }
 }
 
@@ -74,6 +82,9 @@ pub fn swiper_background_color(theme: &CurrentTheme) -> Color {
         }
         CurrentTheme::Matrix => {
             return MATRIX_DARK_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_GREY;
         }
     }
 }
@@ -89,6 +100,9 @@ pub fn text_color(theme: &CurrentTheme) -> Color {
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
         }
+        CurrentTheme::Cyberpunk => {
+            return Color::WHITE;
+        }
     }
 }
 
@@ -101,6 +115,9 @@ pub fn navbar_background_color(theme: &CurrentTheme) -> Color {
             return Color::BLACK;
         }
         CurrentTheme::Matrix => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Cyberpunk => {
             return Color::BLACK;
         }
     }
@@ -117,10 +134,13 @@ pub fn navbar_text_color(theme: &CurrentTheme) -> Color {
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
         }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_YELLOW;
+        }
     }
 }
 
-pub fn navbar_buttons_background_color(theme:&CurrentTheme) -> Color {
+pub fn navbar_buttons_background_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
             return BERKELEY_GOLD;
@@ -130,6 +150,9 @@ pub fn navbar_buttons_background_color(theme:&CurrentTheme) -> Color {
         }
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_YELLOW;
         }
     }
 }
@@ -145,6 +168,9 @@ pub fn sidebar_color(theme: &CurrentTheme) -> Color {
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
         }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_YELLOW;
+        }
     }
 }
 
@@ -159,9 +185,11 @@ pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
         CurrentTheme::Matrix => {
             return MATRIX_GREEN;
         }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_RED;
+        }
     }
 }
-
 
 pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
     match theme {
@@ -172,6 +200,9 @@ pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
             return Color::BLACK;
         }
         CurrentTheme::Matrix => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Cyberpunk => {
             return Color::BLACK;
         }
     }
