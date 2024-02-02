@@ -8,64 +8,74 @@ use bevy::{
     // winit::WinitSettings,
 };
 
-pub fn spawn(commands: &mut Commands, text: &str, body_left: Entity, body_right: Entity) -> Entity {
+use crate::ui::util::theme;
+
+pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, text: &str, body_left: Entity, body_right: Entity) -> Entity {
 
 
-    let definition_block = commands.spawn(
-        NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Auto,
-            padding: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
-            },
-            border: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
-            },
-            flex_direction: FlexDirection::Column,
-            justify_items: JustifyItems::Start,
-            align_items: AlignItems::Center,
-            ..default()
+    let definition_block = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
         },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    }).id();
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Auto,
+                padding: UiRect {
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                },
+                border: UiRect {
+                    left: Val::Px(8.0),
+                    right: Val::Px(8.0),
+                    top: Val::Px(14.0),
+                    bottom: Val::Px(14.0),
+                },
+                flex_direction: FlexDirection::Column,
+                justify_items: JustifyItems::Start,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            border_color: theme::background_color(theme).into(),
+            ..default()
+        }
+    )).id();
 
     // fake background
-    let fake_background = commands.spawn(
+    let fake_background = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
         NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Px(30.0),
-            // min_height: Val::Px(100.0),
-            padding: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(30.0),
+                // min_height: Val::Px(100.0),
+                padding: UiRect {
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                },
+                border: UiRect {
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                },
+                flex_direction: FlexDirection::Row,
+                justify_items: JustifyItems::Start,
+                align_items: AlignItems::Center,
+                ..default()
             },
-            border: UiRect {
-                left: Val::Px(0.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(0.0),
-            },
-            flex_direction: FlexDirection::Row,
-            justify_items: JustifyItems::Start,
-            align_items: AlignItems::Center,
+            background_color: theme::background_color(theme).into(),
             ..default()
         },
-        background_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-        ..default()
-    }).id();
+    )).id();
 
     // definition banner
     let definition_banner = commands.spawn(

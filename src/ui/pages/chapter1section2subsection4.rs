@@ -194,7 +194,7 @@ pub fn get(
 
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Case 2: Our set of vectors contains one non-null vector");
+    sub_header::spawn(commands, theme, view_list_entity, "Case 2: Our set of vectors contains one non-null vector");
     
 
     text_section::spawn(
@@ -251,7 +251,7 @@ pub fn get(
 
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Case 3: Our set of vectors contains two vectors that point in different directions");
+    sub_header::spawn(commands, theme, view_list_entity, "Case 3: Our set of vectors contains two vectors that point in different directions");
     
 
     text_section::spawn(
@@ -299,7 +299,7 @@ pub fn get(
 
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Case 4: Our set of vectors contains two vectors that point the same direction");
+    sub_header::spawn(commands, theme, view_list_entity, "Case 4: Our set of vectors contains two vectors that point the same direction");
     
 
     text_section::spawn(
@@ -350,7 +350,7 @@ pub fn get(
     );
     
 
-    example_header::spawn(commands, theme, view_list_entity, "RECAP");
+    page_header::spawn(commands, theme, view_list_entity, "RECAP");
 
     text_section::spawn(
         commands,
@@ -415,7 +415,7 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Test Yourself:");
+    sub_header::spawn(commands, theme, view_list_entity, "Test Yourself:");
 
     text_section::spawn(
         commands,
@@ -448,7 +448,7 @@ pub fn get(
 
     let span_of_vectors_left = definition_text_section::spawn(commands, "Given a collection of vectors v1, . . . , vk ∈ Rn, their span\nSpan {v1,...,vk} ⊂ Rn\nis the set of all their linear combinations. In other words, Span {v1,...,vk} consists of all v ∈ Rn that can be expressed in the form\nv=a1v1 +···+akvk\nfor some weights a1,...,ak ∈ R.\nGeometrically, the span of a collection of vectors is the set of all vectors that can be reached by trav- eling along scales of each of the individual vectors in turn.");
     let span_of_vectors_right = span_of_vectors_renderer::spawn(commands);
-    let next_item = definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
+    let next_item = definition_block::spawn(commands, theme, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
     commands.entity(view_list_entity).push_children(&[next_item]);
 
     example_block::spawn(
