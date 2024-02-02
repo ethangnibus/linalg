@@ -91,13 +91,13 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, o
     let themes_header = themes_header(commands, theme);
     let light_theme_button = theme_button(commands, theme, theme::CurrentTheme::Light, "Light");
     let dark_theme_button = theme_button(commands, theme, theme::CurrentTheme::Dark, "Dark");
-    // let hacker_theme_button = thee(commands, theme);
+    let matrix_theme_button = theme_button(commands, theme, theme::CurrentTheme::Matrix, "Matrix");
 
     commands.entity(option_bar).push_children(&[
         themes_header,
         light_theme_button,
         dark_theme_button,
-        // hacker_theme_button,
+        matrix_theme_button,
     ]);
 
     return option_bar;
