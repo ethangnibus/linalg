@@ -20,5 +20,5 @@ pub fn get(
     mut images: &mut ResMut<Assets<Image>>,
     view_list_entity: Entity,
 ) {
-    subsection_cameras::setup_camera(commands, theme, camera_setup_writer, &"3.png".into(), 5.5, Val::Vh(100.0), meshes, materials, images, view_list_entity, 0)
+    subsection_cameras::setup_camera(commands, theme, Val::Vh(100.0), meshes, materials, images, view_list_entity, 0)
 }

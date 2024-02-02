@@ -6,7 +6,7 @@ pub const BERKELEY_GOLD: Color = Color::rgb(0.99, 0.71, 0.08);
 pub const BERKELEY_DARK_GOLD: Color = Color::rgb(0.77, 0.51, 0.05);
 pub const BERKELEY_BLUE: Color = Color::rgb(0.0, 0.19, 0.38);
 pub const BERKELEY_LIGHT_BLUE: Color = Color::rgb(0.23, 0.49, 0.63);
-pub const LIGHT_GRAY: Color = Color::rgb(0.65, 0.65, 0.65);
+pub const LIGHT_GRAY: Color = Color::rgb(0.55, 0.55, 0.55);
 pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
 
 

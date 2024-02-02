@@ -243,6 +243,7 @@ mod components{
     pub mod definition_text_section;
     pub mod span_of_vectors_renderer;
     pub mod example_header;
+    pub mod example_footer;
     pub mod solution_header;
     pub mod example_block;
 }

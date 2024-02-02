@@ -11,13 +11,11 @@ use bevy::{
 use crate::ui::util::theme;
 use super::super::subsection_cameras;
 use super::example_header;
+use super::example_footer;
 
 pub fn spawn(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
-    camera_setup_writer: &mut EventWriter<subsection_cameras::CameraSetupEvent>,
-    image_path: &String,
-    ratio: f32,
     height: Val,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -25,7 +23,30 @@ pub fn spawn(
     view_list_entity: Entity,
     crew_id: u8,
 ) {
-    example_header::spawn(commands, theme, view_list_entity, "WEE MADE IT");
+    example_header::spawn(
+        commands,
+        theme,
+        view_list_entity,
+        format!(" Example {}", crew_id).as_str(),
+    );
+
+    subsection_cameras::setup_camera(
+        commands,
+        theme,
+        Val::Px(500.0),
+        meshes,
+        materials,
+        images,
+        view_list_entity,
+        crew_id,
+    );
+
+    example_footer::spawn(
+        commands,
+        theme,
+        view_list_entity,
+        format!("Example {} done", crew_id).as_str(),
+    );
     
     
 }

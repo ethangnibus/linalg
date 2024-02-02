@@ -66,9 +66,6 @@ pub struct FilmCrew {
 pub fn setup_camera(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
-    camera_setup_writer: &mut EventWriter<CameraSetupEvent>,
-    image_path: &String,
-    ratio: f32,
     height: Val,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,

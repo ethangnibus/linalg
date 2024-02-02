@@ -60,14 +60,12 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
         view_list_entity,
-        0,
+        1,
     );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
@@ -95,19 +93,15 @@ pub fn get(
         2:"
     );
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 2");
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
         view_list_entity,
-        1,
+        2,
     );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
@@ -168,19 +162,15 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 3");
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
         view_list_entity,
-        2,
+        3,
     );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
@@ -218,20 +208,15 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 4");
-    
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
         view_list_entity,
-        3,
+        4,
     );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
@@ -251,15 +236,10 @@ pub fn get(
         extended our vectors out into infinity:"
     );
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 5");
-    
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
@@ -292,15 +272,10 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 6");
-    
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
@@ -336,14 +311,10 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 7");
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
@@ -388,14 +359,10 @@ pub fn get(
         we can only span zero dimensional space. See Example 8:"
     );
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 8");
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
@@ -414,14 +381,10 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 9");
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
@@ -439,14 +402,10 @@ pub fn get(
     );
 
 
-    example_header::spawn(commands, theme, view_list_entity, "Example 10");
-
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
@@ -491,20 +450,16 @@ pub fn get(
     let next_item = definition_block::spawn(commands, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
     commands.entity(view_list_entity).push_children(&[next_item]);
 
-    subsection_cameras::setup_camera(
+    example_block::spawn(
         commands,
         theme,
-        camera_setup_writer,
-        &"3.png".into(),
-        5.5, Val::Px(500.0),
+        Val::Px(500.0),
         meshes,
         materials,
         images,
         view_list_entity,
-        4,
+        15,
     );
-
-    example_header::spawn(commands, theme, view_list_entity, "Example 16");
 
 
 
