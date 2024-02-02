@@ -9,10 +9,9 @@ use bevy::{
 use crate::ui::util::theme;
 
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, text: &str) {
-    // make banner behind the text
     let background_banner = commands.spawn((
         theme::ColorFunction {
-            background: theme::swiper_background_color,
+            background: theme::background_color,
             border: theme::background_color,
         },
         NodeBundle {
@@ -20,46 +19,114 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             width: Val::Percent(100.0),
             height: Val::Auto,
             min_height: Val::Px(50.0),
-            padding: UiRect {
-                left: Val::Px(4.0),
-                right: Val::Px(4.0),
-                top: Val::Px(4.0),
-                bottom: Val::Px(4.0),
-            },
             border: UiRect {
                 left: Val::Px(8.0),
                 right: Val::Px(8.0),
-                top: Val::Px(4.0),
+                top: Val::Px(8.0),
                 bottom: Val::Px(4.0),
             },
-            justify_items: JustifyItems::Start,
-            align_items: AlignItems::Center,
+            justify_content: JustifyContent::SpaceBetween,
             ..default()
         },
-        background_color: theme::swiper_background_color(theme).into(),
+        background_color: theme::background_color(theme).into(),
         border_color: theme::background_color(theme).into(),
         ..default()
     })).id();
 
+    let skeleton_left = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::swiper_background_color,
+        },
+        NodeBundle {
+            style: Style {
+                height: Val::Percent(100.0),
+                aspect_ratio: Some(1.0),
+                border: UiRect {
+                    left: Val::Px(4.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(4.0),
+                },
+                ..default()
+            },
+            background_color: theme::background_color(theme).into(),
+            border_color: theme::swiper_background_color(theme).into(),
+            ..default()
+        },
+    )).id();
+
+    let skeleton_right = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::swiper_background_color,
+        },
+        NodeBundle {
+            style: Style {
+                height: Val::Percent(100.0),
+                aspect_ratio: Some(1.0),
+                border: UiRect {
+                    left: Val::Px(0.0),
+                    right: Val::Px(4.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(4.0),
+                },
+                ..default()
+            },
+            background_color: theme::background_color(theme).into(),
+            border_color: theme::swiper_background_color(theme).into(),
+            ..default()
+        },
+    )).id();
+
+
     // make the text that appears on the banner
     let text_bundle = commands.spawn((
         theme::ColorFunction {
-            background: theme::text_color,
-            border: theme::text_color,
+            background: theme::sidebar_color,
+            border: theme::sidebar_color,
         },
         TextBundle::from_section(
-            // format!(text),
             text,
             TextStyle {
                 font_size: 24.,
-                color: theme::text_color(theme).into(),
+                color: theme::sidebar_color(theme).into(),
                 ..default()
             },
+        ).with_style(
+            Style {
+                padding: UiRect {
+                    left: Val::Px(20.0),
+                    right: Val::Px(4.0),
+                    top: Val::Px(4.0),
+                    bottom: Val::Px(4.0),
+                },
+                justify_self: JustifySelf::Start,
+                align_self: AlignSelf::Center,
+                position_type: PositionType::Absolute,
+                ..default()
+            }
         ),
         Label,
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     )).id();
 
-    commands.entity(background_banner).push_children(&[text_bundle]);
-    commands.entity(view_list_entity).push_children(&[background_banner]);
+    commands.entity(background_banner).push_children(&[skeleton_left, skeleton_right, text_bundle]);
+
+    let space_under = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
+        NodeBundle {
+            style: Style {
+                height: Val::Px(10.0),
+                width: Val::Px(100.0),
+                ..default()
+            },
+            ..default()
+        }
+
+    )).id();
+    commands.entity(view_list_entity).push_children(&[background_banner, space_under]);
 }

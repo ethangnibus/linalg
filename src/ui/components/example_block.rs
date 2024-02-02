@@ -45,7 +45,7 @@ pub fn spawn(
         commands,
         theme,
         view_list_entity,
-        format!("Example {} done", crew_id).as_str(),
+        format!(" ...").as_str(),
     );
     
     

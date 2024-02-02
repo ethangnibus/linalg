@@ -24,7 +24,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 left: Val::Px(8.0),
                 right: Val::Px(8.0),
                 top: Val::Px(4.0),
-                bottom: Val::Px(4.0),
+                bottom: Val::Px(8.0),
             },
             justify_content: JustifyContent::SpaceBetween,
             ..default()
