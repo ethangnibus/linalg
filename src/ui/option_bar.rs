@@ -78,10 +78,8 @@ impl Plugin for SystemsPlugin {
                 theme_button_interaction,
                 theme_change_node_color_change_system,
                 theme_change_text_color_change_system,
-                dark_theme_button_text_color_change_system,
-                dark_theme_button_line_color_change_system,
-                light_theme_button_text_color_change_system,
-                light_theme_button_line_color_change_system,
+                theme_button_text_color_change_system,
+                theme_button_line_color_change_system,
             ));
     }
 }
@@ -91,13 +89,15 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32, o
     let option_bar = option_bar_entity;
 
     let themes_header = themes_header(commands, theme);
-    let light_theme_button = light_theme_button(commands, theme);
-    let dark_theme_button = dark_theme_button(commands, theme);
+    let light_theme_button = theme_button(commands, theme, theme::CurrentTheme::Light, "Light");
+    let dark_theme_button = theme_button(commands, theme, theme::CurrentTheme::Dark, "Dark");
+    // let hacker_theme_button = thee(commands, theme);
 
     commands.entity(option_bar).push_children(&[
         themes_header,
         light_theme_button,
         dark_theme_button,
+        // hacker_theme_button,
     ]);
 
     return option_bar;
@@ -175,83 +175,12 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
     return header_button;
 }
 
-pub fn light_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
 
-    let light_theme_button = commands.spawn((
+
+pub fn theme_button(commands: &mut Commands, theme: &theme::CurrentTheme, next_theme: theme::CurrentTheme, text: &str) -> Entity {
+    let theme_button_entity = commands.spawn((
         theme::ThemeButton {
-            next_theme: theme::CurrentTheme::Light
-        },
-        theme::ColorFunction {
-            background: theme::background_color,
-            border: theme::background_color
-        },
-        ButtonBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Auto,
-                min_height: chapter_container::SIDEBAR_BUTTON_HEIGHT,
-                border: chapter_container::CHAPTER_BUTTON_BORDER,
-                padding: chapter_container::CHAPTER_BUTTON_BORDER,
-                justify_content: JustifyContent::End,
-                align_items: AlignItems::Start,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-            background_color: theme::background_color(theme).into(),
-            focus_policy: FocusPolicy::Block,
-            ..default()
-        },
-    )).id();
-
-    let text_item = commands.spawn((
-        LightThemeButtonText,
-        theme::ColorFunction {
-            background: theme::sidebar_color,
-            border: theme::sidebar_color,
-        },
-        TextBundle::from_section(
-            "Light",
-            TextStyle {
-                font_size: chapter_container::CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::sidebar_color(theme),
-                ..default()
-            },
-        )
-    )).id();
-
-    let bottom_line = commands.spawn((
-        LightThemeButtonLine,
-        theme::ColorFunction {
-            background: theme::sidebar_color,
-            border: theme::sidebar_color
-        },
-        ButtonBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Px(1.0),
-                border: chapter_container::HIDDEN_BUTTON_BORDER,
-                padding: chapter_container::HIDDEN_BUTTON_BORDER,
-                justify_content: JustifyContent::End,
-                align_items: AlignItems::Start,
-                flex_direction: FlexDirection::Column,
-                ..default()
-            },
-            background_color: theme::sidebar_color(theme).into(),
-            ..default()
-        },
-    )).id();
-
-    commands
-        .entity(light_theme_button)
-        .push_children(&[text_item, bottom_line]);
-
-    return light_theme_button;
-}
-
-pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
-    let dark_theme_button = commands.spawn((
-        theme::ThemeButton {
-            next_theme: theme::CurrentTheme::Dark
+            next_theme: next_theme,
         },
         theme::ColorFunction {
             background: theme::background_color,
@@ -276,13 +205,15 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
     )).id();
 
     let text_item = commands.spawn((
-        DarkThemeButtonText,
+        theme::ThemeButtonText {
+            next_theme: next_theme,
+        },
         theme::ColorFunction {
             background: theme::sidebar_color,
             border: theme::sidebar_color
         },
         TextBundle::from_section(
-            "Dark",
+            text,
             TextStyle {
                 font_size: chapter_container::CHAPTER_BUTTON_FONT_SIZE,
                 color: theme::navbar_text_color(theme),
@@ -292,7 +223,9 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
     )).id();
 
     let bottom_line = commands.spawn((
-        DarkThemeButtonLine,
+        theme::ThemeButtonLine {
+            next_theme: next_theme,
+        },
         theme::ColorFunction {
             background: theme::sidebar_color,
             border: theme::sidebar_color
@@ -315,10 +248,10 @@ pub fn dark_theme_button(commands: &mut Commands, theme: &theme::CurrentTheme) -
     )).id();
 
     commands
-        .entity(dark_theme_button)
+        .entity(theme_button_entity)
         .push_children(&[text_item, bottom_line]);
 
-    return dark_theme_button;
+    return theme_button_entity;
 }
 
 
@@ -412,88 +345,49 @@ fn theme_change_text_color_change_system(
     }
 }
 
-fn dark_theme_button_text_color_change_system(
+fn theme_button_text_color_change_system(
     mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
     mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
-    mut text_query: Query<(&mut Text, &ColorFunction), With<DarkThemeButtonText>>,
+    mut text_query: Query<(&mut Text, &ColorFunction, &theme::ThemeButtonText), With<theme::ThemeButtonText>>,
     theme: Res<theme::CurrentTheme>,
 ) {
     for event in theme_change_reader.read() {
-        for (mut text, color_function) in text_query.iter_mut() {
+        for (mut text, color_function, _theme_button_text) in text_query.iter_mut() {
             text.sections[0].style.color = (color_function.background)(&theme).into();
         }
     }
     let theme = theme.as_ref();
     for event in theme_button_color_reader.read() {
-        match event.theme {
-            theme::CurrentTheme::Dark => {
-                for (mut text, _color_function) in text_query.iter_mut() {
-                    text.sections[0].style.color = event.color;
-                }
+        for (mut text, _color_function, theme_button_text) in text_query.iter_mut() {
+            if event.theme == theme_button_text.next_theme {
+                text.sections[0].style.color = event.color;
             }
-            _ => {}
         }
     }
 }
 
-fn dark_theme_button_line_color_change_system(
+fn theme_button_line_color_change_system(
     mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
     mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
-    mut line_query: Query<(&mut BackgroundColor, &ColorFunction), With<DarkThemeButtonLine>>,
+    mut line_query: Query<(&mut BackgroundColor, &ColorFunction, &theme::ThemeButtonLine), With<theme::ThemeButtonLine>>,
     theme: Res<theme::CurrentTheme>,
 ) {
-    for event in theme_button_color_reader.read() {
-        match event.theme {
-            theme::CurrentTheme::Dark => {
-                for (mut background_color, _color_function) in line_query.iter_mut() {
-                    *background_color = event.color.into();
-                }
-            }
-            _ => {}
-        }
-    }
-}
-
-
-fn light_theme_button_text_color_change_system(
-    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
-    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
-    mut text_query: Query<(&mut Text, &theme::ColorFunction), With<LightThemeButtonText>>,
-    theme: Res<theme::CurrentTheme>,
-) {
-    
-    for event in theme_change_reader.read() {
-        for (mut text, color_function) in text_query.iter_mut() {
-            text.sections[0].style.color = (color_function.background)(&theme).into();
-        }
-    }
+    // for event in theme_button_color_reader.read() {
+    //     match event.theme {
+    //         theme::CurrentTheme::Dark => {
+    //             for (mut background_color, _color_function) in line_query.iter_mut() {
+    //                 *background_color = event.color.into();
+    //             }
+    //         }
+    //         _ => {}
+    //     }
+    // }
 
     for event in theme_button_color_reader.read() {
-        match event.theme {
-            theme::CurrentTheme::Light => {
-                for (mut text, _color_function) in text_query.iter_mut() {
-                    text.sections[0].style.color = event.color;
-                }
-            }
-            _ => {}
-        }
-    }
-}
-
-fn light_theme_button_line_color_change_system(
-    mut theme_button_color_reader: EventReader<ThemeButtonColorEvent>,
-    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
-    mut line_query: Query<(&mut BackgroundColor, &theme::ColorFunction), With<LightThemeButtonLine>>,
-    theme: Res<theme::CurrentTheme>,
-) {
-    for event in theme_button_color_reader.read() {
-        match event.theme {
-            theme::CurrentTheme::Light => {
-                for (mut background_color, _color_function) in line_query.iter_mut() {
+        for (mut background_color, _color_function, theme_button_line) in line_query.iter_mut() {
+            if event.theme == theme_button_line.next_theme {
                 *background_color = event.color.into();
-                }
             }
-            _ => {}
         }
     }
 }

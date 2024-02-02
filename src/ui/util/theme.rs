@@ -10,7 +10,7 @@ pub const LIGHT_GRAY: Color = Color::rgb(0.55, 0.55, 0.55);
 pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
 
 
-#[derive(Resource, Clone, Copy)]
+#[derive(Resource, Clone, Copy, PartialEq)]
 pub enum CurrentTheme {
     Light,
     Dark,
@@ -21,6 +21,16 @@ pub struct ThemeChangeEvent;
 
 #[derive(Component)]
 pub struct ThemeButton {
+    pub next_theme: CurrentTheme,
+}
+
+#[derive(Component)]
+pub struct ThemeButtonText{
+    pub next_theme: CurrentTheme,
+}
+
+#[derive(Component)]
+pub struct ThemeButtonLine {
     pub next_theme: CurrentTheme,
 }
 
