@@ -34,6 +34,7 @@ pub fn get(
     mut images: &mut ResMut<Assets<Image>>,
     view_list_entity: Entity,
 ) {
+    subsection_cameras::setup_light(commands, film_crew_entity);
     page_header::spawn(commands, theme, view_list_entity, "1.2.4 Spans");
 
     text_section::spawn(

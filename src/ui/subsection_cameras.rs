@@ -63,6 +63,28 @@ pub struct MiniCamera {
 #[derive(Component)]
 pub struct FilmCrew;
 
+pub fn setup_light(
+    commands: &mut Commands,
+    film_crew_entity: Entity,
+) {
+    // Light
+    // NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
+    let light = commands
+        .spawn((
+            PointLightBundle {
+                point_light: PointLight {
+                    intensity: 100.0,
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
+                ..default()
+            },
+            subsection::SubsectionGameEntity,
+        ))
+        .id();
+    commands.entity(film_crew_entity).push_children(&[light]);
+}
+
 pub fn setup_camera(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
