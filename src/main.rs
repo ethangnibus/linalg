@@ -1,7 +1,8 @@
 #![allow(warnings)]
 use bevy::prelude::*;
 use bevy::window::WindowResized;
-mod ui;
+pub mod ui;
+pub mod pages;
 
 use ui::view::UiResizeEvent;
 use bevy_inspector_egui::quick::WorldInspectorPlugin; // FIXME: REMOVE IN PROD

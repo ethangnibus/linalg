@@ -16,6 +16,7 @@ use super::example_footer;
 pub fn spawn(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
+    film_crew_entity: Entity,
     height: Val,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -33,6 +34,7 @@ pub fn spawn(
     subsection_cameras::setup_camera(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(400.0),
         meshes,
         materials,

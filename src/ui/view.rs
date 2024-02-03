@@ -22,7 +22,7 @@ use bevy::{
 // use bevy_prototype_lyon::prelude::*;
 // use bevy_svg::prelude::*;
 use super::theme;
-use super::pages::splash_page;
+use crate::pages::splash_page;
 
 // Marker for UI node
 #[derive(Component)]

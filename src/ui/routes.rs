@@ -3,7 +3,7 @@ use super::util::subsection::SubsectionGameEntity;
 use super::util::theme;
 use super::view;
 use super::subsection_cameras;
-use super::pages::*;
+use crate::pages;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -72,9 +72,9 @@ pub fn routing_system(
                 // println!("\nView size before: {:?}\n", size);
             }
 
-            for camera3d in camera_query.iter_mut() {
-                commands.entity(camera3d).despawn_recursive();
-            }
+            // for camera3d in camera_query.iter_mut() {
+            //     commands.entity(camera3d).despawn_recursive();
+            // }
             for film_crew_entity in film_crew_query.iter_mut() {
                 // println!("Despawning film crew here!");
                 commands.entity(film_crew_entity).despawn_recursive();
@@ -109,6 +109,13 @@ pub fn routing_system(
             // let mut page_item: Entity = Entity::PLACEHOLDER;
             // let mut page_entities: Vec<Entity> = Vec::new();
             // Add new page stuff
+            let film_crew_entity = commands.spawn((
+                SpatialBundle {
+                    visibility: Visibility::Inherited,
+                    ..default()
+                },
+                subsection_cameras::FilmCrew
+            )).id();
 
 
             match event.chapter_number {
@@ -116,68 +123,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 0, Section 0
                             match event.subsection_number {
-                                0 => {splash_page::get(&mut commands, &theme, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::chapter_0::section_0::subsection_0::partial::get(&mut commands, &theme, film_crew_entity, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 0, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 0, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 0, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 0, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -187,67 +194,67 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 1, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         1 => { // Chapter 1, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 // 1 => {page_item = chapter1section1subsection1::get_page(&mut commands);},
                                 // 2 => {page_item = chapter1section1subsection2::get_page(&mut commands);},
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 1, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {chapter1section2subsection4::get(&mut commands, &theme, &asset_server, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::chapter_1::section_2::subsection_4::partial::get(&mut commands, &theme, film_crew_entity, &asset_server, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 1, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 1, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -257,68 +264,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 2, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 2, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 2, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 2, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 2, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -328,68 +335,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 3, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 3, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 3, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 3, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 3, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -399,68 +406,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 4, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 4, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 4, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 4, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 4, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -470,68 +477,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 5, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 5, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 5, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 5, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 5, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -541,68 +548,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 6, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 6, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 6, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 6, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 6, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -612,68 +619,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => {
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 7, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 7, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 7, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 7, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -683,68 +690,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 8, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 8, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 8, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 8, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 8, Section 4 
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -754,68 +761,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 9, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 9, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 9, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 9, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 9, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -825,68 +832,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 10, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 10, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 10, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 10, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 10, Section 4 
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -896,67 +903,67 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 11, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         1 => { // Chapter 11, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 11, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 11, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 11, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -966,68 +973,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 12, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 12, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 12, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 12, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 12, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -1037,68 +1044,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 13, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 13, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 13, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 13, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 13, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -1108,68 +1115,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 14, Section 0
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 14, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 14, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 14, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 14, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
@@ -1179,68 +1186,68 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 15, Section 0 Bibliography
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                     
                         },
                         1 => { // Chapter 15, Section 1
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         2 => { // Chapter 15, Section 2
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         3 => { // Chapter 15, Section 3
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         4 => { // Chapter 15, Section 4
                             match event.subsection_number {
-                                0 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                1 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                2 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                3 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                5 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                6 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                7 => {page_not_found::get(&mut commands, view_list )}, // FIXME
-                                _ => {page_not_found::get(&mut commands, view_list )}, // FIXME
+                                0 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                4 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
+                                _ => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                             }
                         },
                         _ => {}
