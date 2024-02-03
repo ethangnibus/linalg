@@ -26,6 +26,7 @@ use super::example_1;
 pub fn get(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
+    film_crew_entity: Entity,
     asset_server: & Res<AssetServer>,
     camera_setup_writer: &mut EventWriter<subsection_cameras::CameraSetupEvent>,
     mut meshes: &mut ResMut<Assets<Mesh>>,
@@ -33,7 +34,6 @@ pub fn get(
     mut images: &mut ResMut<Assets<Image>>,
     view_list_entity: Entity,
 ) {
-    let film_crew_entity = commands.spawn(subsection_cameras::FilmCrew).id();
     page_header::spawn(commands, theme, view_list_entity, "1.2.4 Spans");
 
     text_section::spawn(
@@ -69,14 +69,6 @@ pub fn get(
         materials,
         images,
         view_list_entity,
-        1,
-    );
-
-    example_1::setup_scene(
-        commands,
-        film_crew_entity,
-        meshes,
-        materials,
         1,
     );
 
@@ -509,6 +501,85 @@ pub fn get(
     page_header::spawn(commands, theme, view_list_entity, "Filler just to test :)");
 
     page_header::spawn(commands, theme, view_list_entity, "Filler just to test :)");
+
+
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        1,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        2,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        3,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        4,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        5,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        6,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        7,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        8,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        9,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        10,
+    );
+    example_1::setup_scene(
+        commands,
+        film_crew_entity,
+        meshes,
+        materials,
+        15,
+    );
 
 }
 
