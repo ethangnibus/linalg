@@ -39,7 +39,7 @@ pub fn routing_system(
     mut commands: Commands,
     mut view_list_query: Query<(Entity, &Children, &mut view::ViewList, &mut Style), With<view::ViewList>>,
     subsection_game_entity_query: Query<Entity, With<SubsectionGameEntity>>,
-    // mut camera_query: Query<Entity, With<subsection_cameras::MiniCamera>>, // replaced with film crew query
+    mut camera_query: Query<Entity, With<subsection_cameras::MiniCamera>>, // replaced with film crew query
     mut film_crew_query: Query<Entity, With<subsection_cameras::FilmCrew>>,
     mut camera_setup_writer: EventWriter<subsection_cameras::CameraSetupEvent>,
     mut routing_event_reader: EventReader<RoutingEvent>,
@@ -72,6 +72,9 @@ pub fn routing_system(
                 // println!("\nView size before: {:?}\n", size);
             }
 
+            for camera3d in camera_query.iter_mut() {
+                commands.entity(camera3d).despawn_recursive();
+            }
             for film_crew_entity in film_crew_query.iter_mut() {
                 // println!("Despawning film crew here!");
                 commands.entity(film_crew_entity).despawn_recursive();

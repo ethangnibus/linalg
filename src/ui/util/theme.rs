@@ -9,9 +9,9 @@ pub const BERKELEY_LIGHT_BLUE: Color = Color::rgb(0.23, 0.49, 0.63);
 pub const LIGHT_GRAY: Color = Color::rgb(0.55, 0.55, 0.55);
 
 // Matrix theme
-pub const MATRIX_LIGHT_GREEN: Color = Color::rgb(0.0, 0.56, 0.06);
-pub const MATRIX_GREEN: Color = Color::rgb(0.0, 0.23, 0.0);
-pub const MATRIX_DARK_GREEN: Color = Color::rgb(0.0, 0.1, 0.0);
+pub const MATRIX_LIGHT_GREEN: Color = Color::rgb(0.0, 0.66, 0.12);
+pub const MATRIX_GREEN: Color = Color::rgb(0.0, 0.33, 0.06);
+pub const MATRIX_DARK_GREEN: Color = Color::rgb(0.0, 0.15, 0.0);
 
 // Cyberpunk theme
 pub const CYBERPUNK_YELLOW: Color = Color::rgb(0.952, 0.901, 0.0);
