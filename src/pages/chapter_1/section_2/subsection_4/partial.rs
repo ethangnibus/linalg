@@ -33,6 +33,7 @@ pub fn get(
     mut images: &mut ResMut<Assets<Image>>,
     view_list_entity: Entity,
 ) {
+    let film_crew_entity = commands.spawn(subsection_cameras::FilmCrew).id();
     page_header::spawn(commands, theme, view_list_entity, "1.2.4 Spans");
 
     text_section::spawn(
@@ -62,6 +63,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -72,6 +74,7 @@ pub fn get(
 
     example_1::setup_scene(
         commands,
+        film_crew_entity,
         meshes,
         materials,
         1,
@@ -105,6 +108,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -174,6 +178,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -220,6 +225,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -248,6 +254,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -284,6 +291,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -323,6 +331,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -371,6 +380,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -393,6 +403,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -414,6 +425,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,
@@ -462,6 +474,7 @@ pub fn get(
     example_block::spawn(
         commands,
         theme,
+        film_crew_entity,
         Val::Px(500.0),
         meshes,
         materials,

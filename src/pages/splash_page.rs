@@ -18,5 +18,7 @@ pub fn get(
     mut images: &mut ResMut<Assets<Image>>,
     view_list_entity: Entity,
 ) {
-    subsection_cameras::setup_camera(commands, theme, Val::Vh(100.0), meshes, materials, images, view_list_entity, 0)
+    let film_crew_entity = commands.spawn(subsection_cameras::FilmCrew).id();
+    subsection_cameras::setup_camera(commands, theme, film_crew_entity, Val::Vh(100.0), meshes, materials, images, view_list_entity, 0);
+
 }

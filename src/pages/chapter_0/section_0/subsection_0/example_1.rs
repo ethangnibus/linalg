@@ -26,6 +26,7 @@ pub struct SpinnyCube;
 
 pub fn setup_scene(
     commands: &mut Commands,
+    film_crew_entity: Entity,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_id: u8,
@@ -81,6 +82,8 @@ pub fn setup_scene(
             subsection::SubsectionGameEntity,
         ))
         .id();
+    
+    commands.entity(film_crew_entity).push_children(&[cube, light]);
 }
 
 
