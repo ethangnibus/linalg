@@ -38,6 +38,8 @@ impl Plugin for SystemsPlugin {
         app.add_event::<CameraSetupEvent>()
            .add_event::<CameraSelectionEvent>()
            .add_event::<CameraSelectionColorEvent>()
+           .add_event::<FullscreenEvent>()
+           .add_event::<FullscreenColorEvent>()
            .add_systems(
             Update,
             (
@@ -52,6 +54,8 @@ impl Plugin for SystemsPlugin {
                 example_header::selection_button_color_system,
                 example_header::selection_button_text_color_system,
                 example_footer::selection_text_description_color_system,
+                example_footer::fullscreen_button_interaction_system,
+                example_footer::fullscreen_button_color_system,
             ),
         );
     }
@@ -68,6 +72,19 @@ pub struct CameraSelectionEvent {
 
 #[derive(Event)]
 pub struct CameraSelectionColorEvent {
+    pub crew_id: u8,
+    pub color_function: fn(&theme::CurrentTheme) -> Color,
+}
+
+
+#[derive(Event)]
+pub struct FullscreenEvent {
+    pub crew_id: u8,
+    pub maximize: bool,
+}
+
+#[derive(Event, Debug)]
+pub struct FullscreenColorEvent {
     pub crew_id: u8,
     pub color_function: fn(&theme::CurrentTheme) -> Color,
 }

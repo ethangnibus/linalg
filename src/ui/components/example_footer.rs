@@ -8,10 +8,10 @@ use bevy::{
 
 use crate::ui::{
     util::{
-        theme,
+        theme::{self, swiper_background_color},
         style,
     },
-    subsection_cameras,
+    subsection_cameras::{self, FullscreenColorEvent, FullscreenEvent},
 };
 
 use super::example_block;
@@ -26,6 +26,19 @@ pub struct SelectionTextDescription {
 pub struct FullscreenButton {
     pub crew_id: u8,
     pub is_selected: bool,
+}
+pub enum FullscreenArrowType{
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+}
+
+#[derive(Component)]
+pub struct FullscreenArrow {
+    pub crew_id: u8,
+    pub is_selected: bool,
+    pub arrow_type: FullscreenArrowType,
 }
 
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
@@ -86,6 +99,10 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             style: Style {
                 height: Val::Percent(100.0),
                 aspect_ratio: Some(1.0),
+
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+
                 border: UiRect {
                     left: Val::Px(0.0),
                     right: Val::Px(4.0),
@@ -177,15 +194,9 @@ pub fn fullscreen_button(
                     // height: Val::Percent(height),
                     height: style::BUTTON_HEIGHT,
                     aspect_ratio: Some(1.0),
-
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
-                    border: UiRect {
-                        left: Val::Px(2.0),
-                        right: Val::Px(2.0),
-                        top: Val::Px(2.0),
-                        bottom: Val::Px(2.0),
-                    },
+                    flex_direction: FlexDirection::Column,
+                    // align_content: AlignContent::SpaceBetween,
+                    justify_content: JustifyContent::SpaceBetween,
                     overflow: Overflow::clip(),
                     ..default()
                 },
@@ -202,28 +213,199 @@ pub fn fullscreen_button(
         ))
         .id();
 
-    let text = commands
+    let top = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_collapsed_color,
+                background: theme::navbar_background_color,
                 border: theme::sidebar_collapsed_color,
             },
-            TextBundle::from_section(
-                "F",
-                TextStyle {
-                    font_size: 50.0,
-                    color: theme::sidebar_collapsed_color(theme).into(),
+            NodeBundle {
+                style: Style {
+                    height: style::BUTTON_HEIGHT / 3.0,
+                    width: Val::Percent(100.0),
+
+                    flex_direction: FlexDirection::Row,
+                    // align_content: AlignContent::SpaceBetween,
+                    justify_content: JustifyContent::SpaceBetween,
                     ..default()
                 },
-            ),
-            // SelectionButtonText {
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            // FullscreenButton {
             //     crew_id: crew_id,
             //     is_selected: false,
             // },
         ))
         .id();
 
-    commands.entity(background_banner).push_children(&[text]);
+    let top_left = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::swiper_background_color,
+            },
+            NodeBundle {
+                style: Style {
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(1.0),
+
+                    border: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(0.0),
+                        top: Val::Px(2.0),
+                        bottom: Val::Px(0.0),
+                    },
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            FullscreenArrow {
+                crew_id: crew_id,
+                is_selected: false,
+                arrow_type: FullscreenArrowType::TopLeft,
+            },
+        ))
+        .id();
+
+    let top_right = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::swiper_background_color,
+            },
+            NodeBundle {
+                style: Style {
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(1.0),
+
+                    border: UiRect {
+                        left: Val::Px(0.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(2.0),
+                        bottom: Val::Px(0.0),
+                    },
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            FullscreenArrow {
+                crew_id: crew_id,
+                is_selected: false,
+                arrow_type: FullscreenArrowType::TopRight,
+            },
+        ))
+        .id();
+
+    let bottom = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            NodeBundle {
+                style: Style {
+                    height: style::BUTTON_HEIGHT / 3.0,
+                    width: Val::Percent(100.0),
+
+                    flex_direction: FlexDirection::Row,
+                    // align_content: AlignContent::SpaceBetween,
+                    justify_content: JustifyContent::SpaceBetween,
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            // FullscreenButton {
+            //     crew_id: crew_id,
+            //     is_selected: false,
+            // },
+        ))
+        .id();
+
+    let bottom_left = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::swiper_background_color,
+            },
+            NodeBundle {
+                style: Style {
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(1.0),
+
+                    border: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(0.0),
+                        top: Val::Px(0.0),
+                        bottom: Val::Px(2.0),
+                    },
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            FullscreenArrow {
+                crew_id: crew_id,
+                is_selected: false,
+                arrow_type: FullscreenArrowType::BottomLeft,
+            },
+        ))
+        .id();
+
+    let bottom_right = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::swiper_background_color,
+            },
+            NodeBundle {
+                style: Style {
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(1.0),
+
+                    border: UiRect {
+                        left: Val::Px(0.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(0.0),
+                        bottom: Val::Px(2.0),
+                    },
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            FullscreenArrow {
+                crew_id: crew_id,
+                is_selected: false,
+                arrow_type: FullscreenArrowType::BottomRight,
+            },
+        ))
+        .id();
+    
+    commands.entity(top).push_children(&[top_left, top_right]);
+    commands.entity(bottom).push_children(&[bottom_left, bottom_right]);
+    commands.entity(background_banner).push_children(&[top, bottom]);
 
     return background_banner;
 }
@@ -268,5 +450,167 @@ pub fn selection_text_description_color_system(
                 color_function.border = theme::swiper_background_color;
             }
         }
+    }
+}
+
+
+pub fn fullscreen_button_interaction_system(
+    mut interaction_query: Query<(&Interaction, &mut FullscreenButton), (Changed<Interaction>, With<FullscreenButton>)>,
+    mut fullscreen_writer: EventWriter<subsection_cameras::FullscreenEvent>,
+    mut fullscreen_color_writer: EventWriter<subsection_cameras::FullscreenColorEvent>,
+) {
+    for (interaction, mut fullscreen_button) in interaction_query.iter_mut() {
+        match interaction {
+            Interaction::Pressed => {
+                match fullscreen_button.is_selected {
+                    true => {
+                        fullscreen_writer.send(
+                            FullscreenEvent{
+                                crew_id: fullscreen_button.crew_id,
+                                maximize: false,
+                            }
+                        )
+                    }
+                    false => {
+                        fullscreen_writer.send(
+                            FullscreenEvent{
+                                crew_id: fullscreen_button.crew_id,
+                                maximize: true,
+                            }
+                        )
+                    }
+                }
+                fullscreen_button.is_selected = !fullscreen_button.is_selected;
+            }
+            Interaction::Hovered => {
+                println!("hovered");
+                match fullscreen_button.is_selected {
+                    true => {
+                        fullscreen_color_writer.send(
+                            FullscreenColorEvent {
+                                crew_id: fullscreen_button.crew_id,
+                                color_function: theme::swiper_background_color,
+                            }
+                        )
+                    }
+                    false => {
+                        fullscreen_color_writer.send(
+                            FullscreenColorEvent {
+                                crew_id: fullscreen_button.crew_id,
+                                color_function: theme::sidebar_color,
+                            }
+                        )
+                    }
+                }
+            }
+            Interaction::None => {
+                match fullscreen_button.is_selected {
+                    true => {
+                        fullscreen_color_writer.send(
+                            FullscreenColorEvent {
+                                crew_id: fullscreen_button.crew_id,
+                                color_function: theme::sidebar_color,
+                            }
+                        )
+                    }
+                    false => {
+                        fullscreen_color_writer.send(
+                            FullscreenColorEvent {
+                                crew_id: fullscreen_button.crew_id,
+                                color_function: theme::swiper_background_color,
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn fullscreen_button_color_system (
+    mut fullscreen_reader: EventReader<subsection_cameras::FullscreenEvent>,
+    mut fullscreen_color_reader: EventReader<subsection_cameras::FullscreenColorEvent>,
+    mut fullscreen_arrow_query: Query<(&FullscreenArrow, &mut Style, &mut BorderColor, &mut theme::ColorFunction), With<FullscreenArrow>>,
+
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+
+    for fullscreen_color_event in fullscreen_color_reader.read() {
+        println!("fullscreen_color_event {:?}", fullscreen_color_event);
+        for (fullscreen_arrow, style, mut border_color, color_function) in fullscreen_arrow_query.iter_mut() {
+            if fullscreen_arrow.crew_id != fullscreen_color_event.crew_id { continue };
+            println!("before coloring");
+            *border_color = (fullscreen_color_event.color_function)(theme).into();
+        }
+    }
+
+    for fullscreen_event in fullscreen_reader.read() {
+        for (fullscreen_arrow, mut style, mut border_color, mut color_function) in fullscreen_arrow_query.iter_mut() {
+            if fullscreen_arrow.crew_id != fullscreen_event.crew_id { continue }
+            match fullscreen_event.maximize {
+                true => {
+                    *border_color = theme::swiper_background_color(theme).into();
+                    color_function.border = theme::sidebar_color;
+                    match fullscreen_arrow.arrow_type {
+                        FullscreenArrowType::TopLeft => {
+                            style.border.top = Val::Px(0.0);
+                            style.border.bottom = Val::Px(2.0);
+                            style.border.left = Val::Px(0.0);
+                            style.border.right = Val::Px(2.0);
+                        }
+                        FullscreenArrowType::TopRight => {
+                            style.border.top = Val::Px(0.0);
+                            style.border.bottom = Val::Px(2.0);
+                            style.border.left = Val::Px(2.0);
+                            style.border.right = Val::Px(0.0);
+                        }
+                        FullscreenArrowType::BottomLeft => {
+                            style.border.top = Val::Px(2.0);
+                            style.border.bottom = Val::Px(0.0);
+                            style.border.left = Val::Px(0.0);
+                            style.border.right = Val::Px(2.0);
+                        }
+                        FullscreenArrowType::BottomRight => {
+                            style.border.top = Val::Px(2.0);
+                            style.border.bottom = Val::Px(0.0);
+                            style.border.left = Val::Px(2.0);
+                            style.border.right = Val::Px(0.0);
+                        }
+                    }
+                }
+                false => {
+                    *border_color = theme::sidebar_color(theme).into();
+                    color_function.border = theme::swiper_background_color;
+                    match fullscreen_arrow.arrow_type {
+                        FullscreenArrowType::TopLeft => {
+                            style.border.top = Val::Px(2.0);
+                            style.border.bottom = Val::Px(0.0);
+                            style.border.left = Val::Px(2.0);
+                            style.border.right = Val::Px(0.0);
+                        }
+                        FullscreenArrowType::TopRight => {
+                            style.border.top = Val::Px(2.0);
+                            style.border.bottom = Val::Px(0.0);
+                            style.border.left = Val::Px(0.0);
+                            style.border.right = Val::Px(2.0);
+                        }
+                        FullscreenArrowType::BottomLeft => {
+                            style.border.top = Val::Px(0.0);
+                            style.border.bottom = Val::Px(2.0);
+                            style.border.left = Val::Px(2.0);
+                            style.border.right = Val::Px(0.0);
+                        }
+                        FullscreenArrowType::BottomRight => {
+                            style.border.top = Val::Px(0.0);
+                            style.border.bottom = Val::Px(2.0);
+                            style.border.left = Val::Px(0.0);
+                            style.border.right = Val::Px(2.0);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

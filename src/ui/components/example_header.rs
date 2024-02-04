@@ -159,7 +159,7 @@ pub fn selection_button(
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::sidebar_collapsed_color,
+                border: theme::swiper_background_color,
             },
             ButtonBundle {
                 style: Style {
@@ -181,7 +181,7 @@ pub fn selection_button(
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::sidebar_collapsed_color(theme).into(),
+                border_color: theme::swiper_background_color(theme).into(),
                 ..default()
             },
             SelectionButton{
@@ -194,14 +194,14 @@ pub fn selection_button(
     let text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_collapsed_color,
-                border: theme::sidebar_collapsed_color,
+                background: theme::swiper_background_color,
+                border: theme::swiper_background_color,
             },
             TextBundle::from_section(
                 "*",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::sidebar_collapsed_color(theme).into(),
+                    color: theme::swiper_background_color(theme).into(),
                     ..default()
                 },
             ),
@@ -350,11 +350,13 @@ pub fn selection_button_text_color_system(
                 match camera_selection_event.select_this_camera {
                     true => {
                         text.sections[0].style.color = theme::sidebar_color(theme).into();
+                        color_function.background = theme::sidebar_color;
                         text.sections[0].value = String::from("=");
                         color_function.border = theme::sidebar_color;
                     },
                     false => {
                         text.sections[0].style.color = theme::swiper_background_color(theme).into();
+                        color_function.background = theme::swiper_background_color;
                         text.sections[0].value = String::from("*");
                         color_function.border = theme::swiper_background_color;
                     },
