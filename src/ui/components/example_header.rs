@@ -24,6 +24,7 @@ pub struct SelectionButton {
 #[derive(Component)]
 pub struct SelectionButtonText {
     pub crew_id: u8,
+    pub is_selected: bool,
 }
 
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
@@ -206,6 +207,7 @@ pub fn selection_button(
             ),
             SelectionButtonText {
                 crew_id: crew_id,
+                is_selected: false,
             },
         ))
         .id();
@@ -320,6 +322,45 @@ pub fn selection_button_color_system(
             }
             else {
                 *border_color = theme::swiper_background_color(theme).into();
+                color_function.border = theme::swiper_background_color;
+            }
+        }
+    }
+}
+
+pub fn selection_button_text_color_system(
+    mut camera_selection_reader: EventReader<subsection_cameras::CameraSelectionEvent>,
+    mut camera_selection_color_reader: EventReader<subsection_cameras::CameraSelectionColorEvent>,
+    mut selection_button_text_query: Query<(&mut Text, &mut theme::ColorFunction, &SelectionButtonText), With<SelectionButtonText>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+
+    for camera_selection_color_event in camera_selection_color_reader.read() {
+        for (mut text, mut color_function, mut selection_button) in selection_button_text_query.iter_mut() {
+            if selection_button.crew_id == camera_selection_color_event.crew_id {
+                text.sections[0].style.color = (camera_selection_color_event.color_function)(theme).into();
+            }
+        }
+    }
+
+    for camera_selection_event in camera_selection_reader.read() {
+        for (mut text, mut color_function, mut selection_button) in selection_button_text_query.iter_mut() {
+            if selection_button.crew_id == camera_selection_event.crew_id {
+                match camera_selection_event.select_this_camera {
+                    true => {
+                        text.sections[0].style.color = theme::sidebar_color(theme).into();
+                        color_function.border = theme::sidebar_color;
+                    },
+                    false => {
+                        text.sections[0].style.color = theme::swiper_background_color(theme).into();
+                        color_function.border = theme::swiper_background_color;
+                    },
+                }
+                
+            }
+            else {
+                text.sections[0].style.color = theme::swiper_background_color(theme).into();
                 color_function.border = theme::swiper_background_color;
             }
         }

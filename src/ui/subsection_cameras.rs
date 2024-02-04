@@ -49,6 +49,7 @@ impl Plugin for SystemsPlugin {
                 example_block::example_skeleton_color_system,
                 example_header::selection_button_interation,
                 example_header::selection_button_color_system,
+                example_header::selection_button_text_color_system,
             ),
         );
     }
@@ -487,6 +488,7 @@ fn camera_background_focus_policy_system(
     mut camera_selection_reader: EventReader<CameraSelectionEvent>,
     mut camera_banner_query: Query<(&mut CameraBackgroundBanner, &mut FocusPolicy), With<CameraBackgroundBanner>>,
     mut selection_button_query: Query<&mut example_header::SelectionButton, With<example_header::SelectionButton>>,
+    mut selection_button_text_query: Query<&mut example_header::SelectionButtonText, With<example_header::SelectionButtonText>>,
 ) {
     for camera_selection_event in camera_selection_reader.read() {
         println!("selected camera {:?}", camera_selection_event.crew_id);
@@ -494,28 +496,35 @@ fn camera_background_focus_policy_system(
 
         for (mut camera_banner, mut focus_policy) in camera_banner_query.iter_mut() {
             for mut selection_button in selection_button_query.iter_mut() {
-                
-                if selection_button.crew_id != camera_selection_event.crew_id {
-                    if selection_button.crew_id == camera_banner.crew_id {
+                for mut selection_button_text in selection_button_text_query.iter_mut() {
+                    if selection_button.crew_id != selection_button_text.crew_id { continue };
+
+                    if selection_button.crew_id != camera_selection_event.crew_id {
+                        if selection_button.crew_id == camera_banner.crew_id {
+                            *focus_policy = FocusPolicy::Pass;
+                            camera_banner.is_selected = false;
+                            selection_button.is_selected = false;
+                            selection_button_text.is_selected = false;
+                        } else {
+                            continue;
+                        }
+                    }
+    
+                    if camera_banner.crew_id != camera_selection_event.crew_id { continue };
+                    
+                    if camera_selection_event.select_this_camera {
+                        *focus_policy = FocusPolicy::Block;
+                        camera_banner.is_selected = true;
+                        selection_button.is_selected = true;
+                        selection_button_text.is_selected = true;
+                    } else {
                         *focus_policy = FocusPolicy::Pass;
                         camera_banner.is_selected = false;
                         selection_button.is_selected = false;
-                    } else {
-                        continue;
+                        selection_button_text.is_selected = false;
                     }
                 }
-
-                if camera_banner.crew_id != camera_selection_event.crew_id { continue };
                 
-                if camera_selection_event.select_this_camera {
-                    *focus_policy = FocusPolicy::Block;
-                    camera_banner.is_selected = true;
-                    selection_button.is_selected = true;
-                } else {
-                    *focus_policy = FocusPolicy::Pass;
-                    camera_banner.is_selected = false;
-                    selection_button.is_selected = false;
-                }
 
                 // } else {
                 //     *focus_policy = FocusPolicy::Pass;
