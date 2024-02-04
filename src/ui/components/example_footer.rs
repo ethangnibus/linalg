@@ -7,8 +7,9 @@ use bevy::{
 };
 
 use crate::ui::util::theme;
+use super::example_block;
 
-pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, text: &str) {
+pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
     let background_banner = commands.spawn((
         theme::ColorFunction {
             background: theme::background_color,
@@ -18,7 +19,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Auto,
-            min_height: Val::Px(50.0),
+            min_height: Val::Px(70.0),
             border: UiRect {
                 left: Val::Px(8.0),
                 right: Val::Px(8.0),
@@ -54,6 +55,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border_color: theme::swiper_background_color(theme).into(),
             ..default()
         },
+        example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
 
     let skeleton_right = commands.spawn((
@@ -77,6 +79,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border_color: theme::swiper_background_color(theme).into(),
             ..default()
         },
+        example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
 
 

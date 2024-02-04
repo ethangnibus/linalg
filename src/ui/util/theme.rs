@@ -160,7 +160,7 @@ pub fn navbar_buttons_background_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_LIGHT_BLUE;
+            return BERKELEY_BLUE;
         }
         CurrentTheme::Dark => {
             return BERKELEY_GOLD;

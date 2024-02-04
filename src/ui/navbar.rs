@@ -148,7 +148,7 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
             ButtonBundle {
                 style: Style {
                     // height: Val::Percent(height),
-                    height: Val::Percent(100.0),
+                    height: style::BUTTON_HEIGHT,
                     aspect_ratio: Some(1.0),
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::Center,
@@ -265,7 +265,7 @@ pub fn option_bar_button(
             ButtonBundle {
                 style: Style {
                     // height: Val::Percent(height),
-                    height: Val::Percent(100.0),
+                    height: style::BUTTON_HEIGHT,
                     aspect_ratio: Some(1.0),
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::Center,

@@ -1,6 +1,6 @@
 
 
-use super::components::example_header;
+use super::components::example_block;
 use super::option_bar;
 use super::routes;
 use super::theme;
@@ -44,6 +44,7 @@ impl Plugin for SystemsPlugin {
                 pan_orbit_camera,
                 camera_selection_system.before(pan_orbit_camera),
                 camera_background_focus_policy_system,
+                example_block::example_skeleton_color_system,
             ),
         );
     }
@@ -455,7 +456,6 @@ fn camera_selection_system (
     for (camera_banner, interaction) in interaction_query.iter() {
         match interaction {
             Interaction::Pressed => {
-                println!("pressed the button");
                 if camera_banner.is_selected { continue };
                 camera_selection_writer.send(
                     CameraSelectionEvent {
@@ -487,6 +487,8 @@ fn camera_background_focus_policy_system(
         
     }
 }
+
+
 
 
 /// Pan the camera with middle mouse click, zoom with scroll wheel, orbit with right mouse click.
@@ -602,3 +604,6 @@ fn pan_orbit_camera(
 //     let window = Vec2::new(window.width() as f32, window.height() as f32);
 //     window
 // }
+
+
+

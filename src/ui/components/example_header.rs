@@ -5,10 +5,27 @@ use bevy::{
     }, input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*, render::view
     // winit::WinitSettings,
 };
+use bevy_inspector_egui::egui::Align;
 
-use crate::ui::util::theme;
+use crate::ui::util::{
+    theme,
+    style,
+};
 
-pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, text: &str) {
+use super::example_block;
+
+
+#[derive(Component)]
+pub struct SelectionButton {
+    pub crew_id: u8,
+}
+
+#[derive(Component)]
+pub struct SelectionButtonText {
+    pub crew_id: u8,
+}
+
+pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
 
     let background_banner = commands.spawn((
         theme::ColorFunction {
@@ -19,7 +36,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Auto,
-            min_height: Val::Px(50.0),
+            min_height: Val::Px(70.0),
             border: UiRect {
                 left: Val::Px(8.0),
                 right: Val::Px(8.0),
@@ -56,6 +73,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border_color: theme::swiper_background_color(theme).into(),
             ..default()
         },
+        example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
 
     let skeleton_right = commands.spawn((
@@ -68,6 +86,10 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 // width: Val::Percent(100.0), // FIXME: fix so navbar isnt weird when going to 1.2.4
                 height: Val::Percent(100.0),
                 aspect_ratio: Some(1.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                // align_content: AlignContent::FlexStart,
+
                 border: UiRect {
                     left: Val::Px(0.0),
                     right: Val::Px(4.0),
@@ -80,7 +102,11 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border_color: theme::swiper_background_color(theme).into(),
             ..default()
         },
+        example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
+
+    let selection_button = selection_button(commands, theme, crew_id);
+    commands.entity(skeleton_right).push_children(&[selection_button]);
 
 
     // make the text that appears on the banner
@@ -119,3 +145,73 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     commands.entity(background_banner).push_children(&[skeleton_left, skeleton_right, text_bundle]);
     commands.entity(view_list_entity).push_children(&[background_banner]);
 }
+
+
+
+pub fn selection_button(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    crew_id: u8,
+) -> Entity {
+    let background_banner = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    // height: Val::Percent(height),
+                    height: style::BUTTON_HEIGHT,
+                    aspect_ratio: Some(1.0),
+
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    border: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(2.0),
+                        bottom: Val::Px(2.0),
+                    },
+                    overflow: Overflow::clip(),
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Block,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            SelectionButton{
+                crew_id: crew_id,
+            },
+        ))
+        .id();
+
+    let text = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            TextBundle::from_section(
+                "+",
+                TextStyle {
+                    font_size: 50.0,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+            SelectionButtonText {
+                crew_id: crew_id,
+            },
+        ))
+        .id();
+
+    commands.entity(background_banner).push_children(&[text]);
+
+    return background_banner;
+}
+
+
+

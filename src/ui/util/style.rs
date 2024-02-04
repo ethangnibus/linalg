@@ -9,3 +9,5 @@ pub const NO_PADDING: UiRect = UiRect {
 pub const NO_BORDER: UiRect = NO_PADDING;
 
 pub const SWIPERS_WIDTH: Val = Val::Px(10.0);
+
+pub const BUTTON_HEIGHT: Val = Val::Px(40.0);
