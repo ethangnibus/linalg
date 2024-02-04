@@ -188,7 +188,7 @@ pub fn get(
         view_list_entity,
         "   Interesting. With a set of no vectors, we can still visit one planet. \
         our spaceship drops space dust on the planet we start at. Here, we could say \
-        that our spacship spans the null vector."
+        that our spaceship spans the null vector."
     );
 
 
@@ -506,6 +506,7 @@ pub fn get(
 
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -513,6 +514,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -520,6 +522,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -527,6 +530,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -534,6 +538,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -541,6 +546,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -548,6 +554,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -555,6 +562,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -562,6 +570,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -569,6 +578,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,
@@ -576,6 +586,7 @@ pub fn get(
     );
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,

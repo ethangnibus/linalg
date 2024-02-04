@@ -190,4 +190,5 @@ fn mouse_scroll(
             _ => {}
         }
     }
+    mouse_wheel_events.clear();
 }

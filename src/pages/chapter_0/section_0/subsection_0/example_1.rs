@@ -26,7 +26,9 @@ pub struct SpinnyCube;
 
 pub fn setup_scene(
     commands: &mut Commands,
+    theme: &theme::CurrentTheme,
     film_crew_entity: Entity,
+    
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_id: u8,
@@ -34,9 +36,10 @@ pub fn setup_scene(
     let crew_render_layer = RenderLayers::layer(crew_id);
 
     let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
-    let cube_material_handle = if crew_id == 0 {
+    let cube_material_handle = if crew_id == 1 {
         materials.add(StandardMaterial {
             base_color: Color::rgb(1.0, 0.75, 0.90),
+            // base_color: theme::sidebar_color(theme).into(),
             metallic: 20.0,
             reflectance: 0.02,
             unlit: false,
@@ -45,6 +48,7 @@ pub fn setup_scene(
     } else {
         materials.add(StandardMaterial {
             base_color: Color::rgb(0.0, 0.1, 0.90),
+            // base_color: theme::sidebar_collapsed_color(theme).into(),
             metallic: 20.0,
             reflectance: 0.02,
             unlit: false,

@@ -25,6 +25,7 @@ pub fn get(
     subsection_cameras::setup_camera(commands, theme, film_crew_entity, Val::Vh(100.0), meshes, materials, images, view_list_entity, 1);
     example_1::setup_scene(
         commands,
+        theme,
         film_crew_entity,
         meshes,
         materials,

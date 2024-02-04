@@ -1655,4 +1655,5 @@ fn sidebar_button_mouse_scroll(
             Interaction::None => {}
         }
     }
+    mouse_wheel_events.clear();
 }
