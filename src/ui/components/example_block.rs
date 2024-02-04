@@ -54,7 +54,7 @@ pub fn spawn(
         theme,
         view_list_entity,
         crew_id,
-        format!(" ...").as_str(),
+        format!(" Press \"*\" on the top right to activate").as_str(),
     );
     
     

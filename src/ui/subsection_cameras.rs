@@ -2,6 +2,7 @@
 
 use super::components::example_block;
 use super::components::example_header;
+use super::components::example_footer;
 use super::option_bar;
 use super::routes;
 use super::theme;
@@ -50,6 +51,7 @@ impl Plugin for SystemsPlugin {
                 example_header::selection_button_interation,
                 example_header::selection_button_color_system,
                 example_header::selection_button_text_color_system,
+                example_footer::selection_text_description_color_system,
             ),
         );
     }

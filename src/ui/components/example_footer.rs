@@ -6,8 +6,18 @@ use bevy::{
     // winit::WinitSettings,
 };
 
-use crate::ui::util::theme;
+use crate::ui::{
+    util::theme,
+    subsection_cameras,
+};
+
 use super::example_block;
+
+#[derive(Component)]
+pub struct SelectionTextDescription {
+    crew_id: u8,
+    is_selected: bool,
+}
 
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
     let background_banner = commands.spawn((
@@ -104,12 +114,17 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                     top: Val::Px(4.0),
                     bottom: Val::Px(4.0),
                 },
+                overflow: Overflow::clip(),
                 justify_self: JustifySelf::Start,
                 align_self: AlignSelf::Center,
                 position_type: PositionType::Absolute,
                 ..default()
             }
         ),
+        SelectionTextDescription {
+            crew_id: crew_id,
+            is_selected: false,
+        },
         Label,
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
     )).id();
@@ -132,4 +147,46 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
 
     )).id();
     commands.entity(view_list_entity).push_children(&[background_banner, space_under]);
+}
+
+
+pub fn selection_text_description_color_system(
+    mut camera_selection_reader: EventReader<subsection_cameras::CameraSelectionEvent>,
+    mut camera_selection_color_reader: EventReader<subsection_cameras::CameraSelectionColorEvent>,
+    mut selection_text_description_query: Query<(&mut Text, &mut theme::ColorFunction, &SelectionTextDescription), With<SelectionTextDescription>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    let theme = theme.as_ref();
+
+    for camera_selection_color_event in camera_selection_color_reader.read() {
+        for (mut text, mut color_function, mut selection_text_description) in selection_text_description_query.iter_mut() {
+            if selection_text_description.crew_id == camera_selection_color_event.crew_id {
+                text.sections[0].style.color = (camera_selection_color_event.color_function)(theme).into();
+            }
+        }
+    }
+
+    for camera_selection_event in camera_selection_reader.read() {
+        for (mut text, mut color_function, mut selection_text_description) in selection_text_description_query.iter_mut() {
+            if selection_text_description.crew_id == camera_selection_event.crew_id {
+                match camera_selection_event.select_this_camera {
+                    true => {
+                        text.sections[0].style.color = theme::sidebar_color(theme).into();
+                        text.sections[0].value = String::from(" Press \"=\" to return to scrolling");
+                        color_function.border = theme::sidebar_color;
+                    },
+                    false => {
+                        text.sections[0].style.color = theme::swiper_background_color(theme).into();
+                        text.sections[0].value = String::from(" Press \"*\" at the top right to interact with the scene");
+                        color_function.border = theme::swiper_background_color;
+                    },
+                }
+                
+            }
+            else {
+                text.sections[0].style.color = theme::swiper_background_color(theme).into();
+                color_function.border = theme::swiper_background_color;
+            }
+        }
+    }
 }

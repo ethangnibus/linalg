@@ -198,7 +198,7 @@ pub fn selection_button(
                 border: theme::sidebar_collapsed_color,
             },
             TextBundle::from_section(
-                "+",
+                "*",
                 TextStyle {
                     font_size: 50.0,
                     color: theme::sidebar_collapsed_color(theme).into(),
@@ -350,10 +350,12 @@ pub fn selection_button_text_color_system(
                 match camera_selection_event.select_this_camera {
                     true => {
                         text.sections[0].style.color = theme::sidebar_color(theme).into();
+                        text.sections[0].value = String::from("=");
                         color_function.border = theme::sidebar_color;
                     },
                     false => {
                         text.sections[0].style.color = theme::swiper_background_color(theme).into();
+                        text.sections[0].value = String::from("*");
                         color_function.border = theme::swiper_background_color;
                     },
                 }
