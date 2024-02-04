@@ -179,7 +179,7 @@ pub fn selection_button(
                     ..default()
                 },
                 visibility: Visibility::Inherited,
-                focus_policy: bevy::ui::FocusPolicy::Block,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
                 background_color: theme::navbar_background_color(theme).into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
@@ -305,7 +305,7 @@ pub fn selection_button_color_system(
     }
 
     for camera_selection_event in camera_selection_reader.read() {
-        println!("camera_selection_event {:?}", camera_selection_event);
+        // println!("camera_selection_event {:?}", camera_selection_event);
         for (mut border_color, mut color_function, mut selection_button) in selection_button_query.iter_mut() {
             if selection_button.crew_id == camera_selection_event.crew_id {
                 match camera_selection_event.select_this_camera {

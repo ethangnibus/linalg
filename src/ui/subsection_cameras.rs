@@ -493,7 +493,7 @@ fn camera_background_focus_policy_system(
     mut selection_button_text_query: Query<&mut example_header::SelectionButtonText, With<example_header::SelectionButtonText>>,
 ) {
     for camera_selection_event in camera_selection_reader.read() {
-        println!("selected camera {:?}", camera_selection_event.crew_id);
+        // println!("selected camera {:?}", camera_selection_event.crew_id);
 
 
         for (mut camera_banner, mut focus_policy) in camera_banner_query.iter_mut() {

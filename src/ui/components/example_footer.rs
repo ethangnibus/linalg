@@ -7,7 +7,10 @@ use bevy::{
 };
 
 use crate::ui::{
-    util::theme,
+    util::{
+        theme,
+        style,
+    },
     subsection_cameras,
 };
 
@@ -17,6 +20,12 @@ use super::example_block;
 pub struct SelectionTextDescription {
     crew_id: u8,
     is_selected: bool,
+}
+
+#[derive(Component)]
+pub struct FullscreenButton {
+    pub crew_id: u8,
+    pub is_selected: bool,
 }
 
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
@@ -92,6 +101,9 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
 
+    let fullscreen_button = fullscreen_button(commands, theme, crew_id);
+    commands.entity(skeleton_right).push_children(&[fullscreen_button]);
+
 
     // make the text that appears on the banner
     let text_bundle = commands.spawn((
@@ -148,6 +160,74 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     )).id();
     commands.entity(view_list_entity).push_children(&[background_banner, space_under]);
 }
+
+pub fn fullscreen_button(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    crew_id: u8,
+) -> Entity {
+    let background_banner = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::navbar_background_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            ButtonBundle {
+                style: Style {
+                    // height: Val::Percent(height),
+                    height: style::BUTTON_HEIGHT,
+                    aspect_ratio: Some(1.0),
+
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    border: UiRect {
+                        left: Val::Px(2.0),
+                        right: Val::Px(2.0),
+                        top: Val::Px(2.0),
+                        bottom: Val::Px(2.0),
+                    },
+                    overflow: Overflow::clip(),
+                    ..default()
+                },
+                visibility: Visibility::Inherited,
+                focus_policy: bevy::ui::FocusPolicy::Pass,
+                background_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
+                ..default()
+            },
+            FullscreenButton {
+                crew_id: crew_id,
+                is_selected: false,
+            },
+        ))
+        .id();
+
+    let text = commands
+        .spawn((
+            theme::ColorFunction {
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
+            },
+            TextBundle::from_section(
+                "F",
+                TextStyle {
+                    font_size: 50.0,
+                    color: theme::sidebar_collapsed_color(theme).into(),
+                    ..default()
+                },
+            ),
+            // SelectionButtonText {
+            //     crew_id: crew_id,
+            //     is_selected: false,
+            // },
+        ))
+        .id();
+
+    commands.entity(background_banner).push_children(&[text]);
+
+    return background_banner;
+}
+
 
 
 pub fn selection_text_description_color_system(
