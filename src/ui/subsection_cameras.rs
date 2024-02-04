@@ -64,7 +64,10 @@ pub struct CameraSelectionEvent {
 }
 
 #[derive(Event)]
-pub struct CameraSelectionColorEvent;
+pub struct CameraSelectionColorEvent {
+    pub crew_id: u8,
+    pub color_function: fn(&theme::CurrentTheme) -> Color,
+}
 
 #[derive(Component)]
 pub struct CameraBackgroundBanner {

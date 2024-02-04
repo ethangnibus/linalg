@@ -63,10 +63,20 @@ pub fn spawn(
 
 pub fn example_skeleton_color_system(
     mut camera_selection_reader: EventReader<subsection_cameras::CameraSelectionEvent>,
+    mut camera_selection_color_reader: EventReader<subsection_cameras::CameraSelectionColorEvent>,
     mut example_skeleton_query: Query<(&mut BorderColor, &mut theme::ColorFunction, &ExampleSkeletonCorner), With<ExampleSkeletonCorner>>,
     theme: Res<theme::CurrentTheme>,
 ) {
     let theme = theme.as_ref();
+
+    for camera_selection_color_event in camera_selection_color_reader.read() {
+        for (mut border_color, mut color_function, mut skeleton_corner) in example_skeleton_query.iter_mut() {
+            if skeleton_corner.crew_id == camera_selection_color_event.crew_id {
+                *border_color = (camera_selection_color_event.color_function)(theme).into();
+            }
+        }
+    }
+
     for camera_selection_event in camera_selection_reader.read() {
         println!("camera_selection_event {:?}", camera_selection_event);
         for (mut border_color, mut color_function, mut skeleton_corner) in example_skeleton_query.iter_mut() {

@@ -242,12 +242,44 @@ pub fn selection_button_interation(
                 }
             },
             Interaction::Hovered => {
-                camera_selection_color_writer.send(
-                    subsection_cameras::CameraSelectionColorEvent
-                )
+                match selection_button.is_selected {
+                    true => {
+                        camera_selection_color_writer.send(
+                            subsection_cameras::CameraSelectionColorEvent {
+                                crew_id: selection_button.crew_id,
+                                color_function: theme::swiper_background_color,
+                            }
+                        )
+                    }
+                    false => {
+                        camera_selection_color_writer.send(
+                            subsection_cameras::CameraSelectionColorEvent {
+                                crew_id: selection_button.crew_id,
+                                color_function: theme::sidebar_color,
+                            }
+                        )
+                    }
+                }
             },
             Interaction::None => {
-
+                match selection_button.is_selected {
+                    true => {
+                        camera_selection_color_writer.send(
+                            subsection_cameras::CameraSelectionColorEvent {
+                                crew_id: selection_button.crew_id,
+                                color_function: theme::sidebar_color,
+                            }
+                        )
+                    }
+                    false => {
+                        camera_selection_color_writer.send(
+                            subsection_cameras::CameraSelectionColorEvent {
+                                crew_id: selection_button.crew_id,
+                                color_function: theme::swiper_background_color,
+                            }
+                        )
+                    }
+                }
             }
         }
     }
@@ -255,30 +287,41 @@ pub fn selection_button_interation(
 
 
 pub fn selection_button_color_system(
-    interaction_query: Query<(&SelectionButton, &Interaction), (Changed<Interaction>, With<SelectionButton>)>,
-    mut camera_selection_writer: EventWriter<subsection_cameras::CameraSelectionEvent>,
-    mut camera_selection_color_writer: EventWriter<subsection_cameras::CameraSelectionColorEvent>,
+    mut camera_selection_reader: EventReader<subsection_cameras::CameraSelectionEvent>,
+    mut camera_selection_color_reader: EventReader<subsection_cameras::CameraSelectionColorEvent>,
+    mut selection_button_query: Query<(&mut BorderColor, &mut theme::ColorFunction, &SelectionButton), With<SelectionButton>>,
+    theme: Res<theme::CurrentTheme>,
 ) {
-    // for (selection_button, interaction) in interaction_query.iter() {
-    //     match interaction {
-    //         Interaction::Pressed => {
-    //             if selection_button.is_selected { continue };
-    //             camera_selection_writer.send(
-    //                 subsection_cameras::CameraSelectionEvent {
-    //                     crew_id: selection_button.crew_id,
-    //                     this_camera_is_selected: true,
-    //                 }
-    //             )
-                
-    //         },
-    //         Interaction::Hovered => {
-    //             camera_selection_color_writer.send(
-    //                 subsection_cameras::CameraSelectionColorEvent
-    //             )
-    //         },
-    //         Interaction::None => {
+    let theme = theme.as_ref();
 
-    //         }
-    //     }
-    // }
+    for camera_selection_color_event in camera_selection_color_reader.read() {
+        for (mut border_color, mut color_function, mut selection_button) in selection_button_query.iter_mut() {
+            if selection_button.crew_id == camera_selection_color_event.crew_id {
+                *border_color = (camera_selection_color_event.color_function)(theme).into();
+            }
+        }
+    }
+
+    for camera_selection_event in camera_selection_reader.read() {
+        println!("camera_selection_event {:?}", camera_selection_event);
+        for (mut border_color, mut color_function, mut selection_button) in selection_button_query.iter_mut() {
+            if selection_button.crew_id == camera_selection_event.crew_id {
+                match camera_selection_event.select_this_camera {
+                    true => {
+                        *border_color = theme::sidebar_color(theme).into();
+                        color_function.border = theme::sidebar_color;
+                    },
+                    false => {
+                        *border_color = theme::swiper_background_color(theme).into();
+                        color_function.border = theme::swiper_background_color;
+                    },
+                }
+                
+            }
+            else {
+                *border_color = theme::swiper_background_color(theme).into();
+                color_function.border = theme::swiper_background_color;
+            }
+        }
+    }
 }
