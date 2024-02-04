@@ -7,10 +7,10 @@ use bevy::{
 };
 use bevy_inspector_egui::egui::Align;
 
-use crate::ui::util::{
+use crate::ui::{subsection_cameras, util::{
     theme,
     style,
-};
+}};
 
 use super::example_block;
 
@@ -18,6 +18,7 @@ use super::example_block;
 #[derive(Component)]
 pub struct SelectionButton {
     pub crew_id: u8,
+    pub is_selected: bool,
 }
 
 #[derive(Component)]
@@ -184,6 +185,7 @@ pub fn selection_button(
             },
             SelectionButton{
                 crew_id: crew_id,
+                is_selected: false,
             },
         ))
         .id();
@@ -215,3 +217,68 @@ pub fn selection_button(
 
 
 
+pub fn selection_button_interation(
+    interaction_query: Query<(&SelectionButton, &Interaction), (Changed<Interaction>, With<SelectionButton>)>,
+    mut camera_selection_writer: EventWriter<subsection_cameras::CameraSelectionEvent>,
+    mut camera_selection_color_writer: EventWriter<subsection_cameras::CameraSelectionColorEvent>,
+) {
+    for (selection_button, interaction) in interaction_query.iter() {
+        match interaction {
+            Interaction::Pressed => {
+                if selection_button.is_selected { 
+                    camera_selection_writer.send(
+                        subsection_cameras::CameraSelectionEvent {
+                            crew_id: selection_button.crew_id,
+                            select_this_camera: false,
+                        }
+                    )
+                } else {
+                    camera_selection_writer.send(
+                        subsection_cameras::CameraSelectionEvent {
+                            crew_id: selection_button.crew_id,
+                            select_this_camera: true,
+                        }
+                    )
+                }
+            },
+            Interaction::Hovered => {
+                camera_selection_color_writer.send(
+                    subsection_cameras::CameraSelectionColorEvent
+                )
+            },
+            Interaction::None => {
+
+            }
+        }
+    }
+}
+
+
+pub fn selection_button_color_system(
+    interaction_query: Query<(&SelectionButton, &Interaction), (Changed<Interaction>, With<SelectionButton>)>,
+    mut camera_selection_writer: EventWriter<subsection_cameras::CameraSelectionEvent>,
+    mut camera_selection_color_writer: EventWriter<subsection_cameras::CameraSelectionColorEvent>,
+) {
+    // for (selection_button, interaction) in interaction_query.iter() {
+    //     match interaction {
+    //         Interaction::Pressed => {
+    //             if selection_button.is_selected { continue };
+    //             camera_selection_writer.send(
+    //                 subsection_cameras::CameraSelectionEvent {
+    //                     crew_id: selection_button.crew_id,
+    //                     this_camera_is_selected: true,
+    //                 }
+    //             )
+                
+    //         },
+    //         Interaction::Hovered => {
+    //             camera_selection_color_writer.send(
+    //                 subsection_cameras::CameraSelectionColorEvent
+    //             )
+    //         },
+    //         Interaction::None => {
+
+    //         }
+    //     }
+    // }
+}

@@ -68,10 +68,20 @@ pub fn example_skeleton_color_system(
 ) {
     let theme = theme.as_ref();
     for camera_selection_event in camera_selection_reader.read() {
+        println!("camera_selection_event {:?}", camera_selection_event);
         for (mut border_color, mut color_function, mut skeleton_corner) in example_skeleton_query.iter_mut() {
             if skeleton_corner.crew_id == camera_selection_event.crew_id {
-                *border_color = theme::sidebar_color(theme).into();
-                color_function.border = theme::sidebar_color;
+                match camera_selection_event.select_this_camera {
+                    true => {
+                        *border_color = theme::sidebar_color(theme).into();
+                        color_function.border = theme::sidebar_color;
+                    },
+                    false => {
+                        *border_color = theme::swiper_background_color(theme).into();
+                        color_function.border = theme::swiper_background_color;
+                    },
+                }
+                
             } else {
                 *border_color = theme::swiper_background_color(theme).into();
                 color_function.border = theme::swiper_background_color;

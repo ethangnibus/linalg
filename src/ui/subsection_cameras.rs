@@ -1,6 +1,7 @@
 
 
 use super::components::example_block;
+use super::components::example_header;
 use super::option_bar;
 use super::routes;
 use super::theme;
@@ -35,6 +36,7 @@ impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<CameraSetupEvent>()
            .add_event::<CameraSelectionEvent>()
+           .add_event::<CameraSelectionColorEvent>()
            .add_systems(
             Update,
             (
@@ -45,6 +47,8 @@ impl Plugin for SystemsPlugin {
                 camera_selection_system.before(pan_orbit_camera),
                 camera_background_focus_policy_system,
                 example_block::example_skeleton_color_system,
+                example_header::selection_button_interation,
+                example_header::selection_button_color_system,
             ),
         );
     }
@@ -53,10 +57,14 @@ impl Plugin for SystemsPlugin {
 #[derive(Event)]
 pub struct CameraSetupEvent;
 
-#[derive(Event)]
+#[derive(Event, Debug)]
 pub struct CameraSelectionEvent {
     pub crew_id: u8,
+    pub select_this_camera: bool,
 }
+
+#[derive(Event)]
+pub struct CameraSelectionColorEvent;
 
 #[derive(Component)]
 pub struct CameraBackgroundBanner {
@@ -457,13 +465,16 @@ fn camera_selection_system (
         match interaction {
             Interaction::Pressed => {
                 if camera_banner.is_selected { continue };
+                
                 camera_selection_writer.send(
                     CameraSelectionEvent {
-                        crew_id: camera_banner.crew_id
+                        crew_id: camera_banner.crew_id,
+                        select_this_camera: true,
                     }
                 )
             }
-            _ => {}
+            _ => {
+            }
         }
     }
 }
@@ -472,16 +483,30 @@ fn camera_selection_system (
 fn camera_background_focus_policy_system(
     mut camera_selection_reader: EventReader<CameraSelectionEvent>,
     mut camera_banner_query: Query<(&mut CameraBackgroundBanner, &mut FocusPolicy), With<CameraBackgroundBanner>>,
+    mut selection_button_query: Query<&mut example_header::SelectionButton, With<example_header::SelectionButton>>,
 ) {
     for camera_selection_event in camera_selection_reader.read() {
         println!("selected camera {:?}", camera_selection_event.crew_id);
         for (mut camera_banner, mut focus_policy) in camera_banner_query.iter_mut() {
-            if camera_banner.crew_id == camera_selection_event.crew_id {
-                *focus_policy = FocusPolicy::Block;
-                camera_banner.is_selected = true;
-            } else {
-                *focus_policy = FocusPolicy::Pass;
-                camera_banner.is_selected = false;
+            if camera_banner.crew_id != camera_selection_event.crew_id { continue };
+            for mut selection_button in selection_button_query.iter_mut() {
+                if selection_button.crew_id != camera_selection_event.crew_id { continue };
+                
+                if camera_selection_event.select_this_camera {
+                    *focus_policy = FocusPolicy::Block;
+                    camera_banner.is_selected = true;
+                    selection_button.is_selected = true;
+                } else {
+                    *focus_policy = FocusPolicy::Pass;
+                    camera_banner.is_selected = false;
+                    selection_button.is_selected = false;
+                }
+
+                // } else {
+                //     *focus_policy = FocusPolicy::Pass;
+                //     camera_banner.is_selected = false;
+                //     selection_button.is_selected = false;
+                // }
             }
         }
         
