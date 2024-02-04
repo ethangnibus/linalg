@@ -26,7 +26,7 @@ use bevy::{
         },
         view::{RenderLayers, VisibleEntities},
     },
-    ui,
+    ui::FocusPolicy,
 };
 // use rand::Rng;
 
@@ -34,6 +34,7 @@ pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<CameraSetupEvent>()
+           .add_event::<CameraSelectionEvent>()
            .add_systems(
             Update,
             (
@@ -41,6 +42,8 @@ impl Plugin for SystemsPlugin {
                 resize_camera_system,
                 theme_change_node_color_change_system,
                 pan_orbit_camera,
+                camera_selection_system.before(pan_orbit_camera),
+                camera_background_focus_policy_system,
             ),
         );
     }
@@ -49,9 +52,15 @@ impl Plugin for SystemsPlugin {
 #[derive(Event)]
 pub struct CameraSetupEvent;
 
+#[derive(Event)]
+pub struct CameraSelectionEvent {
+    pub crew_id: u8,
+}
+
 #[derive(Component)]
 pub struct CameraBackgroundBanner {
     pub crew_id: u8,
+    pub is_selected: bool,
 }
 
 
@@ -119,10 +128,14 @@ pub fn setup_camera(
                     align_items: AlignItems::Center,
                     ..default()
                 },
+                focus_policy: FocusPolicy::Pass,
                 background_color: Color::WHITE.into(), // FIXME: Change to background color and change to white when camera loads
                 ..default()
             },
-            CameraBackgroundBanner { crew_id: crew_id },
+            CameraBackgroundBanner {
+                crew_id: crew_id,
+                is_selected: false,
+            },
             // image,
         ))
         .id();
@@ -203,7 +216,9 @@ pub fn setup_camera(
             // UI config is a separate component
             UiCameraConfig { show_ui: false },
             crew_render_layer,
-            MiniCamera { crew_id: crew_id },
+            MiniCamera {
+                crew_id: crew_id,
+            },
         ))
         .id();
 
@@ -432,6 +447,48 @@ impl Default for PanOrbitCamera {
     }
 }
 
+fn camera_selection_system (
+    mut camera_selection_writer: EventWriter<CameraSelectionEvent>,
+    interaction_query: Query<(&CameraBackgroundBanner, &Interaction), (Changed<Interaction>, With<CameraBackgroundBanner>)>,
+)
+{
+    for (camera_banner, interaction) in interaction_query.iter() {
+        match interaction {
+            Interaction::Pressed => {
+                println!("pressed the button");
+                if camera_banner.is_selected { continue };
+                camera_selection_writer.send(
+                    CameraSelectionEvent {
+                        crew_id: camera_banner.crew_id
+                    }
+                )
+            }
+            _ => {}
+        }
+    }
+}
+
+
+fn camera_background_focus_policy_system(
+    mut camera_selection_reader: EventReader<CameraSelectionEvent>,
+    mut camera_banner_query: Query<(&mut CameraBackgroundBanner, &mut FocusPolicy), With<CameraBackgroundBanner>>,
+) {
+    for camera_selection_event in camera_selection_reader.read() {
+        println!("selected camera {:?}", camera_selection_event.crew_id);
+        for (mut camera_banner, mut focus_policy) in camera_banner_query.iter_mut() {
+            if camera_banner.crew_id == camera_selection_event.crew_id {
+                *focus_policy = FocusPolicy::Block;
+                camera_banner.is_selected = true;
+            } else {
+                *focus_policy = FocusPolicy::Pass;
+                camera_banner.is_selected = false;
+            }
+        }
+        
+    }
+}
+
+
 /// Pan the camera with middle mouse click, zoom with scroll wheel, orbit with right mouse click.
 fn pan_orbit_camera(
     // windows: Res<Window>,
@@ -447,6 +504,7 @@ fn pan_orbit_camera(
             Interaction::None => {
             }
             _ => {
+
                 // change input mapping for orbit and panning here
                 // let orbit_button = MouseButton::Right;
                 // let pan_button = MouseButton::Middle;
@@ -476,6 +534,8 @@ fn pan_orbit_camera(
                 }
                     for (mini_camera, mut pan_orbit, mut transform, projection) in query.iter_mut() {
                         if camera_background_banner.crew_id != mini_camera.crew_id {continue};
+                        if !camera_background_banner.is_selected { continue }
+
                         if orbit_button_changed {
                             // only check for upside down when orbiting started or ended this frame
                             // if the camera is "upside" down, panning horizontally would be inverted, so invert the input to make it correct
