@@ -82,7 +82,8 @@ pub fn example_skeleton_color_system(
                     },
                 }
                 
-            } else {
+            }
+            else {
                 *border_color = theme::swiper_background_color(theme).into();
                 color_function.border = theme::swiper_background_color;
             }

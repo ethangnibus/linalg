@@ -487,10 +487,22 @@ fn camera_background_focus_policy_system(
 ) {
     for camera_selection_event in camera_selection_reader.read() {
         println!("selected camera {:?}", camera_selection_event.crew_id);
+
+
         for (mut camera_banner, mut focus_policy) in camera_banner_query.iter_mut() {
-            if camera_banner.crew_id != camera_selection_event.crew_id { continue };
             for mut selection_button in selection_button_query.iter_mut() {
-                if selection_button.crew_id != camera_selection_event.crew_id { continue };
+                
+                if selection_button.crew_id != camera_selection_event.crew_id {
+                    if selection_button.crew_id == camera_banner.crew_id {
+                        *focus_policy = FocusPolicy::Pass;
+                        camera_banner.is_selected = false;
+                        selection_button.is_selected = false;
+                    } else {
+                        continue;
+                    }
+                }
+
+                if camera_banner.crew_id != camera_selection_event.crew_id { continue };
                 
                 if camera_selection_event.select_this_camera {
                     *focus_policy = FocusPolicy::Block;
