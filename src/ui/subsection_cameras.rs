@@ -50,6 +50,7 @@ impl Plugin for SystemsPlugin {
                 camera_selection_system.before(pan_orbit_camera),
                 camera_background_focus_policy_system,
                 example_block::example_skeleton_color_system,
+                example_block::fullscreen_event_system,
                 example_header::selection_button_interation,
                 example_header::selection_button_color_system,
                 example_header::selection_button_text_color_system,

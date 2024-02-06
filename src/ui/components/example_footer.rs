@@ -483,7 +483,7 @@ pub fn fullscreen_button_interaction_system(
                 fullscreen_button.is_selected = !fullscreen_button.is_selected;
             }
             Interaction::Hovered => {
-                println!("hovered");
+                // println!("hovered");
                 match fullscreen_button.is_selected {
                     true => {
                         fullscreen_color_writer.send(
@@ -537,10 +537,10 @@ pub fn fullscreen_button_color_system (
     let theme = theme.as_ref();
 
     for fullscreen_color_event in fullscreen_color_reader.read() {
-        println!("fullscreen_color_event {:?}", fullscreen_color_event);
+        // println!("fullscreen_color_event {:?}", fullscreen_color_event);
         for (fullscreen_arrow, style, mut border_color, color_function) in fullscreen_arrow_query.iter_mut() {
             if fullscreen_arrow.crew_id != fullscreen_color_event.crew_id { continue };
-            println!("before coloring");
+            // println!("before coloring");
             *border_color = (fullscreen_color_event.color_function)(theme).into();
         }
     }

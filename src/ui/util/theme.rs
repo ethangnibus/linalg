@@ -249,7 +249,7 @@ pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
             // return LIGHT_GRAY;
-            return Color::rgb(0.7, 0.7, 0.7);
+            return Color::rgb(0.6, 0.6, 0.6);
         }
         CurrentTheme::Dark => {
             return Color::rgb(0.3, 0.3, 0.3);

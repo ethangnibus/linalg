@@ -13,6 +13,10 @@ pub struct Root;
 #[derive(Component)]
 pub struct NavbarFrame;
 
+
+#[derive(Component)]
+pub struct FullscreenNode;
+
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
@@ -30,6 +34,7 @@ impl Plugin for SystemsPlugin {
 
 // Returns root node
 pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) {
+    let fullscreen_node = fullscreen_node(commands);
     let root = new(commands, 100.0, 100.0);
 
     let navbar_height: f32 = 8.0; // in percentage
@@ -48,6 +53,21 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) {
         ]);
 }
 
+pub fn fullscreen_node(commands: &mut Commands) -> Entity {
+    return commands.spawn((
+        FullscreenNode,
+        NodeBundle {
+            style: Style {
+                width: Val::Vw(100.0),
+                height: Val::Vh(100.0),
+                ..default()
+            },
+            z_index: ZIndex::Global(1),
+            ..default()
+        }
+    )).id();
+}
+
 pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
     return commands.spawn((
         NavbarFrame,
@@ -59,6 +79,7 @@ pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            focus_policy: FocusPolicy::Block,
             // background_color: Color::rgb(0.0, 1.0, 0.0).into(),
             ..default()
         },
