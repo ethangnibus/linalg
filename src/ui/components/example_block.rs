@@ -1,4 +1,5 @@
 use bevy::{
+    ui::FocusPolicy,
     a11y::{
         accesskit::{NodeBuilder, Role},
         AccessibilityNode,
@@ -12,7 +13,7 @@ use crate::ui::{
     util::theme,
     subsection_cameras,
     root,
-    view,
+    view::{self, UiResizeEvent},
 };
 use super::example_header;
 use super::example_footer;
@@ -133,37 +134,76 @@ pub fn example_skeleton_color_system(
 
 pub fn fullscreen_event_system (
     mut fullscreen_reader: EventReader<subsection_cameras::FullscreenEvent>,
-    // mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, & Style), With<subsection_cameras::CameraBackgroundBanner>>,
-    mut fullscreen_node_query: Query<Entity, With<root::FullscreenNode>>,
-    mut example_block_query: Query<(Entity, &ExampleBlock, &mut Style), With<ExampleBlock>>,
+    mut fullscreen_node_query: Query<(Entity, &mut FocusPolicy), With<root::FullscreenNode>>,
+
+    mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
+    mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
+    mut example_footer_query: Query<(Entity, &example_footer::ExampleFooter), With<example_footer::ExampleFooter>>,
+    mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, &mut Style), With<subsection_cameras::CameraBackgroundBanner>>,
+
+
 
     mut ui_resize_writer: EventWriter<view::UiResizeEvent>,
     mut commands: Commands,
 ) {
     for fullscreen_event in fullscreen_reader.read() {
         println!("fullscreen maximize: {:?}", fullscreen_event.maximize);
-        // for (camera_banner_entity, camera_banner, mut camera_banner_style) in camera_banner_query.iter_mut() {
-            // if camera_banner.crew_id != fullscreen_event.crew_id { continue };
-            for (example_block_entity, example_block, mut example_block_style) in example_block_query.iter_mut() {
-                if example_block.crew_id != fullscreen_event.crew_id { continue };
-
-
-                // println!("node: {:?}", camera_banner_style);
-                // *z_index = ZIndex::Global(2);
-                for fullscreen_node_entity in fullscreen_node_query.iter() {
-
+        for (camera_banner_entity, camera_banner, mut camera_banner_style) in camera_banner_query.iter_mut() {
+            if camera_banner.crew_id != fullscreen_event.crew_id { continue };
+            for (footer_entity, footer) in example_footer_query.iter() {
+                if footer.crew_id != fullscreen_event.crew_id { continue };
+                for (header_entity, header) in example_header_query.iter() {
+                    if header.crew_id != fullscreen_event.crew_id { continue };
                     if fullscreen_event.maximize {
-                        commands.entity(fullscreen_node_entity).push_children(&[example_block_entity]);
+                        // add to fullscreen node
+                        for (fullscreen_node_entity, mut fullscreen_node_focus_policy) in fullscreen_node_query.iter_mut() {
+                            commands.entity(fullscreen_node_entity).push_children(&[
+                                header_entity,
+                                camera_banner_entity,
+                                footer_entity,
+                            ]);
+                            *fullscreen_node_focus_policy = FocusPolicy::Block;
+
+                            camera_banner_style.flex_grow = 3.0;
+                        }
                     } else {
-                        commands.entity(fullscreen_node_entity).clear_children(); // remember to add children back to viewlist
+                        // add to example_block
+                        for (example_block_entity, example_block) in example_block_query.iter() {
+                            if example_block.crew_id != fullscreen_event.crew_id { continue };
+                            commands.entity(example_block_entity).push_children(&[
+                                header_entity,
+                                camera_banner_entity,
+                                footer_entity,
+                            ]);
+                        }
+                        // remove focus block
+                        for (_fullscreen_node_entity, mut fullscreen_node_focus_policy) in fullscreen_node_query.iter_mut() {
+                            *fullscreen_node_focus_policy = FocusPolicy::Pass;
+                        }
                     }
-                    
+                    ui_resize_writer.send(UiResizeEvent);
                 }
-                // example_block_style.width = Val::Vw(100.0);
-                // example_block_style.height = Val::Vh(100.0);
-                ui_resize_writer.send(view::UiResizeEvent);
             }
-            
         }
-    // }
+    }
 }
+
+//             // if camera_banner.crew_id != fullscreen_event.crew_id { continue };
+//             for (example_block_entity, example_block) in example_block_query.iter() {
+//                 if example_block.crew_id != fullscreen_event.crew_id { continue };
+//                 for fullscreen_node_entity in fullscreen_node_query.iter() {
+
+//                     if fullscreen_event.maximize {
+//                         commands.entity(fullscreen_node_entity).push_children(&[example_block_entity]);
+//                     } else {
+//                         commands.entity(fullscreen_node_entity).clear_children(); // remember to add children back to viewlist
+//                     }
+                    
+//                 }
+//                 // example_block_style.width = Val::Vw(100.0);
+//                 // example_block_style.height = Val::Vh(100.0);
+//                 ui_resize_writer.send(view::UiResizeEvent);
+//             }
+//         }
+//     }
+// }

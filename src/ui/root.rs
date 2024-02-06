@@ -60,9 +60,11 @@ pub fn fullscreen_node(commands: &mut Commands) -> Entity {
             style: Style {
                 width: Val::Vw(100.0),
                 height: Val::Vh(100.0),
+                flex_direction: FlexDirection::Column,
                 ..default()
             },
             z_index: ZIndex::Global(1),
+            focus_policy: FocusPolicy::Pass,
             ..default()
         }
     )).id();
@@ -79,6 +81,7 @@ pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
+            
             focus_policy: FocusPolicy::Block,
             // background_color: Color::rgb(0.0, 1.0, 0.0).into(),
             ..default()

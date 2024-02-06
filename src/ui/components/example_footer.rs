@@ -35,6 +35,11 @@ pub enum FullscreenArrowType{
 }
 
 #[derive(Component)]
+pub struct ExampleFooter {
+    pub crew_id: u8,
+}
+
+#[derive(Component)]
 pub struct FullscreenArrow {
     pub crew_id: u8,
     pub is_selected: bool,
@@ -43,6 +48,9 @@ pub struct FullscreenArrow {
 
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
     let background_banner = commands.spawn((
+        ExampleFooter {
+            crew_id,
+        },
         theme::ColorFunction {
             background: theme::background_color,
             border: theme::background_color,

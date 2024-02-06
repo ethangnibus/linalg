@@ -22,6 +22,11 @@ pub struct SelectionButton {
 }
 
 #[derive(Component)]
+pub struct ExampleHeader {
+    pub crew_id: u8,
+}
+
+#[derive(Component)]
 pub struct SelectionButtonText {
     pub crew_id: u8,
     pub is_selected: bool,
@@ -30,6 +35,9 @@ pub struct SelectionButtonText {
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
 
     let background_banner = commands.spawn((
+        ExampleHeader{
+            crew_id: crew_id,
+        },
         theme::ColorFunction {
             background: theme::background_color,
             border: theme::background_color,
