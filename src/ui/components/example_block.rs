@@ -22,6 +22,11 @@ pub struct ExampleSkeletonCorner {
     pub crew_id: u8,
 }
 
+#[derive(Component)]
+pub struct ExampleBlock {
+    pub crew_id: u8,
+}
+
 pub fn spawn(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
@@ -33,13 +38,13 @@ pub fn spawn(
     view_list_entity: Entity,
     crew_id: u8,
 ) {
-    let example_block = new(commands);
+    let example_block = new(commands, crew_id);
     commands.entity(view_list_entity).push_children(&[example_block]);
 
     example_header::spawn(
         commands,
         theme,
-        view_list_entity,
+        example_block,
         crew_id,
         format!(" Example {}", crew_id).as_str(),
     );
@@ -52,14 +57,14 @@ pub fn spawn(
         meshes,
         materials,
         images,
-        view_list_entity,
+        example_block,
         crew_id,
     );
 
     example_footer::spawn(
         commands,
         theme,
-        view_list_entity,
+        example_block,
         crew_id,
         format!(" Press \"*\" on the top right to activate").as_str(),
     );
@@ -67,12 +72,16 @@ pub fn spawn(
     
 }
 
-fn new(commands: &mut Commands) -> Entity {
+fn new(commands: &mut Commands, crew_id: u8) -> Entity {
     return commands.spawn((
+        ExampleBlock {
+            crew_id: crew_id,
+        },
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: Val::Px(60.0),
+                height: Val::Auto,
+                flex_direction: FlexDirection::Column,
                 ..default()
             },
             ..default()
@@ -124,27 +133,37 @@ pub fn example_skeleton_color_system(
 
 pub fn fullscreen_event_system (
     mut fullscreen_reader: EventReader<subsection_cameras::FullscreenEvent>,
-    mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, &mut Style), With<subsection_cameras::CameraBackgroundBanner>>,
+    // mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, & Style), With<subsection_cameras::CameraBackgroundBanner>>,
     mut fullscreen_node_query: Query<Entity, With<root::FullscreenNode>>,
+    mut example_block_query: Query<(Entity, &ExampleBlock, &mut Style), With<ExampleBlock>>,
 
     mut ui_resize_writer: EventWriter<view::UiResizeEvent>,
     mut commands: Commands,
 ) {
     for fullscreen_event in fullscreen_reader.read() {
         println!("fullscreen maximize: {:?}", fullscreen_event.maximize);
-        for (camera_banner_entity, camera_banner, mut style) in camera_banner_query.iter_mut() {
-            
-            if camera_banner.crew_id == fullscreen_event.crew_id {
-                println!("node: {:?}", style);
+        // for (camera_banner_entity, camera_banner, mut camera_banner_style) in camera_banner_query.iter_mut() {
+            // if camera_banner.crew_id != fullscreen_event.crew_id { continue };
+            for (example_block_entity, example_block, mut example_block_style) in example_block_query.iter_mut() {
+                if example_block.crew_id != fullscreen_event.crew_id { continue };
+
+
+                // println!("node: {:?}", camera_banner_style);
                 // *z_index = ZIndex::Global(2);
                 for fullscreen_node_entity in fullscreen_node_query.iter() {
-                    commands.entity(fullscreen_node_entity).push_children(&[camera_banner_entity]);
+
+                    if fullscreen_event.maximize {
+                        commands.entity(fullscreen_node_entity).push_children(&[example_block_entity]);
+                    } else {
+                        commands.entity(fullscreen_node_entity).clear_children(); // remember to add children back to viewlist
+                    }
+                    
                 }
-                style.width = Val::Vw(100.0);
-                style.height = Val::Vh(100.0);
+                // example_block_style.width = Val::Vw(100.0);
+                // example_block_style.height = Val::Vh(100.0);
                 ui_resize_writer.send(view::UiResizeEvent);
-        
             }
+            
         }
-    }
+    // }
 }

@@ -37,8 +37,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         NodeBundle {
         style: Style {
             width: Val::Percent(100.0),
-            height: Val::Auto,
-            min_height: Val::Px(70.0),
+            height: Val::Px(70.0),
             border: UiRect {
                 left: Val::Px(8.0),
                 right: Val::Px(8.0),
