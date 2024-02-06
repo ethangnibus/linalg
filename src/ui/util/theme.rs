@@ -123,6 +123,23 @@ pub fn option_bar_header_color(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn option_bar_header_text_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Dark => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::WHITE;
+        }
+    }
+}
+
 pub fn text_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {

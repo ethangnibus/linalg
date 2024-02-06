@@ -670,8 +670,8 @@ fn option_bar_button_text_color_change_system(
             if color == theme::NOT_A_COLOR {
                 if option_bar_button_text.sections[0].value == String::from("+") {
                     option_bar_button_text.sections[0].value = String::from("-");
-                    color_funciton.border = theme::option_bar_header_color;
-                    color_funciton.background = theme::option_bar_header_color;
+                    color_funciton.border = theme::navbar_swiper_color;
+                    color_funciton.background = theme::navbar_swiper_color;
                 } else if option_bar_button_text.sections[0].value == String::from("-") {
                     option_bar_button_text.sections[0].value = String::from("+");
                     color_funciton.border = theme::sidebar_collapsed_color;

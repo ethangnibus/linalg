@@ -167,14 +167,14 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
     let text_item = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_collapsed_color,
-                border: theme::sidebar_collapsed_color,
+                background: theme::option_bar_header_text_color,
+                border: theme::option_bar_header_text_color,
             },
             TextBundle::from_section(
                 "Themes",
                 TextStyle {
                     font_size: chapter_container::CHAPTER_BUTTON_FONT_SIZE,
-                    color: theme::sidebar_collapsed_color(&theme),
+                    color: theme::option_bar_header_text_color(&theme),
                     ..default()
                 },
             ),
@@ -281,7 +281,7 @@ pub fn option_bar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -
             OptionBarSwiper,
             theme::ColorFunction {
                 background: theme::swiper_background_color,
-                border: theme::navbar_background_color,
+                border: theme::sidebar_collapsed_color,
             },
             ButtonBundle {
                 style: Style {
@@ -301,7 +301,7 @@ pub fn option_bar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -
                 },
                 focus_policy: FocusPolicy::Block,
                 background_color: theme::swiper_background_color(theme).into(),
-                border_color: theme::navbar_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
         ))
