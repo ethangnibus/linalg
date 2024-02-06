@@ -184,10 +184,10 @@ pub fn fullscreen_event_system (
                             *fullscreen_node_focus_policy = FocusPolicy::Pass;
                         }
                     }
-                    ui_resize_writer.send(UiResizeEvent);
                 }
             }
         }
+        ui_resize_writer.send(UiResizeEvent);
     }
 }
 
