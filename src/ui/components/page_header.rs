@@ -15,8 +15,8 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     // make banner behind the text
     let background_banner = commands.spawn((
         theme::ColorFunction {
-            background: theme::sidebar_color,
-            border: theme::background_color,
+            background: theme::page_header_color,
+            border: theme::navbar_swiper_color,
         },
         NodeBundle {
             style: Style {
@@ -31,16 +31,16 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 },
                 border: UiRect {
                     left: Val::Px(0.0),
-                    right: Val::Px(0.0),
+                    right: Val::Px(1.0),
                     top: Val::Px(0.0),
-                    bottom: Val::Px(4.0),
+                    bottom: Val::Px(2.0),
                 },
                 justify_items: JustifyItems::Start,
                 align_items: AlignItems::Center,
                 ..default()
             },
-            background_color: theme::sidebar_color(theme).into(),
-            border_color: theme::background_color(theme).into(),
+            background_color: theme::page_header_color(theme).into(),
+            border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
     )).id();

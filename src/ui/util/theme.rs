@@ -315,3 +315,22 @@ pub fn option_button_text_color(theme: &CurrentTheme) -> Color {
         }
     }
 }
+
+
+
+pub fn page_header_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return BERKELEY_GOLD;
+        }
+        CurrentTheme::Dark => {
+            return BERKELEY_GOLD;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::WHITE;
+        }
+    }
+}
