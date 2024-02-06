@@ -194,10 +194,12 @@ pub fn navbar_text_color(theme: &CurrentTheme) -> Color {
 pub fn navbar_swiper_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
+            // return Color::rgb(0.5, 0.5, 0.5);
             return Color::BLACK;
         }
         CurrentTheme::Dark => {
-            return Color::WHITE;
+            // return Color::rgb(0.5, 0.5, 0.5);
+            return Color::rgb(0.6, 0.6, 0.6);
         }
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
@@ -246,10 +248,10 @@ pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
             // return LIGHT_GRAY;
-            return swiper_background_color(theme);
+            return Color::rgb(0.7, 0.7, 0.7);
         }
         CurrentTheme::Dark => {
-            return swiper_background_color(theme);
+            return Color::rgb(0.3, 0.3, 0.3);
             // return Color::GRAY;
         }
         CurrentTheme::Matrix => {
@@ -264,7 +266,7 @@ pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return Color::WHITE;
+            return Color::BLACK;
         }
         CurrentTheme::Dark => {
             return Color::BLACK;
@@ -274,6 +276,23 @@ pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
         }
         CurrentTheme::Cyberpunk => {
             return Color::BLACK;
+        }
+    }
+}
+
+pub fn option_button_text_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Dark => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::WHITE;
         }
     }
 }

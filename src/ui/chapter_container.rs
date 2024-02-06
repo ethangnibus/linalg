@@ -237,7 +237,7 @@ pub fn header_button(
                 min_height: HEADER_BUTTON_HEIGHT,
                 // height: Val::Percent(100.0),
                 border: UiRect {
-                    top: Val::Px(2.0),
+                    top: Val::Px(1.0),
                     bottom: Val::Px(0.0),
                     left: Val::Px(0.0),
                     right: Val::Px(0.0),
@@ -259,14 +259,14 @@ pub fn header_button(
 
     let text_item = (
         theme::ColorFunction {
-            background: theme::navbar_swiper_color,
-            border: theme::navbar_swiper_color,
+            background: theme::sidebar_header_text_color,
+            border: theme::sidebar_header_text_color,
         },
         TextBundle::from_section(
             text,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::navbar_swiper_color(theme),
+                color: theme::sidebar_header_text_color(theme),
                 ..default()
             },
         ),

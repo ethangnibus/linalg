@@ -56,6 +56,12 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme, width: f32) -> 
                 flex_direction: FlexDirection::Column,
                 align_self: AlignSelf::Stretch,
                 height: Val::Percent(100.0),
+                border: UiRect {
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
+                },
                 // flex_grow: 1.0,
                 width: Val::Px(width),
                 max_width: Val::Vw(100.0),

@@ -74,7 +74,7 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
         View,
         theme::ColorFunction {
             background: theme::background_color,
-            border: theme::background_color,
+            border: theme::navbar_swiper_color,
         },
         ButtonBundle {
             style: Style {
@@ -84,11 +84,18 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
                 width: Val::Percent(100.0),
                 flex_shrink: 2.0,
                 height: Val::Percent(100.0),
+                border: UiRect {
+                    top: Val::Px(1.0),
+                    bottom: Val::Px(0.0),
+                    left: Val::Px(2.0),
+                    right: Val::Px(2.0),
+                },
                 // flex_grow: 1.0,
                 overflow: Overflow::clip(),
                 ..default()
             },
             background_color: theme::background_color(theme).into(),
+            border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
     )).id();

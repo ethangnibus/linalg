@@ -291,14 +291,14 @@ pub fn option_bar_button(
     let text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_collapsed_color,
-                border: theme::sidebar_collapsed_color,
+                background: theme::option_button_text_color,
+                border: theme::option_button_text_color,
             },
             TextBundle::from_section(
                 "+",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::sidebar_collapsed_color(theme).into(),
+                    color: theme::option_button_text_color(theme).into(),
                     ..default()
                 },
             ),
@@ -674,15 +674,15 @@ fn option_bar_button_text_color_change_system(
             if color == theme::NOT_A_COLOR {
                 if option_bar_button_text.sections[0].value == String::from("+") {
                     option_bar_button_text.sections[0].value = String::from("-");
-                    color_funciton.border = theme::navbar_swiper_color;
-                    color_funciton.background = theme::navbar_swiper_color;
+                    // color_funciton.border = theme::navbar_swiper_color;
+                    // color_funciton.background = theme::navbar_swiper_color;
                 } else if option_bar_button_text.sections[0].value == String::from("-") {
                     option_bar_button_text.sections[0].value = String::from("+");
-                    color_funciton.border = theme::sidebar_collapsed_color;
-                    color_funciton.background = theme::sidebar_collapsed_color;
+                    // color_funciton.border = theme::sidebar_collapsed_color;
+                    // color_funciton.background = theme::sidebar_collapsed_color;
                 }
             } else {
-                option_bar_button_text.sections[0].style.color = event.0.into();
+                // option_bar_button_text.sections[0].style.color = event.0.into();
             }
         }
     }
