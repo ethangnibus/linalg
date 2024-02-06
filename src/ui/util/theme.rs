@@ -45,7 +45,7 @@ pub struct ThemeButtonLine {
     pub next_theme: CurrentTheme,
 }
 
-#[derive(Component, Copy, Clone)]
+#[derive(Component, Copy, Clone, Debug)]
 pub struct ColorFunction {
     pub background: fn(&CurrentTheme) -> Color,
     pub border: fn(&CurrentTheme) -> Color,

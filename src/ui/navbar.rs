@@ -1,6 +1,6 @@
 use bevy::{prelude::*, render::{view::visibility, color}, ui::FocusPolicy};
 
-use super::{option_bar, sidebar, under_navbar, util::style, util::theme};
+use super::{option_bar::{self, ShowingOptionBar}, sidebar, under_navbar, util::style, util::theme};
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
@@ -639,17 +639,21 @@ fn option_bar_button_color_change_system(
     mut option_bar_button_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<OptionBarButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut option_bar_color_reader: EventReader<option_bar::OptionBarCollapseEvent>,
+    showing_option_bar: Res<ShowingOptionBar>,
+
+    theme: Res<theme::CurrentTheme>,
 ) {
+    let theme = theme.as_ref();
     for event in option_bar_color_reader.read() {
-        for (mut option_bar_border_color, color_function) in &mut option_bar_button_query.iter_mut() {
+        for (mut option_bar_border_color, mut color_function) in &mut option_bar_button_query.iter_mut() {
             let color = event.0;
             if color != theme::NOT_A_COLOR {
-                *option_bar_border_color = color.into();
+                *option_bar_border_color = event.0.into();
             } else {
-                if color_function.border == theme::sidebar_collapsed_color {
-                    color_function.border == theme::navbar_swiper_color;
-                } else if color_function.border == theme::navbar_swiper_color {
-                    color_function.border == theme::sidebar_collapsed_color;
+                if color_function.border == theme::navbar_swiper_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                } else if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::navbar_swiper_color;
                 }
             }
         }
