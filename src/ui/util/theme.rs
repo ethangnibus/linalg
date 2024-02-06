@@ -89,6 +89,40 @@ pub fn swiper_background_color(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn sidebar_header_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return BERKELEY_GOLD;
+        }
+        CurrentTheme::Dark => {
+            return BERKELEY_GOLD;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_DARK_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_GREY;
+        }
+    }
+}
+
+pub fn option_bar_header_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return BERKELEY_BLUE;
+        }
+        CurrentTheme::Dark => {
+            return BERKELEY_BLUE;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_DARK_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_GREY;
+        }
+    }
+}
+
 pub fn text_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
@@ -194,10 +228,12 @@ pub fn sidebar_color(theme: &CurrentTheme) -> Color {
 pub fn sidebar_collapsed_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return LIGHT_GRAY;
+            // return LIGHT_GRAY;
+            return swiper_background_color(theme);
         }
         CurrentTheme::Dark => {
-            return Color::GRAY;
+            return swiper_background_color(theme);
+            // return Color::GRAY;
         }
         CurrentTheme::Matrix => {
             return MATRIX_GREEN;

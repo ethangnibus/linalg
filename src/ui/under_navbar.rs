@@ -207,10 +207,10 @@ fn sidebar_swiper_color_change_system(
             if color != theme::NOT_A_COLOR {
                 *sidebar_swiper_border_color = event.0.into();
             } else {
-                if color_function.border == theme::navbar_text_color {
+                if color_function.border == theme::navbar_swiper_color {
                     color_function.border = theme::sidebar_collapsed_color;
                 } else if color_function.border == theme::sidebar_collapsed_color {
-                    color_function.border = theme::navbar_text_color;
+                    color_function.border = theme::navbar_swiper_color;
                 }
             }
         }

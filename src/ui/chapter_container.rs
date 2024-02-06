@@ -94,7 +94,7 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [
 pub const HEADER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(0.0),
     right: Val::Px(0.0),
-    top: Val::Px(0.0),
+    top: Val::Px(2.0),
     bottom: Val::Px(0.0),
 };
 pub const TITLE_BUTTON_BORDER: UiRect = UiRect {
@@ -227,7 +227,7 @@ pub fn header_button(
         SidebarItem(),
         HeaderButton(),
         theme::ColorFunction {
-            background: theme::navbar_text_color,
+            background: theme::sidebar_header_color,
             border: theme::navbar_swiper_color,
         },
         ButtonBundle {
@@ -248,7 +248,7 @@ pub fn header_button(
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: theme::navbar_text_color(theme).into(),
+            background_color: theme::sidebar_header_color(theme).into(),
             border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },

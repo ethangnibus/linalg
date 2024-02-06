@@ -141,8 +141,8 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
         .spawn((
             ThemesHeader,
             theme::ColorFunction {
-                background: theme::sidebar_color,
-                border: theme::sidebar_color,
+                background: theme::option_bar_header_color,
+                border: theme::sidebar_collapsed_color,
             },
             ButtonBundle {
                 style: Style {
@@ -157,7 +157,8 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
-                background_color: theme::sidebar_color(&theme).into(),
+                background_color: theme::option_bar_header_color(&theme).into(),
+                border_color: theme::sidebar_collapsed_color(&theme).into(),
                 ..default()
             },
         ))
@@ -166,14 +167,14 @@ pub fn themes_header(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
     let text_item = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_header_text_color,
-                border: theme::sidebar_header_text_color,
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
             },
             TextBundle::from_section(
                 "Themes",
                 TextStyle {
                     font_size: chapter_container::CHAPTER_BUTTON_FONT_SIZE,
-                    color: theme::sidebar_header_text_color(&theme),
+                    color: theme::sidebar_collapsed_color(&theme),
                     ..default()
                 },
             ),
@@ -280,7 +281,7 @@ pub fn option_bar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -
             OptionBarSwiper,
             theme::ColorFunction {
                 background: theme::swiper_background_color,
-                border: theme::sidebar_color,
+                border: theme::navbar_background_color,
             },
             ButtonBundle {
                 style: Style {
@@ -300,7 +301,7 @@ pub fn option_bar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -
                 },
                 focus_policy: FocusPolicy::Block,
                 background_color: theme::swiper_background_color(theme).into(),
-                border_color: theme::sidebar_color(theme).into(),
+                border_color: theme::navbar_background_color(theme).into(),
                 ..default()
             },
         ))
@@ -400,17 +401,6 @@ fn theme_button_line_color_change_system(
     >,
     theme: Res<theme::CurrentTheme>,
 ) {
-    // for event in theme_button_color_reader.read() {
-    //     match event.theme {
-    //         theme::CurrentTheme::Dark => {
-    //             for (mut background_color, _color_function) in line_query.iter_mut() {
-    //                 *background_color = event.color.into();
-    //             }
-    //         }
-    //         _ => {}
-    //     }
-    // }
-
     for event in theme_button_color_reader.read() {
         for (mut background_color, _color_function, theme_button_line) in line_query.iter_mut() {
             if event.theme == theme_button_line.next_theme {
@@ -455,13 +445,13 @@ fn option_bar_swiper_interacitons(
                 }
                 false => {
                     sidebar_swiper_color_writer
-                        .send(OptionBarCollapseEvent(theme::sidebar_color(theme)));
+                        .send(OptionBarCollapseEvent(theme::navbar_swiper_color(theme)));
                 }
             },
             Interaction::None => match showing_sidebar.0 {
                 true => {
                     sidebar_swiper_color_writer
-                        .send(OptionBarCollapseEvent(theme::sidebar_color(theme)));
+                        .send(OptionBarCollapseEvent(theme::navbar_swiper_color(theme)));
                 }
                 false => {
                     sidebar_swiper_color_writer.send(OptionBarCollapseEvent(
@@ -474,15 +464,21 @@ fn option_bar_swiper_interacitons(
 }
 
 fn option_bar_swiper_color_change_system(
-    mut option_bar_swiper_query: Query<&mut BorderColor, With<OptionBarSwiper>>,
+    mut option_bar_swiper_query: Query<(&mut BorderColor, &mut ColorFunction), With<OptionBarSwiper>>,
     mut option_bar_swiper_color_reader: EventReader<OptionBarCollapseEvent>,
 ) {
     for event in option_bar_swiper_color_reader.read() {
-        for mut option_bar_swiper_border_color in &mut option_bar_swiper_query.iter_mut() {
+        for (mut option_bar_swiper_border_color, mut color_function) in &mut option_bar_swiper_query.iter_mut() {
             let color = event.0;
 
             if color != theme::NOT_A_COLOR {
                 *option_bar_swiper_border_color = event.0.into();
+            } else {
+                if color_function.border == theme::navbar_swiper_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                } else if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::navbar_swiper_color;
+                }
             }
         }
     }
@@ -516,15 +512,21 @@ fn option_bar_visibility_system(
 }
 
 fn themes_header_color_change_system(
-    mut themes_header_query: Query<&mut BackgroundColor, With<ThemesHeader>>,
+    mut themes_header_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<ThemesHeader>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut option_bar_collape_reader: EventReader<OptionBarCollapseEvent>,
 ) {
     for event in option_bar_collape_reader.read() {
-        for mut themes_header_color in &mut themes_header_query.iter_mut() {
+        for (mut themes_header_color, mut color_function) in &mut themes_header_query.iter_mut() {
             let color = event.0;
             if color != theme::NOT_A_COLOR {
                 *themes_header_color = color.into();
+            } else {
+                if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::navbar_swiper_color;
+                } else if color_function.border == theme::navbar_swiper_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                }
             }
         }
     }

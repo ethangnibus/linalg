@@ -142,8 +142,8 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
     let sidebar_button = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
-                border: theme::navbar_text_color,
+                background: theme::sidebar_header_color,
+                border: theme::navbar_swiper_color,
             },
             ButtonBundle {
                 style: Style {
@@ -163,8 +163,8 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Block,
-                background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::navbar_text_color(theme).into(),
+                background_color: theme::sidebar_header_color(theme).into(),
+                border_color: theme::navbar_swiper_color(theme).into(),
                 ..default()
             },
             SidebarButton,
@@ -174,14 +174,14 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
     let arrow_text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_text_color,
-                border: theme::navbar_text_color,
+                background: theme::navbar_swiper_color,
+                border: theme::navbar_swiper_color,
             },
             TextBundle::from_section(
                 "<",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::navbar_text_color(theme).into(),
+                    color: theme::navbar_swiper_color(theme).into(),
                     ..default()
                 },
             ),
@@ -259,7 +259,7 @@ pub fn option_bar_button(
     let background_banner = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::option_bar_header_color,
                 border: theme::sidebar_collapsed_color,
             },
             ButtonBundle {
@@ -280,8 +280,8 @@ pub fn option_bar_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Block,
-                background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::navbar_text_color(theme).into(),
+                background_color: theme::option_bar_header_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
             OptionBarButton,
@@ -373,22 +373,28 @@ fn sidebar_button_interactions(
 }
 
 fn sidebar_button_color_change_system(
-    mut sidebar_button_query: Query<&mut BorderColor, With<SidebarButton>>,
+    mut sidebar_button_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<SidebarButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut sidebar_collapse_reader: EventReader<under_navbar::SidebarCollapseInteractionEvent>,
 ) {
     for event in sidebar_collapse_reader.read() {
-        for mut sidebar_button_border_color in &mut sidebar_button_query.iter_mut() {
+        for (mut sidebar_button_border_color, mut color_function) in &mut sidebar_button_query.iter_mut() {
             let color = event.0;
             if color != theme::NOT_A_COLOR {
                 *sidebar_button_border_color = color.into();
+            } else {
+                if color_function.border == theme::navbar_swiper_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                } else if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::navbar_swiper_color;
+                }
             }
         }
     }
 }
 
 fn sidebar_button_text_color_change_system(
-    mut sidebar_swiper_query: Query<&mut Text, With<SidebarButtonText>>,
+    mut sidebar_swiper_query: Query<(&mut Text, &mut theme::ColorFunction), With<SidebarButtonText>>,
     theme: Res<theme::CurrentTheme>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut sidebar_swiper_color_event_reader: EventReader<
@@ -397,14 +403,20 @@ fn sidebar_button_text_color_change_system(
 ) {
     let theme = theme.as_ref();
     for event in sidebar_swiper_color_event_reader.read() {
-        for mut sidebar_button_text in &mut sidebar_swiper_query.iter_mut() {
+        for (mut sidebar_button_text, mut color_function) in &mut sidebar_swiper_query.iter_mut() {
             let color = event.0;
 
             if color == theme::NOT_A_COLOR {
                 if sidebar_button_text.sections[0].value == String::from(">") {
                     sidebar_button_text.sections[0].value = String::from("<");
+                    // color_function.border = theme::sidebar_collapsed_color;
+                    color_function.background = theme::navbar_swiper_color;
+                    color_function.border = theme::navbar_swiper_color;
                 } else if sidebar_button_text.sections[0].value == String::from("<") {
                     sidebar_button_text.sections[0].value = String::from(">");
+                    // color_function.border = theme::navbar_swiper_color;
+                    color_function.background = theme::sidebar_collapsed_color;
+                    color_function.border = theme::sidebar_collapsed_color;
                 }
             } else {
                 sidebar_button_text.sections[0].style.color = event.0.into();
@@ -481,22 +493,26 @@ fn navbar_swiper_interactions(
                 });
                 showing_navbar.0 = !showing_navbar.0;
             }
-            Interaction::Hovered => match showing_navbar.0 {
-                true => navbar_collapse_writer.send(NavbarCollapseEvent {
-                    color: theme::sidebar_collapsed_color(theme),
-                }),
-                false => navbar_collapse_writer.send(NavbarCollapseEvent {
-                    color: theme::navbar_swiper_color(theme),
-                }),
-            },
-            Interaction::None => match showing_navbar.0 {
-                true => navbar_collapse_writer.send(NavbarCollapseEvent {
-                    color: theme::navbar_swiper_color(theme),
-                }),
-                false => navbar_collapse_writer.send(NavbarCollapseEvent {
-                    color: theme::sidebar_collapsed_color(theme),
-                }),
-            },
+            Interaction::Hovered => {
+                match showing_navbar.0 {
+                    true => navbar_collapse_writer.send(NavbarCollapseEvent {
+                        color: theme::sidebar_collapsed_color(theme),
+                    }),
+                    false => navbar_collapse_writer.send(NavbarCollapseEvent {
+                        color: theme::navbar_swiper_color(theme),
+                    }),
+                }
+            }
+            Interaction::None => {
+                match showing_navbar.0 {
+                    true => navbar_collapse_writer.send(NavbarCollapseEvent {
+                        color: theme::navbar_swiper_color(theme),
+                    }),
+                    false => navbar_collapse_writer.send(NavbarCollapseEvent {
+                        color: theme::sidebar_collapsed_color(theme),
+                    }),
+                }
+            }
         }
     }
 }
@@ -511,8 +527,8 @@ fn navbar_swiper_color_change_system(
                 *navbar_swiper_border_color = event.color.into();
             } else {
                 if color_function.border == theme::sidebar_collapsed_color {
-                    color_function.border = theme::sidebar_color;
-                } else if color_function.border == theme::sidebar_color {
+                    color_function.border = theme::navbar_swiper_color;
+                } else if color_function.border == theme::navbar_swiper_color {
                     color_function.border = theme::sidebar_collapsed_color;
                 }
             }
@@ -599,14 +615,14 @@ fn option_bar_button_interactions(
                 }
                 false => {
                     option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
-                        theme::sidebar_color(theme),
+                        theme::navbar_swiper_color(theme),
                     ));
                 }
             },
             Interaction::None => match showing_option_bar.0 {
                 true => {
                     option_bar_swiper_color_writer.send(option_bar::OptionBarCollapseEvent(
-                        theme::sidebar_color(theme),
+                        theme::navbar_swiper_color(theme),
                     ));
                 }
                 false => {
@@ -620,36 +636,46 @@ fn option_bar_button_interactions(
 }
 
 fn option_bar_button_color_change_system(
-    mut option_bar_button_query: Query<&mut BorderColor, With<OptionBarButton>>,
+    mut option_bar_button_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<OptionBarButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut option_bar_color_reader: EventReader<option_bar::OptionBarCollapseEvent>,
 ) {
     for event in option_bar_color_reader.read() {
-        for mut option_bar_border_color in &mut option_bar_button_query.iter_mut() {
+        for (mut option_bar_border_color, color_function) in &mut option_bar_button_query.iter_mut() {
             let color = event.0;
             if color != theme::NOT_A_COLOR {
                 *option_bar_border_color = color.into();
+            } else {
+                if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border == theme::navbar_swiper_color;
+                } else if color_function.border == theme::navbar_swiper_color {
+                    color_function.border == theme::sidebar_collapsed_color;
+                }
             }
         }
     }
 }
 
 fn option_bar_button_text_color_change_system(
-    mut option_bar_text_query: Query<&mut Text, With<OptionBarButtonText>>,
+    mut option_bar_text_query: Query<(&mut Text, &mut theme::ColorFunction), With<OptionBarButtonText>>,
     theme: Res<theme::CurrentTheme>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut option_bar_color_reader: EventReader<option_bar::OptionBarCollapseEvent>,
 ) {
     let theme = theme.as_ref();
     for event in option_bar_color_reader.read() {
-        for mut option_bar_button_text in &mut option_bar_text_query.iter_mut() {
+        for (mut option_bar_button_text, mut color_funciton) in &mut option_bar_text_query.iter_mut() {
             let color = event.0;
 
             if color == theme::NOT_A_COLOR {
                 if option_bar_button_text.sections[0].value == String::from("+") {
                     option_bar_button_text.sections[0].value = String::from("-");
+                    color_funciton.border = theme::option_bar_header_color;
+                    color_funciton.background = theme::option_bar_header_color;
                 } else if option_bar_button_text.sections[0].value == String::from("-") {
                     option_bar_button_text.sections[0].value = String::from("+");
+                    color_funciton.border = theme::sidebar_collapsed_color;
+                    color_funciton.background = theme::sidebar_collapsed_color;
                 }
             } else {
                 option_bar_button_text.sections[0].style.color = event.0.into();
