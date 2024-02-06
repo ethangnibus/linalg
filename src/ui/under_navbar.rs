@@ -113,7 +113,7 @@ pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> E
         SidebarSwiper,
         theme::ColorFunction {
             background: theme::swiper_background_color,
-            border: theme::sidebar_color,
+            border: theme::navbar_swiper_color,
         },
         ButtonBundle {
             style: Style {
@@ -133,7 +133,7 @@ pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> E
             },
             focus_policy: FocusPolicy::Block,
             background_color: theme::swiper_background_color(theme).into(),
-            border_color: theme::sidebar_color(theme).into(),
+            border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
     )).id();
@@ -176,13 +176,13 @@ fn sidebar_swiper_interactions(
                 }
                 false => {
                     sidebar_swiper_color_writer
-                        .send(SidebarCollapseInteractionEvent(theme::sidebar_color(theme)));
+                        .send(SidebarCollapseInteractionEvent(theme::navbar_swiper_color(theme)));
                 }
             },
             Interaction::None => match showing_sidebar.0 {
                 true => {
                     sidebar_swiper_color_writer
-                        .send(SidebarCollapseInteractionEvent(theme::sidebar_color(theme)));
+                        .send(SidebarCollapseInteractionEvent(theme::navbar_swiper_color(theme)));
                 }
                 false => {
                     sidebar_swiper_color_writer.send(SidebarCollapseInteractionEvent(
@@ -207,10 +207,10 @@ fn sidebar_swiper_color_change_system(
             if color != theme::NOT_A_COLOR {
                 *sidebar_swiper_border_color = event.0.into();
             } else {
-                if color_function.border == theme::sidebar_color {
+                if color_function.border == theme::navbar_text_color {
                     color_function.border = theme::sidebar_collapsed_color;
                 } else if color_function.border == theme::sidebar_collapsed_color {
-                    color_function.border = theme::sidebar_color;
+                    color_function.border = theme::navbar_text_color;
                 }
             }
         }

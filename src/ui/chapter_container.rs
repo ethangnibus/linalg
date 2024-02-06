@@ -227,8 +227,8 @@ pub fn header_button(
         SidebarItem(),
         HeaderButton(),
         theme::ColorFunction {
-            background: theme::sidebar_color,
-            border: theme::sidebar_color,
+            background: theme::navbar_text_color,
+            border: theme::navbar_swiper_color,
         },
         ButtonBundle {
             style: Style {
@@ -236,14 +236,20 @@ pub fn header_button(
                 height: Val::Auto,
                 min_height: HEADER_BUTTON_HEIGHT,
                 // height: Val::Percent(100.0),
-                border: HEADER_BUTTON_BORDER,
+                border: UiRect {
+                    top: Val::Px(2.0),
+                    bottom: Val::Px(0.0),
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
+                },
                 padding: HEADER_BUTTON_BORDER,
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            background_color: theme::sidebar_color(theme).into(),
+            background_color: theme::navbar_text_color(theme).into(),
+            border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
     );
@@ -253,14 +259,14 @@ pub fn header_button(
 
     let text_item = (
         theme::ColorFunction {
-            background: theme::sidebar_header_text_color,
-            border: theme::sidebar_header_text_color,
+            background: theme::navbar_swiper_color,
+            border: theme::navbar_swiper_color,
         },
         TextBundle::from_section(
             text,
             TextStyle {
                 font_size: CHAPTER_BUTTON_FONT_SIZE,
-                color: theme::sidebar_header_text_color(theme),
+                color: theme::navbar_swiper_color(theme),
                 ..default()
             },
         ),
@@ -781,7 +787,7 @@ pub fn subsection_button(
 
 // ---------- Header Button ----------
 fn header_button_color_change_system(
-    mut header_button_query: Query<&mut BackgroundColor, With<HeaderButton>>,
+    mut header_button_query: Query<&mut BorderColor, With<HeaderButton>>,
     // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
     mut sidebar_swiper_color_event_reader: EventReader<
         under_navbar::SidebarCollapseInteractionEvent,

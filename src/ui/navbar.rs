@@ -143,7 +143,7 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::sidebar_color,
+                border: theme::navbar_text_color,
             },
             ButtonBundle {
                 style: Style {
@@ -164,7 +164,7 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Block,
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::sidebar_color(theme).into(),
+                border_color: theme::navbar_text_color(theme).into(),
                 ..default()
             },
             SidebarButton,
@@ -174,14 +174,14 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
     let arrow_text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_color,
-                border: theme::sidebar_color,
+                background: theme::navbar_text_color,
+                border: theme::navbar_text_color,
             },
             TextBundle::from_section(
                 "<",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::sidebar_color(theme).into(),
+                    color: theme::navbar_text_color(theme).into(),
                     ..default()
                 },
             ),
@@ -229,14 +229,14 @@ pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
     let navbar_text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::sidebar_color,
-                border: theme::sidebar_color,
+                background: theme::navbar_swiper_color,
+                border: theme::navbar_swiper_color,
             },
             TextBundle::from_section(
                 "Math 56",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::sidebar_color(theme).into(),
+                    color: theme::navbar_swiper_color(theme).into(),
                     ..default()
                 },
             ),
@@ -281,7 +281,7 @@ pub fn option_bar_button(
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Block,
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::sidebar_collapsed_color(theme).into(),
+                border_color: theme::navbar_text_color(theme).into(),
                 ..default()
             },
             OptionBarButton,
@@ -350,14 +350,14 @@ fn sidebar_button_interactions(
                 }
                 false => {
                     sidebar_swiper_color_writer.send(
-                        under_navbar::SidebarCollapseInteractionEvent(theme::sidebar_color(theme)),
+                        under_navbar::SidebarCollapseInteractionEvent(theme::navbar_swiper_color(theme)),
                     );
                 }
             },
             Interaction::None => match showing_sidebar.0 {
                 true => {
                     sidebar_swiper_color_writer.send(
-                        under_navbar::SidebarCollapseInteractionEvent(theme::sidebar_color(theme)),
+                        under_navbar::SidebarCollapseInteractionEvent(theme::navbar_swiper_color(theme)),
                     );
                 }
                 false => {
@@ -420,7 +420,7 @@ pub fn navbar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
             NavbarSwiper,
             theme::ColorFunction {
                 background: theme::swiper_background_color,
-                border: theme::sidebar_color,
+                border: theme::navbar_swiper_color,
             },
             ButtonBundle {
                 style: Style {
@@ -437,7 +437,7 @@ pub fn navbar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> En
                 },
                 focus_policy: FocusPolicy::Block,
                 background_color: theme::swiper_background_color(theme).into(), // FIXME
-                border_color: theme::sidebar_color(theme).into(),
+                border_color: theme::navbar_swiper_color(theme).into(),
                 ..default()
             },
         ))
@@ -486,12 +486,12 @@ fn navbar_swiper_interactions(
                     color: theme::sidebar_collapsed_color(theme),
                 }),
                 false => navbar_collapse_writer.send(NavbarCollapseEvent {
-                    color: theme::sidebar_color(theme),
+                    color: theme::navbar_swiper_color(theme),
                 }),
             },
             Interaction::None => match showing_navbar.0 {
                 true => navbar_collapse_writer.send(NavbarCollapseEvent {
-                    color: theme::sidebar_color(theme),
+                    color: theme::navbar_swiper_color(theme),
                 }),
                 false => navbar_collapse_writer.send(NavbarCollapseEvent {
                     color: theme::sidebar_collapsed_color(theme),

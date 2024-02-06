@@ -126,16 +126,33 @@ pub fn navbar_background_color(theme: &CurrentTheme) -> Color {
 pub fn navbar_text_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_BLUE;
+            return BERKELEY_GOLD;
         }
         CurrentTheme::Dark => {
-            return BERKELEY_GOLD;
+            return BERKELEY_BLUE;
         }
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
         }
         CurrentTheme::Cyberpunk => {
             return CYBERPUNK_YELLOW;
+        }
+    }
+}
+
+pub fn navbar_swiper_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Dark => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::WHITE;
         }
     }
 }
