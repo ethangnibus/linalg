@@ -87,8 +87,8 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
                 border: UiRect {
                     top: Val::Px(1.0),
                     bottom: Val::Px(0.0),
-                    left: Val::Px(2.0),
-                    right: Val::Px(2.0),
+                    left: Val::Px(1.0),
+                    right: Val::Px(1.0),
                 },
                 // flex_grow: 1.0,
                 overflow: Overflow::clip(),

@@ -153,10 +153,10 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::Center,
                     border: UiRect {
-                        left: Val::Px(2.0),
-                        right: Val::Px(2.0),
-                        top: Val::Px(2.0),
+                        top: Val::Px(1.0),
                         bottom: Val::Px(2.0),
+                        left: Val::Px(1.0),
+                        right: Val::Px(2.0),
                     },
                     overflow: Overflow::clip(),
                     ..default()
@@ -174,14 +174,14 @@ pub fn sidebar_button(commands: &mut Commands, theme: &theme::CurrentTheme, heig
     let arrow_text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_swiper_color,
-                border: theme::navbar_swiper_color,
+                background: theme::sidebar_button_text_color,
+                border: theme::sidebar_button_text_color,
             },
             TextBundle::from_section(
                 "<",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::navbar_swiper_color(theme).into(),
+                    color: theme::sidebar_button_text_color(theme).into(),
                     ..default()
                 },
             ),
@@ -270,9 +270,9 @@ pub fn option_bar_button(
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::Center,
                     border: UiRect {
-                        left: Val::Px(2.0),
+                        left: Val::Px(1.0),
                         right: Val::Px(2.0),
-                        top: Val::Px(2.0),
+                        top: Val::Px(1.0),
                         bottom: Val::Px(2.0),
                     },
                     overflow: Overflow::clip(),
@@ -409,17 +409,15 @@ fn sidebar_button_text_color_change_system(
             if color == theme::NOT_A_COLOR {
                 if sidebar_button_text.sections[0].value == String::from(">") {
                     sidebar_button_text.sections[0].value = String::from("<");
-                    // color_function.border = theme::sidebar_collapsed_color;
-                    color_function.background = theme::navbar_swiper_color;
-                    color_function.border = theme::navbar_swiper_color;
+                    // color_function.background = theme::navbar_swiper_color;
+                    // color_function.border = theme::navbar_swiper_color;
                 } else if sidebar_button_text.sections[0].value == String::from("<") {
                     sidebar_button_text.sections[0].value = String::from(">");
-                    // color_function.border = theme::navbar_swiper_color;
-                    color_function.background = theme::sidebar_collapsed_color;
-                    color_function.border = theme::sidebar_collapsed_color;
+                    // color_function.background = theme::sidebar_collapsed_color;
+                    // color_function.border = theme::sidebar_collapsed_color;
                 }
             } else {
-                sidebar_button_text.sections[0].style.color = event.0.into();
+                // sidebar_button_text.sections[0].style.color = event.0.into();
             }
         }
     }

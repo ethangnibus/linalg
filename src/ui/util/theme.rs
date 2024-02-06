@@ -18,6 +18,7 @@ pub const CYBERPUNK_YELLOW: Color = Color::rgb(0.952, 0.901, 0.0);
 pub const CYBERPUNK_BLUE: Color = Color::rgb(0.015, 0.855, 0.965);
 pub const CYBERPUNK_RED: Color = Color::rgb(1.0, 0.0, 0.235);
 pub const CYBERPUNK_GREY: Color = Color::rgb(0.333, 0.294, 0.255);
+pub const CYBERPUNK_PINK: Color = Color::rgb(0.91764706,0.0,0.8509804);
 
 #[derive(Resource, Clone, Copy, PartialEq)]
 pub enum CurrentTheme {
@@ -78,7 +79,7 @@ pub fn swiper_background_color(theme: &CurrentTheme) -> Color {
             return Color::rgb(0.85, 0.85, 0.85);
         }
         CurrentTheme::Dark => {
-            return Color::rgb(0.15, 0.15, 0.15);
+            return Color::rgb(0.1, 0.1, 0.1);
         }
         CurrentTheme::Matrix => {
             return MATRIX_DARK_GREEN;
@@ -101,7 +102,7 @@ pub fn sidebar_header_color(theme: &CurrentTheme) -> Color {
             return MATRIX_DARK_GREEN;
         }
         CurrentTheme::Cyberpunk => {
-            return CYBERPUNK_GREY;
+            return CYBERPUNK_YELLOW;
         }
     }
 }
@@ -118,7 +119,7 @@ pub fn option_bar_header_color(theme: &CurrentTheme) -> Color {
             return MATRIX_DARK_GREEN;
         }
         CurrentTheme::Cyberpunk => {
-            return CYBERPUNK_GREY;
+            return CYBERPUNK_PINK;
         }
     }
 }
@@ -199,13 +200,13 @@ pub fn navbar_swiper_color(theme: &CurrentTheme) -> Color {
         }
         CurrentTheme::Dark => {
             // return Color::rgb(0.5, 0.5, 0.5);
-            return Color::rgb(0.6, 0.6, 0.6);
+            return Color::rgb(0.7, 0.7, 0.7);
         }
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
         }
         CurrentTheme::Cyberpunk => {
-            return Color::WHITE;
+            return CYBERPUNK_BLUE;
         }
     }
 }
@@ -273,6 +274,24 @@ pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
         }
         CurrentTheme::Matrix => {
             return Color::BLACK;
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::BLACK;
+        }
+    }
+}
+
+
+pub fn sidebar_button_text_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Dark => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
         }
         CurrentTheme::Cyberpunk => {
             return Color::BLACK;

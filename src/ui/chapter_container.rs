@@ -94,8 +94,8 @@ const NUMBER_OF_SECTIONS_IN_CHAPTER: [u32; 16] = [
 pub const HEADER_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(0.0),
     right: Val::Px(0.0),
-    top: Val::Px(2.0),
-    bottom: Val::Px(0.0),
+    top: Val::Px(1.0),
+    bottom: Val::Px(2.0),
 };
 pub const TITLE_BUTTON_BORDER: UiRect = UiRect {
     left: Val::Px(4.0),
@@ -238,7 +238,7 @@ pub fn header_button(
                 // height: Val::Percent(100.0),
                 border: UiRect {
                     top: Val::Px(1.0),
-                    bottom: Val::Px(0.0),
+                    bottom: Val::Px(2.0),
                     left: Val::Px(0.0),
                     right: Val::Px(0.0),
                 },
