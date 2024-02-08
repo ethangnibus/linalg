@@ -233,7 +233,7 @@ pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
                 border: theme::navbar_swiper_color,
             },
             TextBundle::from_section(
-                "Math 56",
+                "Projection Matrix",
                 TextStyle {
                     font_size: 50.0,
                     color: theme::navbar_swiper_color(theme).into(),
