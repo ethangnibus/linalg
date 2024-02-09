@@ -76,7 +76,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     let skeleton_left = commands.spawn((
         theme::ColorFunction {
             background: theme::background_color,
-            border: theme::swiper_background_color,
+            border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
             style: Style {
@@ -91,7 +91,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 ..default()
             },
             background_color: theme::background_color(theme).into(),
-            border_color: theme::swiper_background_color(theme).into(),
+            border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
@@ -100,7 +100,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     let skeleton_right = commands.spawn((
         theme::ColorFunction {
             background: theme::background_color,
-            border: theme::swiper_background_color,
+            border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
             style: Style {
@@ -119,7 +119,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 ..default()
             },
             background_color: theme::background_color(theme).into(),
-            border_color: theme::swiper_background_color(theme).into(),
+            border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
@@ -253,7 +253,7 @@ pub fn fullscreen_button(
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::swiper_background_color,
+                border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
                 style: Style {
@@ -286,7 +286,7 @@ pub fn fullscreen_button(
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::swiper_background_color,
+                border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
                 style: Style {
@@ -348,7 +348,7 @@ pub fn fullscreen_button(
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::swiper_background_color,
+                border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
                 style: Style {
@@ -381,7 +381,7 @@ pub fn fullscreen_button(
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::swiper_background_color,
+                border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
                 style: Style {
@@ -445,16 +445,16 @@ pub fn selection_text_description_color_system(
                         color_function.border = theme::sidebar_color;
                     },
                     false => {
-                        text.sections[0].style.color = theme::swiper_background_color(theme).into();
+                        text.sections[0].style.color = theme::sidebar_collapsed_color(theme).into();
                         text.sections[0].value = String::from(" Press \"*\" at the top right to interact with the scene");
-                        color_function.border = theme::swiper_background_color;
+                        color_function.border = theme::sidebar_collapsed_color;
                     },
                 }
                 
             }
             else {
-                text.sections[0].style.color = theme::swiper_background_color(theme).into();
-                color_function.border = theme::swiper_background_color;
+                text.sections[0].style.color = theme::sidebar_collapsed_color(theme).into();
+                color_function.border = theme::sidebar_collapsed_color;
             }
         }
     }
@@ -496,7 +496,7 @@ pub fn fullscreen_button_interaction_system(
                         fullscreen_color_writer.send(
                             FullscreenColorEvent {
                                 crew_id: fullscreen_button.crew_id,
-                                color_function: theme::swiper_background_color,
+                                color_function: theme::sidebar_collapsed_color,
                             }
                         )
                     }
@@ -524,7 +524,7 @@ pub fn fullscreen_button_interaction_system(
                         fullscreen_color_writer.send(
                             FullscreenColorEvent {
                                 crew_id: fullscreen_button.crew_id,
-                                color_function: theme::swiper_background_color,
+                                color_function: theme::sidebar_collapsed_color,
                             }
                         )
                     }
@@ -557,7 +557,7 @@ pub fn fullscreen_button_color_system (
             if fullscreen_arrow.crew_id != fullscreen_event.crew_id { continue }
             match fullscreen_event.maximize {
                 true => {
-                    *border_color = theme::swiper_background_color(theme).into();
+                    *border_color = theme::sidebar_collapsed_color(theme).into();
                     color_function.border = theme::sidebar_color;
                     match fullscreen_arrow.arrow_type {
                         FullscreenArrowType::TopLeft => {
@@ -588,7 +588,7 @@ pub fn fullscreen_button_color_system (
                 }
                 false => {
                     *border_color = theme::sidebar_color(theme).into();
-                    color_function.border = theme::swiper_background_color;
+                    color_function.border = theme::sidebar_collapsed_color;
                     match fullscreen_arrow.arrow_type {
                         FullscreenArrowType::TopLeft => {
                             style.border.top = Val::Px(2.0);

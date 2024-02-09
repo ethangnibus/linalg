@@ -63,7 +63,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     let skeleton_left = commands.spawn((
         theme::ColorFunction {
             background: theme::background_color,
-            border: theme::swiper_background_color,
+            border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
             style: Style {
@@ -79,7 +79,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 ..default()
             },
             background_color: theme::background_color(theme).into(),
-            border_color: theme::swiper_background_color(theme).into(),
+            border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
@@ -88,7 +88,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     let skeleton_right = commands.spawn((
         theme::ColorFunction {
             background: theme::background_color,
-            border: theme::swiper_background_color,
+            border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
             style: Style {
@@ -108,7 +108,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 ..default()
             },
             background_color: theme::background_color(theme).into(),
-            border_color: theme::swiper_background_color(theme).into(),
+            border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
@@ -166,7 +166,7 @@ pub fn selection_button(
         .spawn((
             theme::ColorFunction {
                 background: theme::navbar_background_color,
-                border: theme::swiper_background_color,
+                border: theme::sidebar_collapsed_color,
             },
             ButtonBundle {
                 style: Style {
@@ -188,7 +188,7 @@ pub fn selection_button(
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
                 background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::swiper_background_color(theme).into(),
+                border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
             SelectionButton{
@@ -201,14 +201,14 @@ pub fn selection_button(
     let text = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::swiper_background_color,
-                border: theme::swiper_background_color,
+                background: theme::sidebar_collapsed_color,
+                border: theme::sidebar_collapsed_color,
             },
             TextBundle::from_section(
                 "*",
                 TextStyle {
                     font_size: 50.0,
-                    color: theme::swiper_background_color(theme).into(),
+                    color: theme::sidebar_collapsed_color(theme).into(),
                     ..default()
                 },
             ),
@@ -256,7 +256,7 @@ pub fn selection_button_interation(
                         camera_selection_color_writer.send(
                             subsection_cameras::CameraSelectionColorEvent {
                                 crew_id: selection_button.crew_id,
-                                color_function: theme::swiper_background_color,
+                                color_function: theme::sidebar_collapsed_color,
                             }
                         )
                     }
@@ -284,7 +284,7 @@ pub fn selection_button_interation(
                         camera_selection_color_writer.send(
                             subsection_cameras::CameraSelectionColorEvent {
                                 crew_id: selection_button.crew_id,
-                                color_function: theme::swiper_background_color,
+                                color_function: theme::sidebar_collapsed_color,
                             }
                         )
                     }
@@ -321,15 +321,15 @@ pub fn selection_button_color_system(
                         color_function.border = theme::sidebar_color;
                     },
                     false => {
-                        *border_color = theme::swiper_background_color(theme).into();
-                        color_function.border = theme::swiper_background_color;
+                        *border_color = theme::sidebar_collapsed_color(theme).into();
+                        color_function.border = theme::sidebar_collapsed_color;
                     },
                 }
                 
             }
             else {
-                *border_color = theme::swiper_background_color(theme).into();
-                color_function.border = theme::swiper_background_color;
+                *border_color = theme::sidebar_collapsed_color(theme).into();
+                color_function.border = theme::sidebar_collapsed_color;
             }
         }
     }
@@ -362,17 +362,17 @@ pub fn selection_button_text_color_system(
                         color_function.border = theme::sidebar_color;
                     },
                     false => {
-                        text.sections[0].style.color = theme::swiper_background_color(theme).into();
-                        color_function.background = theme::swiper_background_color;
+                        text.sections[0].style.color = theme::sidebar_collapsed_color(theme).into();
+                        color_function.background = theme::sidebar_collapsed_color;
                         text.sections[0].value = String::from("*");
-                        color_function.border = theme::swiper_background_color;
+                        color_function.border = theme::sidebar_collapsed_color;
                     },
                 }
                 
             }
             else {
-                text.sections[0].style.color = theme::swiper_background_color(theme).into();
-                color_function.border = theme::swiper_background_color;
+                text.sections[0].style.color = theme::sidebar_collapsed_color(theme).into();
+                color_function.border = theme::sidebar_collapsed_color;
             }
         }
     }

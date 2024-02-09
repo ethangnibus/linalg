@@ -117,15 +117,15 @@ pub fn example_skeleton_color_system(
                         color_function.border = theme::sidebar_color;
                     },
                     false => {
-                        *border_color = theme::swiper_background_color(theme).into();
-                        color_function.border = theme::swiper_background_color;
+                        *border_color = theme::sidebar_collapsed_color(theme).into();
+                        color_function.border = theme::sidebar_collapsed_color;
                     },
                 }
                 
             }
             else {
-                *border_color = theme::swiper_background_color(theme).into();
-                color_function.border = theme::swiper_background_color;
+                *border_color = theme::sidebar_collapsed_color(theme).into();
+                color_function.border = theme::sidebar_collapsed_color;
             }
         }
     }
@@ -135,6 +135,7 @@ pub fn example_skeleton_color_system(
 pub fn fullscreen_event_system (
     mut fullscreen_reader: EventReader<subsection_cameras::FullscreenEvent>,
     mut fullscreen_node_query: Query<(Entity, &mut FocusPolicy), With<root::FullscreenNode>>,
+    mut root_node_query: Query<&mut Visibility, With<root::Root>>,
 
     mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
     mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
@@ -157,31 +158,35 @@ pub fn fullscreen_event_system (
                 if footer.crew_id != fullscreen_event.crew_id { continue };
                 for (header_entity, header) in example_header_query.iter() {
                     if header.crew_id != fullscreen_event.crew_id { continue };
-                    if fullscreen_event.maximize {
-                        // add to fullscreen node
-                        for (fullscreen_node_entity, mut fullscreen_node_focus_policy) in fullscreen_node_query.iter_mut() {
-                            commands.entity(fullscreen_node_entity).push_children(&[
-                                header_entity,
-                                camera_banner_entity,
-                                footer_entity,
-                            ]);
-                            *fullscreen_node_focus_policy = FocusPolicy::Block;
-
-                            camera_banner_style.flex_grow = 3.0;
-                        }
-                    } else {
-                        // add to example_block
-                        for (example_block_entity, example_block) in example_block_query.iter() {
-                            if example_block.crew_id != fullscreen_event.crew_id { continue };
-                            commands.entity(example_block_entity).push_children(&[
-                                header_entity,
-                                camera_banner_entity,
-                                footer_entity,
-                            ]);
-                        }
-                        // remove focus block
-                        for (_fullscreen_node_entity, mut fullscreen_node_focus_policy) in fullscreen_node_query.iter_mut() {
-                            *fullscreen_node_focus_policy = FocusPolicy::Pass;
+                    for mut root_visibility in root_node_query.iter_mut() {
+                        if fullscreen_event.maximize {
+                            // add to fullscreen node
+                            for (fullscreen_node_entity, mut fullscreen_node_focus_policy) in fullscreen_node_query.iter_mut() {
+                                commands.entity(fullscreen_node_entity).push_children(&[
+                                    header_entity,
+                                    camera_banner_entity,
+                                    footer_entity,
+                                ]);
+                                *fullscreen_node_focus_policy = FocusPolicy::Block;
+    
+                                camera_banner_style.flex_grow = 3.0;
+                            }
+                            *root_visibility = Visibility::Hidden;
+                        } else {
+                            // add to example_block
+                            for (example_block_entity, example_block) in example_block_query.iter() {
+                                if example_block.crew_id != fullscreen_event.crew_id { continue };
+                                commands.entity(example_block_entity).push_children(&[
+                                    header_entity,
+                                    camera_banner_entity,
+                                    footer_entity,
+                                ]);
+                            }
+                            // remove focus block
+                            for (_fullscreen_node_entity, mut fullscreen_node_focus_policy) in fullscreen_node_query.iter_mut() {
+                                *fullscreen_node_focus_policy = FocusPolicy::Pass;
+                            }
+                            *root_visibility = Visibility::Inherited;
                         }
                     }
                 }
