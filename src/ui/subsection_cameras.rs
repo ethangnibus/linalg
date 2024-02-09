@@ -117,6 +117,9 @@ pub struct FilmCrew;
 pub fn setup_light(
     commands: &mut Commands,
     film_crew_entity: Entity,
+    x: f32,
+    y: f32,
+    z: f32,
 ) {
     // Light
     // NOTE: Currently lights are shared between passes - see https://github.com/bevyengine/bevy/issues/3462
@@ -127,7 +130,7 @@ pub fn setup_light(
                     intensity: 100.0,
                     ..default()
                 },
-                transform: Transform::from_translation(Vec3::new(10.0, 5.0, 10.0)),
+                transform: Transform::from_translation(Vec3::new(x, y, z)),
                 ..default()
             },
             subsection::SubsectionGameEntity,

@@ -38,7 +38,8 @@ pub fn setup_scene(
     let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
     let cube_material_handle = if crew_id == 1 {
         materials.add(StandardMaterial {
-            base_color: Color::rgb(1.0, 0.75, 0.90),
+            base_color: theme::cube_base_color(theme).into(),
+            emissive: theme::cube_emissive_color(theme).into(),
             // base_color: theme::sidebar_color(theme).into(),
             metallic: 20.0,
             reflectance: 0.02,
@@ -47,7 +48,8 @@ pub fn setup_scene(
         })
     } else {
         materials.add(StandardMaterial {
-            base_color: Color::rgb(0.0, 0.1, 0.90),
+            base_color: theme::cube_base_color(theme).into(),
+            emissive: theme::cube_emissive_color(theme).into(),
             // base_color: theme::sidebar_collapsed_color(theme).into(),
             metallic: 20.0,
             reflectance: 0.02,
@@ -57,19 +59,21 @@ pub fn setup_scene(
     };
 
     // The cube that will be rendered to the texture.
-    let cube = commands
-        .spawn((
-            PbrBundle {
-                mesh: cube_handle,
-                material: cube_material_handle,
-                // transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
-                ..default()
-            },
-            SpinnyCube,
-            crew_render_layer,
-            subsection::SubsectionGameEntity,
-        ))
-        .id();
+    let cube = commands.spawn((
+        theme::ColorFunction {
+            background: theme::cube_base_color,
+            border: theme::cube_emissive_color,
+        },
+        PbrBundle {
+            mesh: cube_handle,
+            material: cube_material_handle,
+            // transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
+            ..default()
+        },
+        SpinnyCube,
+        crew_render_layer,
+        subsection::SubsectionGameEntity,
+    )).id();
     
     commands.entity(film_crew_entity).push_children(&[cube]);
 }

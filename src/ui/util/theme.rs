@@ -334,3 +334,94 @@ pub fn page_header_color(theme: &CurrentTheme) -> Color {
         }
     }
 }
+
+pub fn cube_base_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return BERKELEY_DARK_GOLD;
+        }
+        CurrentTheme::Dark => {
+            return BERKELEY_GOLD;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return CYBERPUNK_PINK;
+        }
+    }
+}
+
+pub fn cube_emissive_color(theme: &CurrentTheme) -> Color {
+    let base_color = cube_base_color(theme);
+
+    return Color::rgba(
+        base_color.r(),
+        base_color.g(),
+        base_color.b(),
+        0.1,
+    );
+}
+
+
+pub fn axis_base_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::BLACK;
+        }
+        CurrentTheme::Dark => {
+            return Color::WHITE;
+        }
+        CurrentTheme::Matrix => {
+            return MATRIX_GREEN;
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::WHITE;
+        }
+    }
+}
+
+pub fn axis_emissive_color(theme: &CurrentTheme) -> Color {
+    let base_color = axis_base_color(theme);
+
+    return Color::rgba(
+        base_color.r(),
+        base_color.g(),
+        base_color.b(),
+        1.0,
+    );
+}
+
+
+pub fn grid_base_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Light => {
+            return Color::rgba(0.0, 0.0, 0.0, 0.2);
+        }
+        CurrentTheme::Dark => {
+            return Color::rgba(1.0, 1.0, 1.0, 0.1);
+        }
+        CurrentTheme::Matrix => {
+            return Color::rgba(
+                MATRIX_GREEN.r(),
+                MATRIX_GREEN.g(),
+                MATRIX_GREEN.b(),
+                0.5,
+            );
+        }
+        CurrentTheme::Cyberpunk => {
+            return Color::rgba(1.0, 1.0, 1.0, 0.1);
+        }
+    }
+}
+
+pub fn grid_emissive_color(theme: &CurrentTheme) -> Color {
+    let base_color = grid_base_color(theme);
+
+    return Color::rgba(
+        base_color.r(),
+        base_color.g(),
+        base_color.b(),
+        1.0,
+    );
+}

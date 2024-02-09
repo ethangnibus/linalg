@@ -21,7 +21,7 @@ pub fn get(
     view_list_entity: Entity,
 ) {
 
-    subsection_cameras::setup_light(commands, film_crew_entity);
+    subsection_cameras::setup_light(commands, film_crew_entity, 5.0, 3.0, 5.0);
     subsection_cameras::setup_camera(commands, theme, film_crew_entity, Val::Vh(100.0), meshes, materials, images, view_list_entity, 1);
     example_1::setup_scene(
         commands,

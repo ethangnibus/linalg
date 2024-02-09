@@ -90,36 +90,35 @@ fn spawn_axis(
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_render_layer: RenderLayers,
 ) {
-    let mut tcolor = theme::text_color(theme);
     // Materials
     let x_axis_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
-        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 1.0),
+        base_color: theme::axis_base_color(theme),
         metallic: 20.0,
         reflectance: 0.02,
         unlit: false,
-        emissive: Color::rgba(1.0, 1.0, 1.0, 1.0),
+        emissive: theme::axis_emissive_color(theme),
         // alpha_mode: AlphaMode::Blend,
         
         ..default()
     });
     let y_axis_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
-        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 1.0),
+        base_color: theme::axis_base_color(theme),
         metallic: 20.0,
         reflectance: 0.02,
         unlit: false,
-        emissive: Color::rgba(1.0, 1.0, 1.0, 1.0),
+        emissive: theme::axis_emissive_color(theme),
         // alpha_mode: AlphaMode::Blend,
         ..default()
     });
     let z_axis_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
-        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 1.0),
+        base_color: theme::axis_base_color(theme),
         metallic: 20.0,
         reflectance: 0.02,
         unlit: false,
-        emissive: Color::rgba(1.0, 1.0, 1.0, 1.0),
+        emissive: theme::axis_emissive_color(theme),
         // alpha_mode: AlphaMode::Blend,
         ..default()
     });
@@ -138,6 +137,10 @@ fn spawn_axis(
     // Spawn into this world
     let y_axis = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::axis_base_color,
+                border: theme::axis_emissive_color,
+            },
             PbrBundle {
                 mesh: axis_handle.clone(),
                 material: y_axis_material_handle.clone(),
@@ -150,6 +153,10 @@ fn spawn_axis(
         .id();
     let z_axis = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::axis_base_color,
+                border: theme::axis_emissive_color,
+            },
             PbrBundle {
                 mesh: axis_handle.clone(),
                 material: z_axis_material_handle.clone(),
@@ -165,6 +172,10 @@ fn spawn_axis(
         .id();
     let x_axis = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::axis_base_color,
+                border: theme::axis_emissive_color,
+            },
             PbrBundle {
                 mesh: axis_handle,
                 material: x_axis_material_handle,
@@ -198,7 +209,7 @@ fn spawn_grid(
 
     // Materials
     let grid_material_handle = materials.add(StandardMaterial {
-        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 0.1).into(),
+        base_color: theme::grid_base_color(theme),
         metallic: 20.0,
         reflectance: 0.01,
         unlit: false,
@@ -239,6 +250,10 @@ fn spawn_grid(
 
         let grid_x_line = commands
             .spawn((
+                theme::ColorFunction {
+                    background: theme::grid_base_color,
+                    border: theme::grid_emissive_color,
+                },
                 PbrBundle {
                     mesh: grid_line_handle.clone(),
                     material: grid_material_handle.clone(),

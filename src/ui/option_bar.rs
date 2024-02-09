@@ -78,6 +78,7 @@ impl Plugin for SystemsPlugin {
                     theme_change_text_color_change_system,
                     theme_button_text_color_change_system,
                     theme_button_line_color_change_system,
+                    theme_change_mesh_color_change_system,
                 ),
             );
     }
@@ -360,6 +361,23 @@ fn theme_change_text_color_change_system(
     for event in theme_change_reader.read() {
         for (mut text, color_function) in text_query.iter_mut() {
             text.sections[0].style.color = (color_function.background)(&theme).into();
+        }
+    }
+}
+
+fn theme_change_mesh_color_change_system(
+    mut theme_change_reader: EventReader<theme::ThemeChangeEvent>,
+    mut mesh_query: Query<(&Handle<StandardMaterial>, &ColorFunction), With<ColorFunction>>,
+
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    theme: Res<theme::CurrentTheme>,
+) {
+    for event in theme_change_reader.read() {
+        for (material_handle, color_function) in mesh_query.iter_mut() {
+            let material = materials.get_mut(material_handle).unwrap(); // Fixme: Change in case of bugs
+            
+            material.base_color = (color_function.background)(&theme).into();
+            material.emissive = (color_function.border)(&theme).into();
         }
     }
 }
