@@ -15,7 +15,10 @@ use bevy::input::mouse::MouseMotion;
 use bevy::input::mouse::MouseWheel;
 use bevy::utils::intern;
 use bevy::{
-    core_pipeline::clear_color::ClearColorConfig,
+    core_pipeline::{
+        bloom::{BloomCompositeMode, BloomSettings},
+        clear_color::ClearColorConfig,
+    },
     ecs::event::ManualEventReader,
     prelude::*,
     render::{
@@ -124,7 +127,7 @@ pub fn setup_light(
                     intensity: 100.0,
                     ..default()
                 },
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
+                transform: Transform::from_translation(Vec3::new(10.0, 5.0, 10.0)),
                 ..default()
             },
             subsection::SubsectionGameEntity,
@@ -215,7 +218,7 @@ pub fn setup_camera(
 
 
     // let translation = Vec3::new(-2.0, 2.5, 5.0);
-    let translation = Vec3::new(15.0, 5.0, 15.0);
+    let translation = Vec3::new(12.0, 7.0, 12.0);
     let radius = translation.length();
 
     
@@ -243,8 +246,11 @@ pub fn setup_camera(
                 },
                 transform: Transform::from_translation(translation)
                 .looking_at(Vec3::ZERO, Vec3::Y),
-                ..Default::default()
-
+                ..default()
+            },
+            BloomSettings {
+                intensity: 1.0,
+                ..default()
             },
             // UI config is a separate component
             UiCameraConfig { show_ui: false },

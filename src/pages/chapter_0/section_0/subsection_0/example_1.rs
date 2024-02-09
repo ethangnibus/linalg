@@ -62,7 +62,7 @@ pub fn setup_scene(
             PbrBundle {
                 mesh: cube_handle,
                 material: cube_material_handle,
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
+                // transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
                 ..default()
             },
             SpinnyCube,

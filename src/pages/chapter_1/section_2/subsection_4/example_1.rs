@@ -90,34 +90,47 @@ fn spawn_axis(
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_render_layer: RenderLayers,
 ) {
+    let mut tcolor = theme::text_color(theme);
     // Materials
     let x_axis_material_handle = materials.add(StandardMaterial {
-        base_color: Color::RED.into(),
+        // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
+        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 1.0),
         metallic: 20.0,
         reflectance: 0.02,
         unlit: false,
+        emissive: Color::rgba(1.0, 1.0, 1.0, 1.0),
+        // alpha_mode: AlphaMode::Blend,
+        
         ..default()
     });
     let y_axis_material_handle = materials.add(StandardMaterial {
-        base_color: Color::GREEN.into(),
+        // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
+        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 1.0),
         metallic: 20.0,
         reflectance: 0.02,
         unlit: false,
+        emissive: Color::rgba(1.0, 1.0, 1.0, 1.0),
+        // alpha_mode: AlphaMode::Blend,
         ..default()
     });
     let z_axis_material_handle = materials.add(StandardMaterial {
-        base_color: Color::BLUE.into(),
+        // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
+        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 1.0),
         metallic: 20.0,
         reflectance: 0.02,
         unlit: false,
+        emissive: Color::rgba(1.0, 1.0, 1.0, 1.0),
+        // alpha_mode: AlphaMode::Blend,
         ..default()
     });
 
     // Meshes
     let axis_handle = meshes.add(
         shape::Capsule {
-            radius: 0.05,
+            radius: 0.03,
             depth: 20.0,
+            latitudes: 32,
+            longitudes: 64,
             ..default()
         }.into()
     );
@@ -181,26 +194,32 @@ fn spawn_grid(
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_render_layer: RenderLayers,
 ) {
+    let mut tcolor = theme::text_color(theme);
+
     // Materials
     let grid_material_handle = materials.add(StandardMaterial {
-        base_color: theme::text_color(theme).into(),
+        base_color: Color::rgba(tcolor.r(), tcolor.g(), tcolor.b(), 0.1).into(),
         metallic: 20.0,
-        reflectance: 0.02,
+        reflectance: 0.01,
         unlit: false,
+        alpha_mode: AlphaMode::Blend,
         ..default()
     });
 
     // Meshes
     let grid_line_handle = meshes.add(
         shape::Capsule {
-            radius: 0.02,
+            radius: 0.01,
             depth: 20.0,
             ..default()
         }.into()
     );
 
-    // Spawn into this world
-    let grid_z_line = commands
+    for x in (-10..=10).filter(|&x| x != 0) {
+        let offset: f32 = x as f32;
+
+        // Spawn into this world
+        let grid_z_line = commands
         .spawn((
             PbrBundle {
                 mesh: grid_line_handle.clone(),
@@ -208,7 +227,7 @@ fn spawn_grid(
                 transform: Transform::from_rotation(
                     Quat::from_rotation_x(0.5 * PI)
                 ).with_translation(
-                    Vec3 { x: 1.0, y: 0.0, z: 0.0 }
+                    Vec3 { x: offset, y: 0.0, z: 0.0 }
                 ),
                 ..default()
             },
@@ -217,25 +236,34 @@ fn spawn_grid(
             subsection::SubsectionGameEntity,
         ))
         .id();
-    // let x_axis = commands
-    //     .spawn((
-    //         PbrBundle {
-    //             mesh: grid_line_handle,
-    //             material: grid_material_handle,
-    //             transform: Transform::from_rotation(
-    //                 Quat::from_rotation_z(0.5 * PI)
-    //             ),
-    //             ..default()
-    //         },
-    //         // SpinnyCube,
-    //         crew_render_layer,
-    //         subsection::SubsectionGameEntity,
-    //     ))
-    //     .id();
+
+        let grid_x_line = commands
+            .spawn((
+                PbrBundle {
+                    mesh: grid_line_handle.clone(),
+                    material: grid_material_handle.clone(),
+                    transform: Transform::from_rotation(
+                        Quat::from_rotation_z(0.5 * PI)
+                    ).with_translation(
+                        Vec3 { x: 0.0, y: 0.0, z: offset }
+                    ),
+                    ..default()
+                },
+                // SpinnyCube,
+                crew_render_layer,
+                subsection::SubsectionGameEntity,
+            ))
+            .id();
 
         commands.entity(film_crew_entity).push_children(&[
             grid_z_line,
+            grid_x_line,
         ]);
+    }
+    
+    
+
+    
 }
 
 /// Rotates the inner cube (first pass)
