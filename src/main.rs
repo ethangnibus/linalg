@@ -10,7 +10,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin; // FIXME: REMOVE IN PROD
 
 fn main() {
     App::new()
-        .insert_resource(Msaa::Sample8)
+        .insert_resource(Msaa::Sample4)
         // .insert_resource(Msaa::Sample4)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {

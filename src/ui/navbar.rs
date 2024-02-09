@@ -235,7 +235,7 @@ pub fn navbar_banner(commands: &mut Commands, theme: &theme::CurrentTheme, heigh
             TextBundle::from_section(
                 "Projection Matrix",
                 TextStyle {
-                    font_size: 50.0,
+                    font_size: 40.0,
                     color: theme::navbar_swiper_color(theme).into(),
                     ..default()
                 },

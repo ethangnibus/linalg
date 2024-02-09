@@ -1,5 +1,7 @@
 
 
+use std::f32::consts::PI;
+
 use bevy::{
     render::view::RenderLayers,
     prelude::*,
@@ -56,24 +58,119 @@ pub fn setup_scene(
         })
     };
 
+
+    spawn_axis(commands, theme, film_crew_entity, meshes, materials, crew_render_layer);
+    
+
     // The cube that will be rendered to the texture.
-    let cube = commands
+    // let cube = commands
+    //     .spawn((
+    //         PbrBundle {
+    //             mesh: cube_handle,
+    //             material: cube_material_handle,
+    //             transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
+    //             ..default()
+    //         },
+    //         SpinnyCube,
+    //         crew_render_layer,
+    //         subsection::SubsectionGameEntity,
+    //     ))
+    //     .id();
+    
+    
+}
+
+
+fn spawn_axis(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    film_crew_entity: Entity,
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    crew_render_layer: RenderLayers,
+) {
+    // Materials
+    let x_axis_material_handle = materials.add(StandardMaterial {
+        base_color: Color::RED.into(),
+        metallic: 20.0,
+        reflectance: 0.02,
+        unlit: false,
+        ..default()
+    });
+    let y_axis_material_handle = materials.add(StandardMaterial {
+        base_color: Color::GREEN.into(),
+        metallic: 20.0,
+        reflectance: 0.02,
+        unlit: false,
+        ..default()
+    });
+    let z_axis_material_handle = materials.add(StandardMaterial {
+        base_color: Color::BLUE.into(),
+        metallic: 20.0,
+        reflectance: 0.02,
+        unlit: false,
+        ..default()
+    });
+
+    // Meshes
+    let axis_handle = meshes.add(
+        shape::Capsule {
+            radius: 0.05,
+            depth: 20.0,
+            ..default()
+        }.into()
+    );
+
+    // Spawn into this world
+    let y_axis = commands
         .spawn((
             PbrBundle {
-                mesh: cube_handle,
-                material: cube_material_handle,
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
+                mesh: axis_handle.clone(),
+                material: y_axis_material_handle.clone(),
                 ..default()
             },
-            SpinnyCube,
+            // SpinnyCube,
             crew_render_layer,
             subsection::SubsectionGameEntity,
         ))
         .id();
-    
-    commands.entity(film_crew_entity).push_children(&[cube]);
-}
+    let z_axis = commands
+        .spawn((
+            PbrBundle {
+                mesh: axis_handle.clone(),
+                material: z_axis_material_handle.clone(),
+                transform: Transform::from_rotation(
+                    Quat::from_rotation_x(0.5 * PI)
+                ),
+                ..default()
+            },
+            // SpinnyCube,
+            crew_render_layer,
+            subsection::SubsectionGameEntity,
+        ))
+        .id();
+    let x_axis = commands
+        .spawn((
+            PbrBundle {
+                mesh: axis_handle,
+                material: x_axis_material_handle,
+                transform: Transform::from_rotation(
+                    Quat::from_rotation_z(0.5 * PI)
+                ),
+                ..default()
+            },
+            // SpinnyCube,
+            crew_render_layer,
+            subsection::SubsectionGameEntity,
+        ))
+        .id();
 
+        commands.entity(film_crew_entity).push_children(&[
+            x_axis,
+            y_axis,
+            z_axis,
+        ]);
+}
 
 /// Rotates the inner cube (first pass)
 fn rotator_system(time: Res<Time>, mut query: Query<&mut Transform, With<SpinnyCube>>) {

@@ -48,15 +48,15 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     // make the text that appears on the banner
     let text_bundle = commands.spawn((
         theme::ColorFunction {
-            background: theme::sidebar_header_text_color,
-            border: theme::sidebar_header_text_color,
+            background: theme::option_bar_header_text_color,
+            border: theme::option_bar_header_text_color,
         },
         TextBundle::from_section(
             // format!(text),
             text,
             TextStyle {
                 font_size: 30.,
-                color: theme::sidebar_header_text_color(theme).into(),
+                color: theme::option_bar_header_text_color(theme).into(),
                 ..default()
             },
         ),

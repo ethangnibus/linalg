@@ -102,7 +102,7 @@ pub fn sidebar_header_color(theme: &CurrentTheme) -> Color {
             return MATRIX_DARK_GREEN;
         }
         CurrentTheme::Cyberpunk => {
-            return CYBERPUNK_YELLOW;
+            return CYBERPUNK_BLUE;
         }
     }
 }
@@ -206,7 +206,7 @@ pub fn navbar_swiper_color(theme: &CurrentTheme) -> Color {
             return MATRIX_LIGHT_GREEN;
         }
         CurrentTheme::Cyberpunk => {
-            return CYBERPUNK_BLUE;
+            return CYBERPUNK_YELLOW;
         }
     }
 }
@@ -273,7 +273,7 @@ pub fn sidebar_header_text_color(theme: &CurrentTheme) -> Color {
             return Color::BLACK;
         }
         CurrentTheme::Matrix => {
-            return Color::BLACK;
+            return MATRIX_LIGHT_GREEN;
         }
         CurrentTheme::Cyberpunk => {
             return Color::BLACK;
@@ -321,16 +321,16 @@ pub fn option_button_text_color(theme: &CurrentTheme) -> Color {
 pub fn page_header_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
-            return BERKELEY_GOLD;
+            return BERKELEY_DARK_GOLD;
         }
         CurrentTheme::Dark => {
-            return BERKELEY_GOLD;
+            return BERKELEY_DARK_GOLD;
         }
         CurrentTheme::Matrix => {
-            return MATRIX_LIGHT_GREEN;
+            return MATRIX_GREEN;
         }
         CurrentTheme::Cyberpunk => {
-            return Color::WHITE;
+            return Color::RED;
         }
     }
 }

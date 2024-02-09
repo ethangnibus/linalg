@@ -215,7 +215,7 @@ pub fn setup_camera(
 
 
     // let translation = Vec3::new(-2.0, 2.5, 5.0);
-    let translation = Vec3::new(0.0, 0.0, 15.0);
+    let translation = Vec3::new(15.0, 5.0, 15.0);
     let radius = translation.length();
 
     
@@ -646,8 +646,8 @@ fn pan_orbit_camera(
                             any = true;
                             pan_orbit.radius -= scroll * pan_orbit.radius * 0.001;
                             // dont allow zoom to reach zero or you get stuck
-                            pan_orbit.radius = f32::max(pan_orbit.radius, 12.0); // min radius
-                            pan_orbit.radius = f32::min(pan_orbit.radius, 100.0); // max radius
+                            pan_orbit.radius = f32::max(pan_orbit.radius, 1.0); // min radius
+                            pan_orbit.radius = f32::min(pan_orbit.radius, 50.0); // max radius
                         }
 
                         if any {
