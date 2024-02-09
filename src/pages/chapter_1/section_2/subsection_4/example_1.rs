@@ -60,6 +60,7 @@ pub fn setup_scene(
 
 
     spawn_axis(commands, theme, film_crew_entity, meshes, materials, crew_render_layer);
+    spawn_grid(commands, theme, film_crew_entity, meshes, materials, crew_render_layer);
     
 
     // The cube that will be rendered to the texture.
@@ -169,6 +170,71 @@ fn spawn_axis(
             x_axis,
             y_axis,
             z_axis,
+        ]);
+}
+
+fn spawn_grid(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    film_crew_entity: Entity,
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    crew_render_layer: RenderLayers,
+) {
+    // Materials
+    let grid_material_handle = materials.add(StandardMaterial {
+        base_color: theme::text_color(theme).into(),
+        metallic: 20.0,
+        reflectance: 0.02,
+        unlit: false,
+        ..default()
+    });
+
+    // Meshes
+    let grid_line_handle = meshes.add(
+        shape::Capsule {
+            radius: 0.02,
+            depth: 20.0,
+            ..default()
+        }.into()
+    );
+
+    // Spawn into this world
+    let grid_z_line = commands
+        .spawn((
+            PbrBundle {
+                mesh: grid_line_handle.clone(),
+                material: grid_material_handle.clone(),
+                transform: Transform::from_rotation(
+                    Quat::from_rotation_x(0.5 * PI)
+                ).with_translation(
+                    Vec3 { x: 1.0, y: 0.0, z: 0.0 }
+                ),
+                ..default()
+            },
+            // SpinnyCube,
+            crew_render_layer,
+            subsection::SubsectionGameEntity,
+        ))
+        .id();
+    // let x_axis = commands
+    //     .spawn((
+    //         PbrBundle {
+    //             mesh: grid_line_handle,
+    //             material: grid_material_handle,
+    //             transform: Transform::from_rotation(
+    //                 Quat::from_rotation_z(0.5 * PI)
+    //             ),
+    //             ..default()
+    //         },
+    //         // SpinnyCube,
+    //         crew_render_layer,
+    //         subsection::SubsectionGameEntity,
+    //     ))
+    //     .id();
+
+        commands.entity(film_crew_entity).push_children(&[
+            grid_z_line,
         ]);
 }
 
