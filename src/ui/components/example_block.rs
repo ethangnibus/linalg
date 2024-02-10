@@ -151,7 +151,6 @@ pub fn fullscreen_event_system (
     // Not that it would matter tho it's not like this is gonna
     // scale or anything
     for fullscreen_event in fullscreen_reader.read() {
-        println!("fullscreen maximize: {:?}", fullscreen_event.maximize);
         for (camera_banner_entity, camera_banner, mut camera_banner_style) in camera_banner_query.iter_mut() {
             if camera_banner.crew_id != fullscreen_event.crew_id { continue };
             for (footer_entity, footer) in example_footer_query.iter() {

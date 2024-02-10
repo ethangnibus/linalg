@@ -1,6 +1,7 @@
 
-
+use std::f32::consts::FRAC_PI_2;
 use std::f32::consts::PI;
+use bevy_mod_picking::prelude::*;
 
 use bevy::{
     render::view::RenderLayers,
@@ -16,7 +17,10 @@ pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         // Add the setup_ui system as a startup system
-        app.add_systems(Update, rotator_system);
+        app.add_systems(Update, (
+            // rotator_system,
+            spin,
+        ));
     }
 }
 
@@ -37,7 +41,7 @@ pub fn setup_scene(
     
     let crew_render_layer = RenderLayers::layer(crew_id);
 
-    let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
+    let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 1.0 }));
     let cube_material_handle = if crew_id == 1 {
         materials.add(StandardMaterial {
             // base_color: Color::rgb(1.0, 0.75, 0.90),
@@ -64,19 +68,33 @@ pub fn setup_scene(
     
 
     // The cube that will be rendered to the texture.
-    // let cube = commands
-    //     .spawn((
-    //         PbrBundle {
-    //             mesh: cube_handle,
-    //             material: cube_material_handle,
-    //             transform: Transform::from_translation(Vec3::new(0.0, 0.0, 1.0)),
-    //             ..default()
-    //         },
-    //         SpinnyCube,
-    //         crew_render_layer,
-    //         subsection::SubsectionGameEntity,
-    //     ))
-    //     .id();
+    let cube = commands
+        .spawn((
+            PbrBundle {
+                mesh: cube_handle,
+                material: cube_material_handle,
+                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
+                ..default()
+            },
+            SpinnyCube,
+            crew_render_layer,
+            subsection::SubsectionGameEntity,
+
+            //pickable stuff
+            PickableBundle::default(), // <- Makes the mesh pickable.
+            On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
+            On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
+            On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
+                println!("CUBE SELECTED");
+                transform.translation.x += drag.delta.x; // Make the square follow the mouse
+                transform.translation.y -= drag.delta.y;
+            }),
+            On::<Pointer<Drop>>::commands_mut(|event, commands| {
+                commands.entity(event.dropped).insert(Spin(FRAC_PI_2)); // Spin dropped entity
+                commands.entity(event.target).insert(Spin(-FRAC_PI_2)); // Spin dropped-on entity
+            }),
+        ))
+        .id();
     
     
 }
@@ -286,5 +304,17 @@ fn rotator_system(time: Res<Time>, mut query: Query<&mut Transform, With<SpinnyC
     for mut transform in &mut query {
         transform.rotate_x(1.5 * time.delta_seconds());
         transform.rotate_z(1.3 * time.delta_seconds());
+    }
+}
+
+
+#[derive(Component)]
+struct Spin(f32);
+
+fn spin(mut square: Query<(&mut Spin, &mut Transform)>) {
+    for (mut spin, mut transform) in square.iter_mut() {
+        transform.rotation = Quat::from_rotation_z(spin.0);
+        let delta = -spin.0.clamp(-1.0, 1.0) * 0.05;
+        spin.0 += delta;
     }
 }

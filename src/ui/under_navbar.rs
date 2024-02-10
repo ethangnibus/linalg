@@ -13,6 +13,8 @@ use super::view;
 use super::subsection_cameras;
 use bevy::winit::WinitWindows;
 use bevy::{prelude::*, ui::FocusPolicy};
+use bevy_mod_picking::prelude::*;
+
 
 // ending today
 // remember to do colors
@@ -96,16 +98,18 @@ pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
     return commands.spawn((
         UnderNavbar,
         NodeBundle {
-        style: Style {
-            width: Val::Percent(width),
-            height: Val::Percent(100.0),
-            flex_grow: 1.0,
-            flex_direction: FlexDirection::Row,
+            style: Style {
+                width: Val::Percent(width),
+                height: Val::Percent(100.0),
+                flex_grow: 1.0,
+                flex_direction: FlexDirection::Row,
+                ..default()
+            },
+            background_color: Color::rgb(0.0, 0.0, 1.0).into(),
             ..default()
         },
-        background_color: Color::rgb(0.0, 0.0, 1.0).into(),
-        ..default()
-    })).id()
+        Pickable::IGNORE,
+    )).id()
 }
 
 pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {

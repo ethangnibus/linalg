@@ -23,6 +23,8 @@ use bevy::{
 // use bevy_svg::prelude::*;
 use super::theme;
 use crate::pages::splash_page;
+use bevy_mod_picking::prelude::*;
+
 
 // Marker for UI node
 #[derive(Component)]
@@ -59,7 +61,11 @@ pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, view_entity: 
     // splash_page::get(commands, svg_load_writer, &mut page_entities);
 
     let view_list = scrollable_page::get_page(theme);
-    let view_list = commands.spawn((ViewList::default(), view_list)).id();
+    let view_list = commands.spawn((
+        ViewList::default(),
+        view_list,
+        Pickable::IGNORE,
+    )).id();
 
     for entity in page_entities {
         commands.entity(view_list).push_children(&[entity]);
@@ -98,6 +104,7 @@ pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
             border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
+        Pickable::IGNORE,
     )).id();
 }
 

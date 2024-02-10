@@ -13,6 +13,7 @@ bevy = "0.12"
 # svgtypes = "0.13.0"
 # bevy_prototype_lyon = "0.10.0"
 bevy-inspector-egui = "0.22.1"
+bevy_mod_picking = "0.17.0"
 rand = "0.8.5"
 
 [dev-dependencies]

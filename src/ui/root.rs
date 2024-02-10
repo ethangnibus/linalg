@@ -5,6 +5,7 @@ use bevy::{
     ui::FocusPolicy,
     prelude::*,
 };
+use bevy_mod_picking::prelude::*;
 
 // Marker for Root UI node
 #[derive(Component)]
@@ -63,10 +64,11 @@ pub fn fullscreen_node(commands: &mut Commands) -> Entity {
                 flex_direction: FlexDirection::Column,
                 ..default()
             },
-            z_index: ZIndex::Global(1),
+            // z_index: ZIndex::Global(1),
             focus_policy: FocusPolicy::Pass,
             ..default()
-        }
+        },
+        Pickable::IGNORE,
     )).id();
 }
 
@@ -86,5 +88,6 @@ pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
             // background_color: Color::rgb(0.0, 1.0, 0.0).into(),
             ..default()
         },
+        Pickable::IGNORE,
     )).id();
 }

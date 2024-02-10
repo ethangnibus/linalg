@@ -24,6 +24,9 @@ use util::theme;
 use bevy::diagnostic::DiagnosticsStore;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 
+// mod picking and scene selection
+use bevy_mod_picking::prelude::*;
+
 /// Marker to find the container entity so we can show/hide the FPS counter
 #[derive(Component)]
 struct FpsRoot;
@@ -168,6 +171,9 @@ impl Plugin for SetupUiPlugin {
             .add_plugins(pages::SystemsPlugin)
             .add_plugins(scrollable_page::SystemsPlugin)
             .insert_resource(theme::CurrentTheme::Dark)
+
+            //mod picking / scene interaciton
+            .add_plugins(DefaultPickingPlugins)
 
             //FPS STUFF
             .add_plugins(FrameTimeDiagnosticsPlugin::default())

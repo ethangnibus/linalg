@@ -33,6 +33,7 @@ use bevy::{
     },
     ui::FocusPolicy,
 };
+use bevy_mod_picking::prelude::*;
 // use rand::Rng;
 
 pub struct SystemsPlugin;
@@ -127,7 +128,7 @@ pub fn setup_light(
         .spawn((
             PointLightBundle {
                 point_light: PointLight {
-                    intensity: 100.0,
+                    intensity: 1500.0,
                     ..default()
                 },
                 transform: Transform::from_translation(Vec3::new(x, y, z)),
@@ -175,6 +176,7 @@ pub fn setup_camera(
                 crew_id: crew_id,
                 is_selected: false,
             },
+            Pickable::IGNORE,
             // image,
         ))
         .id();
@@ -261,6 +263,7 @@ pub fn setup_camera(
             MiniCamera {
                 crew_id: crew_id,
             },
+            Pickable::IGNORE,
         ))
         .id();
 

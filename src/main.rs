@@ -12,10 +12,12 @@ fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
         // .insert_resource(Msaa::Sample4)
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
+        .add_plugins(DefaultPlugins.set(
+            WindowPlugin {
             primary_window: Some(Window {
                 fit_canvas_to_parent: true,
                 title: "linalg".to_string(),
+                present_mode: bevy::window::PresentMode::AutoNoVsync, // Fixme: Remove if not needed for window interaction
                 ..default()
             }),
             ..default()
