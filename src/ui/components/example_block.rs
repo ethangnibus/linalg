@@ -15,6 +15,8 @@ use crate::ui::{
     root,
     view::{self, UiResizeEvent},
 };
+use bevy_mod_picking::prelude::*;
+
 use super::example_header;
 use super::example_footer;
 
@@ -87,6 +89,7 @@ fn new(commands: &mut Commands, crew_id: u8) -> Entity {
             },
             ..default()
         },
+        Pickable::IGNORE,
     )).id();
 }
 
