@@ -475,7 +475,7 @@ fn theme_change_node_color_change_system(
 
 /// Tags an entity as capable of panning and orbiting.
 #[derive(Component)]
-struct PanOrbitCamera {
+pub struct PanOrbitCamera {
     /// The "focus point" to orbit around. It is automatically updated when panning the camera
     pub focus: Vec3,
     pub radius: f32,

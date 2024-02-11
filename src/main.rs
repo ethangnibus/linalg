@@ -1,11 +1,14 @@
 #![allow(warnings)]
+use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
+use bevy::render::view::RenderLayers;
 use bevy::window::WindowResized;
 pub mod ui;
 pub mod pages;
 
 use ui::view::UiResizeEvent;
 use bevy_inspector_egui::quick::WorldInspectorPlugin; // FIXME: REMOVE IN PROD
+
 
 
 fn main() {
@@ -35,16 +38,47 @@ fn main() {
 #[derive(Component)]
 struct ResolutionText;
 
+#[derive(Component)]
+pub struct Main2dCamera;
+
+
 // Spawns the camera that draws UI
 fn setup_camera(mut commands: Commands) {
-    commands.spawn(Camera2dBundle {
-        camera: Camera {
-            // Renders the right camera after the left camera, which has a default priority of 0
-            order: 0,
+    let camera_render_layer = RenderLayers::layer(1);
+    commands.spawn((
+        // subsection_cameras::PanOrbitCamera {
+        //     focus: pan_orbit_camera.focus,
+        //     radius: pan_orbit_camera.radius,
+        //     upside_down: pan_orbit_camera.upside_down,
+        // },
+        Camera3dBundle {
+            transform: Transform::from_xyz(3.0, 3.0, 3.0).looking_at(Vec3::ZERO, Vec3::Y),
+            camera: Camera {
+                // Renders the right camera after the left camera, which has a default priority of 0
+                order: 0,
+                ..default()
+            },
+            camera_3d: Camera3d {
+                clear_color: ClearColorConfig::Custom(Color::BLACK), // remember to change this based on theme
+                ..default()
+            },
             ..default()
         },
+        // camera_render_layer,
+        camera_render_layer,
+        UiCameraConfig { show_ui: false },
+    ));
+
+    commands.spawn((
+        Main2dCamera,
+        Camera2dBundle {
+            camera: Camera {
+                // Renders the right camera after the left camera, which has a default priority of 0
+                order: 0,
+                ..default()
+            },
         ..default()
-    });
+    }));
 }
 
 // /// This system shows how to request the window to a new resolution
