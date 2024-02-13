@@ -163,8 +163,6 @@ pub fn setup_camera(
                 style: Style {
                     width: Val::Percent(100.0),
                     height: height,
-                    padding: style::NO_BORDER,
-                    border: style::NO_BORDER,
                     // justify_items: JustifyItems::Start,
                     // align_items: AlignItems::Center,
                     ..default()
@@ -177,7 +175,7 @@ pub fn setup_camera(
                 crew_id: crew_id,
                 is_selected: false,
             },
-            Pickable::IGNORE,
+            // Pickable::IGNORE,
             // image,
         ))
         .id();

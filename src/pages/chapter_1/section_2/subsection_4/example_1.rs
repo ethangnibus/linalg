@@ -96,7 +96,7 @@ pub fn setup_scene(
         ))
         .id();
     
-    
+    commands.entity(film_crew_entity).push_children(&[cube]);
 }
 
 
