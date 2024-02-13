@@ -6,6 +6,7 @@ use bevy::{
     // winit::WinitSettings,
 };
 use bevy_inspector_egui::egui::Align;
+use bevy_mod_picking::prelude::*;
 
 use crate::ui::{subsection_cameras, util::{
     theme,
@@ -62,6 +63,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             ..default()
         },
         RenderLayers::layer(crew_id),
+        Pickable::IGNORE,
     )).id();
 
     let skeleton_left = commands.spawn((
@@ -88,6 +90,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         },
         RenderLayers::layer(crew_id),
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
+        Pickable::IGNORE,
     )).id();
 
     let skeleton_right = commands.spawn((
@@ -118,6 +121,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         },
         RenderLayers::layer(crew_id),
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
+        Pickable::IGNORE,
     )).id();
 
     let selection_button = selection_button(commands, theme, crew_id);
@@ -130,6 +134,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             background: theme::sidebar_color,
             border: theme::sidebar_color,
         },
+        Pickable::IGNORE,
         TextBundle::from_section(
             text,
             TextStyle {
@@ -193,11 +198,12 @@ pub fn selection_button(
                     ..default()
                 },
                 visibility: Visibility::Inherited,
-                focus_policy: bevy::ui::FocusPolicy::Pass,
+                focus_policy: bevy::ui::FocusPolicy::Block,
                 background_color: theme::navbar_background_color(theme).into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
+            Pickable::IGNORE,
             RenderLayers::layer(crew_id),
             SelectionButton{
                 crew_id: crew_id,
@@ -225,6 +231,7 @@ pub fn selection_button(
                 is_selected: false,
             },
             RenderLayers::layer(crew_id),
+            Pickable::IGNORE,
         )
     ).id();
 

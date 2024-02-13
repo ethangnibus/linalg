@@ -45,7 +45,7 @@ pub fn setup_scene(
     let cube_material_handle = if crew_id == 1 {
         materials.add(StandardMaterial {
             // base_color: Color::rgb(1.0, 0.75, 0.90),
-            base_color: theme::sidebar_color(theme).into(),
+            base_color: theme::cube_base_color(theme).into(),
             metallic: 20.0,
             reflectance: 0.02,
             unlit: false,
@@ -70,6 +70,10 @@ pub fn setup_scene(
     // The cube that will be rendered to the texture.
     let cube = commands
         .spawn((
+            theme::ColorFunction {
+                background: theme::cube_base_color,
+                border: theme::cube_emissive_color,
+            },
             PbrBundle {
                 mesh: cube_handle,
                 material: cube_material_handle,
