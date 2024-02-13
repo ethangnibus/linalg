@@ -15,6 +15,7 @@ pub mod option_bar;
 pub mod routes;
 pub mod sidebar_routes;
 pub mod subsection_cameras;
+pub mod fullscreen_camera;
 pub mod util;
 pub mod components;
 
