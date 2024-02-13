@@ -177,7 +177,7 @@ pub fn selection_button(
     let background_banner = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::transparent,
                 border: theme::sidebar_collapsed_color,
             },
             ButtonBundle {
@@ -199,7 +199,7 @@ pub fn selection_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Block,
-                background_color: theme::navbar_background_color(theme).into(),
+                background_color: theme::TRANSPARENT.into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },

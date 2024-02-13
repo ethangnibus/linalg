@@ -79,7 +79,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
 
     let skeleton_left = commands.spawn((
         theme::ColorFunction {
-            background: theme::background_color,
+            background: theme::transparent,
             border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
@@ -94,7 +94,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 },
                 ..default()
             },
-            background_color: theme::background_color(theme).into(),
+            background_color: theme::TRANSPARENT.into(),
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
@@ -104,7 +104,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
 
     let skeleton_right = commands.spawn((
         theme::ColorFunction {
-            background: theme::background_color,
+            background: theme::transparent,
             border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
@@ -123,7 +123,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 },
                 ..default()
             },
-            background_color: theme::background_color(theme).into(),
+            background_color: theme::TRANSPARENT.into(),
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
@@ -200,7 +200,7 @@ pub fn fullscreen_button(
     let background_banner = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::transparent,
                 border: theme::sidebar_collapsed_color,
             },
             ButtonBundle {
@@ -216,7 +216,7 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
+                background_color: theme::TRANSPARENT.into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
@@ -230,10 +230,6 @@ pub fn fullscreen_button(
 
     let top = commands
         .spawn((
-            theme::ColorFunction {
-                background: theme::navbar_background_color,
-                border: theme::sidebar_collapsed_color,
-            },
             NodeBundle {
                 style: Style {
                     height: style::BUTTON_HEIGHT / 3.0,
@@ -246,8 +242,6 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
             RenderLayers::layer(crew_id),
@@ -261,7 +255,7 @@ pub fn fullscreen_button(
     let top_left = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::transparent,
                 border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
@@ -279,7 +273,7 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
+                background_color: theme::TRANSPARENT.into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
@@ -295,7 +289,7 @@ pub fn fullscreen_button(
     let top_right = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::transparent,
                 border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
@@ -313,7 +307,7 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
+                background_color: theme::TRANSPARENT.into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
@@ -328,10 +322,6 @@ pub fn fullscreen_button(
 
     let bottom = commands
         .spawn((
-            theme::ColorFunction {
-                background: theme::navbar_background_color,
-                border: theme::sidebar_collapsed_color,
-            },
             NodeBundle {
                 style: Style {
                     height: style::BUTTON_HEIGHT / 3.0,
@@ -345,8 +335,6 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
-                border_color: theme::sidebar_collapsed_color(theme).into(),
 
                 // z_index: ZIndex::Local(1),
                 ..default()
@@ -362,7 +350,7 @@ pub fn fullscreen_button(
     let bottom_left = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::transparent,
                 border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
@@ -380,7 +368,7 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
+                background_color: theme::TRANSPARENT.into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
@@ -396,7 +384,7 @@ pub fn fullscreen_button(
     let bottom_right = commands
         .spawn((
             theme::ColorFunction {
-                background: theme::navbar_background_color,
+                background: theme::transparent,
                 border: theme::sidebar_collapsed_color,
             },
             NodeBundle {
@@ -414,7 +402,7 @@ pub fn fullscreen_button(
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
-                background_color: theme::navbar_background_color(theme).into(),
+                background_color: theme::TRANSPARENT.into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
