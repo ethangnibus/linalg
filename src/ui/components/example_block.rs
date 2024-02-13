@@ -10,12 +10,10 @@ use bevy::{
     prelude::*,
     // winit::WinitSettings,
 };
+use bevy_inspector_egui::egui::Align;
 
 use crate::ui::{
-    util::theme,
-    subsection_cameras,
-    root,
-    view::{self, UiResizeEvent},
+    fullscreen_camera::FullscreenCameraBanner, root, subsection_cameras, util::theme, view::{self, UiResizeEvent}
 };
 use bevy::render::view::RenderLayers;
 use bevy_mod_picking::prelude::*;
@@ -45,18 +43,9 @@ pub fn spawn(
     view_list_entity: Entity,
     crew_id: u8,
 ) {
-    let example_block = new(commands, crew_id);
-    commands.entity(view_list_entity).push_children(&[example_block]);
-
-    example_header::spawn(
-        commands,
-        theme,
-        example_block,
-        crew_id,
-        format!(" Example {}", crew_id).as_str(),
-    );
-
-    subsection_cameras::setup_camera(
+    // let example_block = new(commands, crew_id);
+    // commands.entity(view_list_entity).push_children(&[example_block]);
+    let camera_banner = subsection_cameras::setup_camera(
         commands,
         theme,
         film_crew_entity,
@@ -64,14 +53,47 @@ pub fn spawn(
         meshes,
         materials,
         images,
-        example_block,
+        view_list_entity,
         crew_id,
+    );
+
+    let example_skeleton_banner = commands.spawn((
+        ExampleSkeletonBanner {
+            crew_id: crew_id,
+        },
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                // flex_grow: 3.0,
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::SpaceBetween,
+                ..default()
+            },
+            focus_policy: FocusPolicy::Pass,
+            // background_color: Color::rgba(1.0, 0.0, 0.0, 0.2).into(),
+            // z_index: ZIndex::Global(2),
+            ..default()
+        },
+        Pickable::IGNORE,
+        
+        RenderLayers::layer(crew_id),
+    )).id();
+    // commands.entity(example_block).push_children(&[example_skeleton_banner]);
+    commands.entity(camera_banner).push_children(&[example_skeleton_banner]);
+
+    example_header::spawn(
+        commands,
+        theme,
+        example_skeleton_banner,
+        crew_id,
+        format!(" Example {}", crew_id).as_str(),
     );
 
     example_footer::spawn(
         commands,
         theme,
-        example_block,
+        example_skeleton_banner,
         crew_id,
         format!(" Press \"*\" on the top right to activate").as_str(),
     );
@@ -87,14 +109,18 @@ fn new(commands: &mut Commands, crew_id: u8) -> Entity {
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                height: Val::Auto,
+                height: Val::Px(400.0),
                 flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::SpaceBetween,
                 ..default()
             },
+            focus_policy: FocusPolicy::Pass,
             ..default()
         },
+        
         RenderLayers::layer(crew_id),
         Pickable::IGNORE,
+        
     )).id();
 }
 
@@ -139,18 +165,22 @@ pub fn example_skeleton_color_system(
     }
 }
 
+#[derive(Component)]
+pub struct ExampleSkeletonBanner {
+    pub crew_id: u8,
+}
 
 pub fn fullscreen_event_system (
     mut fullscreen_reader: EventReader<subsection_cameras::FullscreenEvent>,
     // mut fullscreen_node_query: Query<(Entity, &mut FocusPolicy), With<root::FullscreenNode>>,
     // mut root_node_query: Query<&mut Visibility, With<root::Root>>,
 
-    mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
-    mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
-    mut example_footer_query: Query<(Entity, &example_footer::ExampleFooter), With<example_footer::ExampleFooter>>,
+    // mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
+    // mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
+    // mut example_footer_query: Query<(Entity, &example_footer::ExampleFooter), With<example_footer::ExampleFooter>>,
     // mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, &mut Style), With<subsection_cameras::CameraBackgroundBanner>>,
-
-
+    mut example_banner_query: Query<(Entity, &ExampleSkeletonBanner), With<ExampleSkeletonBanner>>,
+    camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner), With<subsection_cameras::CameraBackgroundBanner>>,
 
     mut ui_resize_writer: EventWriter<view::UiResizeEvent>,
 
@@ -168,38 +198,70 @@ pub fn fullscreen_event_system (
         let camera = textbook_camera.single();
 
         if fullscreen_event.maximize {
+
+            // add render layer to main camera
             commands.entity(camera).insert(
                 RenderLayers::layer(fullscreen_event.crew_id),
             );
-            let fullscreen_back = commands.spawn((
-                NodeBundle {
-                    style: Style {
-                        width: Val::Percent(100.0),
-                        height: Val::Percent(100.0),
-                        ..default()
-                    },
-                    background_color: Color::RED.into(),
-                    z_index: ZIndex::Global(-1),
-                    ..default()
-                },
+
+            // // spawn fullscreen back
+            // let fullscreen_camera_banner = commands.spawn((
+            //     FullscreenCameraBanner,
+            //     NodeBundle {
+            //         style: Style {
+            //             width: Val::Percent(100.0),
+            //             height: Val::Percent(100.0),
+            //             flex_direction: FlexDirection::Column,
+            //             justify_content: JustifyContent::SpaceBetween,
+            //             ..default()
+            //         },
+            //         focus_policy: FocusPolicy::Pass,
+            //         // background_color: Color::RED.into(),
+            //         z_index: ZIndex::Global(1),
+            //         ..default()
+            //     },
+            //     Pickable::IGNORE,
                 
-                RenderLayers::layer(fullscreen_event.crew_id),
-            )).id();
+            //     RenderLayers::layer(fullscreen_event.crew_id),
+            // )).id();
 
-
-            for (example_block_entity, example_block) in example_block_query.iter() {
-                if example_block.crew_id != fullscreen_event.crew_id { continue }
-                for (example_header_entity, example_header) in example_header_query.iter() {
-                    if example_header.crew_id != fullscreen_event.crew_id { continue }
-                    // remove from block and add to fullscreen
-                    println!("hello world");
-                    commands.entity(example_block_entity).remove_children(&[example_header_entity]);
-                    commands.entity(fullscreen_back).push_children(&[example_header_entity]);
-                    // commands.entity(example_header_entity).insert(RenderLayers::layer(fullscreen_event.crew_id));
+            // // set header and footer to child of fullscreeen_back
+            // for (example_block_entity, example_block) in example_block_query.iter() {
+            //     if example_block.crew_id != fullscreen_event.crew_id { continue }
+            //     for (example_header_entity, example_header) in example_header_query.iter() {
+            //         if example_header.crew_id != fullscreen_event.crew_id { continue }
+            //         // remove from block and add to fullscreen
+            //         // println!("hello world");
+            //         commands.entity(example_block_entity).remove_children(&[example_header_entity]);
+            //         commands.entity(fullscreen_camera_banner).push_children(&[example_header_entity]);
+            //         // commands.entity(example_header_entity).insert(RenderLayers::layer(fullscreen_event.crew_id));
+            //     }
+            //     for (example_footer_entity, example_footer) in example_footer_query.iter() {
+            //         if example_footer.crew_id != fullscreen_event.crew_id { continue }
+            //         commands.entity(example_block_entity).remove_children(&[example_footer_entity]);
+            //         commands.entity(fullscreen_camera_banner).push_children(&[example_footer_entity]);
+            //     }
+            // }
+            for (camera_banner_entity, camera_banner) in camera_banner_query.iter() {
+                if camera_banner.crew_id != fullscreen_event.crew_id { continue }
+                for (example_banner_entity, example_banner) in example_banner_query.iter() {
+                    if example_banner.crew_id != fullscreen_event.crew_id { continue }
+                    
+                    commands.entity(camera_banner_entity).remove_children(&[example_banner_entity]);
                 }
             }
         } else {
+            // remove render layer from main camera
             commands.entity(camera).remove::<RenderLayers>();
+
+            for (camera_banner_entity, camera_banner) in camera_banner_query.iter() {
+                if camera_banner.crew_id != fullscreen_event.crew_id { continue }
+                for (example_banner_entity, example_banner) in example_banner_query.iter() {
+                    if example_banner.crew_id != fullscreen_event.crew_id { continue }
+                    
+                    commands.entity(camera_banner_entity).push_children(&[example_banner_entity]);
+                }
+            }
         }
     }
     

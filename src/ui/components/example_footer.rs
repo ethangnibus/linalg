@@ -2,7 +2,7 @@ use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
         AccessibilityNode,
-    }, input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*, render::view
+    }, input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*, render::view::{self, RenderLayers}
     // winit::WinitSettings,
 };
 
@@ -51,27 +51,31 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         ExampleFooter {
             crew_id,
         },
-        theme::ColorFunction {
-            background: theme::background_color,
-            border: theme::background_color,
-        },
+        // theme::ColorFunction {
+        //     background: theme::background_color,
+        //     border: theme::background_color,
+        // },
         NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Px(70.0),
-            border: UiRect {
-                left: Val::Px(8.0),
-                right: Val::Px(8.0),
-                top: Val::Px(8.0),
-                bottom: Val::Px(4.0),
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(70.0),
+                border: UiRect {
+                    left: Val::Px(8.0),
+                    right: Val::Px(8.0),
+                    top: Val::Px(8.0),
+                    bottom: Val::Px(4.0),
+                },
+                justify_content: JustifyContent::SpaceBetween,
+                justify_self: JustifySelf::End,
+                ..default()
             },
-            justify_content: JustifyContent::SpaceBetween,
+            // z_index: ZIndex::Local(1),
+            // background_color: theme::background_color(theme).into(),
+            // border_color: theme::background_color(theme).into(),
             ..default()
         },
-        background_color: theme::background_color(theme).into(),
-        border_color: theme::background_color(theme).into(),
-        ..default()
-    })).id();
+        RenderLayers::layer(crew_id),
+    )).id();
 
     let skeleton_left = commands.spawn((
         theme::ColorFunction {
@@ -95,6 +99,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             ..default()
         },
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
+        RenderLayers::layer(crew_id),
     )).id();
 
     let skeleton_right = commands.spawn((
@@ -123,6 +128,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             ..default()
         },
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
+        RenderLayers::layer(crew_id),
     )).id();
 
     let fullscreen_button = fullscreen_button(commands, theme, crew_id);
@@ -135,6 +141,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             background: theme::sidebar_color,
             border: theme::sidebar_color,
         },
+        RenderLayers::layer(crew_id),
         TextBundle::from_section(
             text,
             TextStyle {
@@ -167,22 +174,22 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
 
     commands.entity(background_banner).push_children(&[skeleton_left, skeleton_right, text_bundle]);
 
-    let space_under = commands.spawn((
-        theme::ColorFunction {
-            background: theme::background_color,
-            border: theme::background_color,
-        },
-        NodeBundle {
-            style: Style {
-                height: Val::Px(10.0),
-                width: Val::Px(100.0),
-                ..default()
-            },
-            ..default()
-        }
+    // let space_under = commands.spawn((
+    //     theme::ColorFunction {
+    //         background: theme::background_color,
+    //         border: theme::background_color,
+    //     },
+    //     NodeBundle {
+    //         style: Style {
+    //             height: Val::Px(10.0),
+    //             width: Val::Px(100.0),
+    //             ..default()
+    //         },
+    //         ..default()
+    //     }
 
-    )).id();
-    commands.entity(view_list_entity).push_children(&[background_banner, space_under]);
+    // )).id();
+    commands.entity(view_list_entity).push_children(&[background_banner]);
 }
 
 pub fn fullscreen_button(
@@ -217,6 +224,7 @@ pub fn fullscreen_button(
                 crew_id: crew_id,
                 is_selected: false,
             },
+            RenderLayers::layer(crew_id),
         ))
         .id();
 
@@ -242,6 +250,7 @@ pub fn fullscreen_button(
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
+            RenderLayers::layer(crew_id),
             // FullscreenButton {
             //     crew_id: crew_id,
             //     is_selected: false,
@@ -279,6 +288,7 @@ pub fn fullscreen_button(
                 is_selected: false,
                 arrow_type: FullscreenArrowType::TopLeft,
             },
+            RenderLayers::layer(crew_id),
         ))
         .id();
 
@@ -312,6 +322,7 @@ pub fn fullscreen_button(
                 is_selected: false,
                 arrow_type: FullscreenArrowType::TopRight,
             },
+            RenderLayers::layer(crew_id),
         ))
         .id();
 
@@ -327,20 +338,24 @@ pub fn fullscreen_button(
                     width: Val::Percent(100.0),
 
                     flex_direction: FlexDirection::Row,
-                    // align_content: AlignContent::SpaceBetween,
                     justify_content: JustifyContent::SpaceBetween,
+
+                    justify_self: JustifySelf::End,
                     ..default()
                 },
                 visibility: Visibility::Inherited,
                 focus_policy: bevy::ui::FocusPolicy::Pass,
                 background_color: theme::navbar_background_color(theme).into(),
                 border_color: theme::sidebar_collapsed_color(theme).into(),
+
+                // z_index: ZIndex::Local(1),
                 ..default()
             },
             // FullscreenButton {
             //     crew_id: crew_id,
             //     is_selected: false,
             // },
+            RenderLayers::layer(crew_id),
         ))
         .id();
 
@@ -374,6 +389,7 @@ pub fn fullscreen_button(
                 is_selected: false,
                 arrow_type: FullscreenArrowType::BottomLeft,
             },
+            RenderLayers::layer(crew_id),
         ))
         .id();
 
@@ -407,6 +423,7 @@ pub fn fullscreen_button(
                 is_selected: false,
                 arrow_type: FullscreenArrowType::BottomRight,
             },
+            RenderLayers::layer(crew_id),
         ))
         .id();
     

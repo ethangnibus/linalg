@@ -38,10 +38,10 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         ExampleHeader{
             crew_id: crew_id,
         },
-        theme::ColorFunction {
-            background: theme::background_color,
-            border: theme::background_color,
-        },
+        // theme::ColorFunction {
+        //     background: theme::background_color,
+        //     border: theme::background_color,
+        // },
         NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -52,12 +52,13 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                     top: Val::Px(4.0),
                     bottom: Val::Px(8.0),
                 },
+                justify_self: JustifySelf::Start,
                 justify_content: JustifyContent::SpaceBetween,
                 ..default()
             },
-            
-            background_color: theme::background_color(theme).into(),
-            border_color: theme::background_color(theme).into(),
+            // z_index: ZIndex::Local(1),
+            // background_color: theme::background_color(theme).into(),
+            // border_color: theme::background_color(theme).into(),
             ..default()
         },
         RenderLayers::layer(crew_id),

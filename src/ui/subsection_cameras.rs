@@ -13,7 +13,6 @@ use super::util::subsection::SubsectionGameEntity;
 use super::{routes::RoutingEvent, view::UiResizeEvent};
 use bevy::input::mouse::MouseMotion;
 use bevy::input::mouse::MouseWheel;
-use bevy::render::Render;
 use bevy::utils::intern;
 use bevy::{
     core_pipeline::{
@@ -136,7 +135,7 @@ pub fn setup_light(
                 ..default()
             },
             subsection::SubsectionGameEntity,
-            RenderLayers::layer(0),
+            
         ))
         .id();
     commands.entity(film_crew_entity).push_children(&[light]);
@@ -152,7 +151,7 @@ pub fn setup_camera(
     mut images: &mut ResMut<Assets<Image>>,
     view_list_entity: Entity,
     crew_id: u8,
-) {
+) -> Entity {
     // make banner behind the text
     let camera_banner = commands
         .spawn((
@@ -166,8 +165,8 @@ pub fn setup_camera(
                     height: height,
                     padding: style::NO_BORDER,
                     border: style::NO_BORDER,
-                    justify_items: JustifyItems::Start,
-                    align_items: AlignItems::Center,
+                    // justify_items: JustifyItems::Start,
+                    // align_items: AlignItems::Center,
                     ..default()
                 },
                 focus_policy: FocusPolicy::Pass,
@@ -270,6 +269,7 @@ pub fn setup_camera(
         .id();
 
     commands.entity(film_crew_entity).push_children(&[camera]);
+    return camera_banner;
 }
 
 use bevy::render::view::visibility::update_frusta;
