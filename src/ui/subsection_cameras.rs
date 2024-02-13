@@ -13,6 +13,7 @@ use super::util::subsection::SubsectionGameEntity;
 use super::{routes::RoutingEvent, view::UiResizeEvent};
 use bevy::input::mouse::MouseMotion;
 use bevy::input::mouse::MouseWheel;
+use bevy::render::Render;
 use bevy::utils::intern;
 use bevy::{
     core_pipeline::{
@@ -135,6 +136,7 @@ pub fn setup_light(
                 ..default()
             },
             subsection::SubsectionGameEntity,
+            RenderLayers::layer(0),
         ))
         .id();
     commands.entity(film_crew_entity).push_children(&[light]);

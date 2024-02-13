@@ -1,3 +1,5 @@
+use std::iter::Zip;
+
 use bevy::{
     ui::FocusPolicy,
     a11y::{
@@ -91,6 +93,7 @@ fn new(commands: &mut Commands, crew_id: u8) -> Entity {
             },
             ..default()
         },
+        RenderLayers::layer(crew_id),
         Pickable::IGNORE,
     )).id();
 }
@@ -142,9 +145,9 @@ pub fn fullscreen_event_system (
     // mut fullscreen_node_query: Query<(Entity, &mut FocusPolicy), With<root::FullscreenNode>>,
     // mut root_node_query: Query<&mut Visibility, With<root::Root>>,
 
-    // mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
-    // mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
-    // mut example_footer_query: Query<(Entity, &example_footer::ExampleFooter), With<example_footer::ExampleFooter>>,
+    mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
+    mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
+    mut example_footer_query: Query<(Entity, &example_footer::ExampleFooter), With<example_footer::ExampleFooter>>,
     // mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, &mut Style), With<subsection_cameras::CameraBackgroundBanner>>,
 
 
@@ -168,18 +171,33 @@ pub fn fullscreen_event_system (
             commands.entity(camera).insert(
                 RenderLayers::layer(fullscreen_event.crew_id),
             );
-            commands.spawn((
+            let fullscreen_back = commands.spawn((
                 NodeBundle {
                     style: Style {
-                        width: Val::Px(300.0),
-                        height: Val::Px(300.0),
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(100.0),
                         ..default()
                     },
                     background_color: Color::RED.into(),
+                    z_index: ZIndex::Global(-1),
                     ..default()
                 },
+                
                 RenderLayers::layer(fullscreen_event.crew_id),
-            ));
+            )).id();
+
+
+            for (example_block_entity, example_block) in example_block_query.iter() {
+                if example_block.crew_id != fullscreen_event.crew_id { continue }
+                for (example_header_entity, example_header) in example_header_query.iter() {
+                    if example_header.crew_id != fullscreen_event.crew_id { continue }
+                    // remove from block and add to fullscreen
+                    println!("hello world");
+                    commands.entity(example_block_entity).remove_children(&[example_header_entity]);
+                    commands.entity(fullscreen_back).push_children(&[example_header_entity]);
+                    // commands.entity(example_header_entity).insert(RenderLayers::layer(fullscreen_event.crew_id));
+                }
+            }
         } else {
             commands.entity(camera).remove::<RenderLayers>();
         }

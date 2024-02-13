@@ -2,7 +2,7 @@ use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
         AccessibilityNode,
-    }, input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*, render::view
+    }, input::mouse::{MouseScrollUnit, MouseWheel}, prelude::*, render::view::{self, RenderLayers}
     // winit::WinitSettings,
 };
 use bevy_inspector_egui::egui::Align;
@@ -43,22 +43,25 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border: theme::background_color,
         },
         NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Px(70.0),
-            border: UiRect {
-                left: Val::Px(8.0),
-                right: Val::Px(8.0),
-                top: Val::Px(4.0),
-                bottom: Val::Px(8.0),
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Px(70.0),
+                border: UiRect {
+                    left: Val::Px(8.0),
+                    right: Val::Px(8.0),
+                    top: Val::Px(4.0),
+                    bottom: Val::Px(8.0),
+                },
+                justify_content: JustifyContent::SpaceBetween,
+                ..default()
             },
-            justify_content: JustifyContent::SpaceBetween,
+            
+            background_color: theme::background_color(theme).into(),
+            border_color: theme::background_color(theme).into(),
             ..default()
         },
-        background_color: theme::background_color(theme).into(),
-        border_color: theme::background_color(theme).into(),
-        ..default()
-    })).id();
+        RenderLayers::layer(crew_id),
+    )).id();
 
     let skeleton_left = commands.spawn((
         theme::ColorFunction {
@@ -82,6 +85,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
+        RenderLayers::layer(crew_id),
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
 
@@ -111,6 +115,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
+        RenderLayers::layer(crew_id),
         example_block::ExampleSkeletonCorner { crew_id: crew_id },
     )).id();
 
@@ -147,6 +152,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         ),
         Label,
         AccessibilityNode(NodeBuilder::new(Role::ListItem)),
+        RenderLayers::layer(crew_id),
     )).id();
 
     // commands.entity(text_banner).push_children(&[text_bundle]);
@@ -191,6 +197,7 @@ pub fn selection_button(
                 border_color: theme::sidebar_collapsed_color(theme).into(),
                 ..default()
             },
+            RenderLayers::layer(crew_id),
             SelectionButton{
                 crew_id: crew_id,
                 is_selected: false,
@@ -216,8 +223,9 @@ pub fn selection_button(
                 crew_id: crew_id,
                 is_selected: false,
             },
-        ))
-        .id();
+            RenderLayers::layer(crew_id),
+        )
+    ).id();
 
     commands.entity(background_banner).push_children(&[text]);
 
