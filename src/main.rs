@@ -46,7 +46,7 @@ fn main() {
 struct ResolutionText;
 
 #[derive(Component)]
-pub struct Main2dCamera;
+pub struct TextbookCamera;
 
 
 fn setup_3d_camera(
@@ -213,11 +213,11 @@ fn setup_cameras(
 
     let crew_render_layer = RenderLayers::layer(1);
     let camera = commands.spawn((
-        subsection_cameras::PanOrbitCamera {
-            radius,
-            ..Default::default()
-        },
-        Main2dCamera,
+        // subsection_cameras::PanOrbitCamera {
+        //     radius,
+        //     ..Default::default()
+        // },
+        TextbookCamera,
         Camera3dBundle {
             camera_3d: Camera3d {
                 clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),

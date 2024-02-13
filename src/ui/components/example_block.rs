@@ -17,7 +17,7 @@ use crate::ui::{
 };
 use bevy::render::view::RenderLayers;
 use bevy_mod_picking::prelude::*;
-use crate::Main2dCamera;
+use crate::TextbookCamera;
 
 use super::example_header;
 use super::example_footer;
@@ -156,16 +156,32 @@ pub fn fullscreen_event_system (
     // mut meshes: ResMut<Assets<Mesh>>,
     // mut materials: ResMut<Assets<StandardMaterial>>,
 
-    mut main_2d_camera: Query<(Entity), With<Main2dCamera>>,
+    mut textbook_camera: Query<(Entity), With<TextbookCamera>>,
     // mut mini_camera_query: Query<(&subsection_cameras::MiniCamera, &subsection_cameras::PanOrbitCamera), With<subsection_cameras::MiniCamera>>,
 
     // mut fullscreen_banner_query: Query<&mut Visibility, (Without<fullscreen_camera::FullscreenCameraBanner>, With<fullscreen_camera::TextbookCameraBanner>)>,
 ) {
     for fullscreen_event in fullscreen_reader.read() {
-        for camera in main_2d_camera.iter_mut() {
+        let camera = textbook_camera.single();
+
+        if fullscreen_event.maximize {
             commands.entity(camera).insert(
-                RenderLayers::layer(1),
+                RenderLayers::layer(fullscreen_event.crew_id),
             );
+            commands.spawn((
+                NodeBundle {
+                    style: Style {
+                        width: Val::Px(300.0),
+                        height: Val::Px(300.0),
+                        ..default()
+                    },
+                    background_color: Color::RED.into(),
+                    ..default()
+                },
+                RenderLayers::layer(fullscreen_event.crew_id),
+            ));
+        } else {
+            commands.entity(camera).remove::<RenderLayers>();
         }
     }
     
