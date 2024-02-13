@@ -286,3 +286,4 @@ fn on_resize_system(
     //     text.sections[0].value = format!("{:.1} x {:.1}", e.width, e.height);
     // }
 }
+

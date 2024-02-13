@@ -20,6 +20,8 @@ pub const CYBERPUNK_RED: Color = Color::rgb(1.0, 0.0, 0.235);
 pub const CYBERPUNK_GREY: Color = Color::rgb(0.333, 0.294, 0.255);
 pub const CYBERPUNK_PINK: Color = Color::rgb(0.91764706,0.0,0.8509804);
 
+pub const TRANSPARENT: Color = Color::rgba(0.0, 0.0, 0.0, 0.0);
+
 #[derive(Resource, Clone, Copy, PartialEq)]
 pub enum CurrentTheme {
     Light,
@@ -54,6 +56,10 @@ pub struct ColorFunction {
 
 pub fn not_a_color(theme: &CurrentTheme) -> Color {
     return NOT_A_COLOR;
+}
+
+pub fn transparent(theme: &CurrentTheme) -> Color {
+    return TRANSPARENT;
 }
 
 pub fn background_color(theme: &CurrentTheme) -> Color {

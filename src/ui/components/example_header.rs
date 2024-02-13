@@ -36,7 +36,7 @@ pub struct SelectionButtonText {
 pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_entity: Entity, crew_id: u8, text: &str) {
 
     let background_banner = commands.spawn((
-        ExampleHeader{
+        ExampleHeader {
             crew_id: crew_id,
         },
         // theme::ColorFunction {
@@ -68,7 +68,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
 
     let skeleton_left = commands.spawn((
         theme::ColorFunction {
-            background: theme::background_color,
+            background: theme::transparent,
             border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
@@ -84,7 +84,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 },
                 ..default()
             },
-            background_color: theme::background_color(theme).into(),
+            background_color: theme::TRANSPARENT.into(),
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
@@ -95,7 +95,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
 
     let skeleton_right = commands.spawn((
         theme::ColorFunction {
-            background: theme::background_color,
+            background: theme::transparent,
             border: theme::sidebar_collapsed_color,
         },
         NodeBundle {
@@ -115,7 +115,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
                 },
                 ..default()
             },
-            background_color: theme::background_color(theme).into(),
+            background_color: theme::TRANSPARENT.into(),
             border_color: theme::sidebar_collapsed_color(theme).into(),
             ..default()
         },
