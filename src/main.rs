@@ -216,19 +216,19 @@ fn setup_cameras(
 
 
     let crew_render_layer = RenderLayers::layer(1);
-    commands.spawn((
-        PointLightBundle {
-            point_light: PointLight {
-                intensity: 2000.0,
-                radius: 40.0,
-                // shadows_enabled: true,
-                ..default()
-            },
-            transform: Transform::from_xyz(-10.0, 5.0, 10.0),
-            ..default()
-        },
-        crew_render_layer,
-    ));
+    // commands.spawn((
+    //     PointLightBundle {
+    //         point_light: PointLight {
+    //             intensity: 2000.0,
+    //             radius: 40.0,
+    //             // shadows_enabled: true,
+    //             ..default()
+    //         },
+    //         transform: Transform::from_xyz(-10.0, 5.0, 10.0),
+    //         ..default()
+    //     },
+    //     crew_render_layer,
+    // ));
 
     // key light
     commands.spawn((
