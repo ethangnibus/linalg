@@ -1,6 +1,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 use std::f32::consts::PI;
+use bevy::pbr::ViewLightEntities;
 use bevy::render::mesh::shape::Cylinder;
 use bevy::ui::FocusPolicy;
 use bevy_mod_picking::prelude::*;
@@ -24,7 +25,7 @@ impl Plugin for SystemsPlugin {
         app.add_event::<MeshSelectionEvent>()
             .add_event::<PanOrbitToggleEvent>()
             .add_systems(Update, (
-                // mesh_selection_system,
+                mesh_selection_system,
                 disable_pan_orbit_system,
             ));
     }
@@ -33,15 +34,15 @@ impl Plugin for SystemsPlugin {
 #[derive(Event)]
 pub struct MeshSelectionEvent;
 
-impl From<ListenerInput<Pointer<Down>>> for MeshSelectionEvent {
-    fn from(event: ListenerInput<Pointer<Down>>) -> Self {
+impl From<ListenerInput<Pointer<Click>>> for MeshSelectionEvent {
+    fn from(event: ListenerInput<Pointer<Click>>) -> Self {
         return MeshSelectionEvent;
     }
 }
 
 pub enum PanOrbitToggleState {
-    DRAG_START,
-    DRAG_END,
+    DragStart,
+    DragEnd,
 }
 
 #[derive(Event)]
@@ -51,14 +52,14 @@ pub struct PanOrbitToggleEvent {
 impl From<ListenerInput<Pointer<DragStart>>> for PanOrbitToggleEvent {
     fn from(event: ListenerInput<Pointer<DragStart>>) -> Self {
         return PanOrbitToggleEvent {
-            state: PanOrbitToggleState::DRAG_START
+            state: PanOrbitToggleState::DragStart
         };
     }
 }
 impl From<ListenerInput<Pointer<DragEnd>>> for PanOrbitToggleEvent {
     fn from(event: ListenerInput<Pointer<DragEnd>>) -> Self {
         return PanOrbitToggleEvent {
-            state: PanOrbitToggleState::DRAG_END
+            state: PanOrbitToggleState::DragEnd
         };
     }
 }
@@ -142,6 +143,7 @@ pub fn setup_scene(
             }, // <- Makes the mesh pickable.
             On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
             On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
+            On::<Pointer<Click>>::send_event::<MeshSelectionEvent>(), 
             // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
             // On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
             // On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
@@ -228,10 +230,10 @@ pub fn disable_pan_orbit_system (
         let mut pan_orbit_camera = pan_orbit_camera_query.single_mut();
 
         match &pan_orbit_toggle.state {
-            PanOrbitToggleState::DRAG_START => {
+            PanOrbitToggleState::DragStart => {
                 pan_orbit_camera.enabled = false;
             }
-            PanOrbitToggleState::DRAG_END => {
+            PanOrbitToggleState::DragEnd => {
                 pan_orbit_camera.enabled = true;
             }
         }
@@ -239,17 +241,31 @@ pub fn disable_pan_orbit_system (
 }
 
 
-// pub fn mesh_selection_system(
-//     mut mesh_selection_reader: EventReader<MeshSelectionEvent>,
-//     q_parent: Query<&Children, With<VectorSphere>>,
+pub fn mesh_selection_system(
+    mut mesh_selection_reader: EventReader<MeshSelectionEvent>,
+    q_parent: Query<&Children, With<VectorSphere>>,
+    mut q_child: Query<&mut Visibility, With<StandardBasisVector>>,
+) {
+    for mesh_selection_event in mesh_selection_reader.read() {
+        
 
-//     mut unit_vector_query: Query<&mut Visibility, With<StandardBasisVector>>,
-//     mut pan_orbit_camera_query: Query<&mut PanOrbitCamera, With<PanOrbitCamera>>,
-// ) {
-//     for mesh_selection_event in mesh_selection_reader.read() {
-//         let mut pan_orbit_camera = pan_orbit_camera_query.single_mut();
-//         pan_orbit_camera.enabled = !pan_orbit_camera.enabled;
-//         println!("selected");
-//     }
+        for children in q_parent.iter() {
+            for &child in children.iter() {
+                let mut visibility = q_child.get_mut(child).unwrap();
+                match *visibility {
+                    Visibility::Hidden => {
+                        *visibility = Visibility::Inherited;
+                    }
+                    Visibility::Inherited => {
+                        *visibility = Visibility::Hidden;
+                    }
+                    Visibility::Visible => {
+                        *visibility = Visibility::Hidden;
+                    }
+                }
+                
+            }
+        }
+    }
     
-// }
+}
