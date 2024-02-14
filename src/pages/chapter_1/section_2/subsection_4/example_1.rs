@@ -81,6 +81,37 @@ pub struct VectorSphereMovementEvent {
 }
 
 
+fn make_vector(
+    commands: &mut Commands,
+    vec: Vec3,
+    crew_render_layer: RenderLayers,
+    mesh_handle: Handle<Mesh>,
+    material_handle: Handle<StandardMaterial>
+) -> Entity {
+    return commands.spawn((
+        VectorSphereBasisVector,
+        PbrBundle {
+            mesh: mesh_handle.clone(),
+            material: material_handle.clone(),
+            transform: Transform::from_translation(vec),
+            ..default()
+        },
+        crew_render_layer,
+        subsection::SubsectionGameEntity,
+
+        //pickable stuff
+        PickableBundle {
+            ..default()
+        }, // <- Makes the mesh pickable.
+        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<Drag>>::run(move |
+            event: Listener<Pointer<Drag>>,
+            mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
+            send_movement_vector(event.delta.x, vec, vector_sphere_movement_writer);
+        }),
+    )).id();
+}
 
 
 pub fn setup_scene(
@@ -97,6 +128,8 @@ pub fn setup_scene(
     let sphere_handle = meshes.add(Mesh::from(
         shape::UVSphere {
             radius: 0.3,
+            sectors: 36 * 2,
+            stacks: 18 * 2,
             ..default()
         }
     ));
@@ -200,8 +233,6 @@ pub fn setup_scene(
             // }),
         ))
         .id();
-    
-
     let cylinder_handle = meshes.add(Mesh::from(
         shape::Cube {
             size: 0.5,
@@ -209,87 +240,80 @@ pub fn setup_scene(
         }
     ));
 
-    let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
-    let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
-    let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 };
+    
+    let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 }.normalize();
+    let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 }.normalize();
+    let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 }.normalize();
 
-    let standard_basis_vector_x = commands.spawn((
-        VectorSphereBasisVector,
-        PbrBundle {
-            mesh: cylinder_handle.clone(),
-            material: basis_vector_1.clone(),
-            transform: Transform::from_translation(v1),
-            ..default()
-        },
+    
+    let standard_basis_vector_x = make_vector(
+        commands,
+        v1,
         crew_render_layer,
-        subsection::SubsectionGameEntity,
-
-        //pickable stuff
-        PickableBundle {
-            ..default()
-        }, // <- Makes the mesh pickable.
-        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
-        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-        // On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
-        //     let delta = drag.delta.x * 0.01;
-        //     if delta > 0.0 && transform.translation.x < 10.0 {
-        //         transform.translation.x += drag.delta.x * 0.01;
-        //     } else if delta < 0.0 && transform.translation.x > -10.0 {
-        //         transform.translation.x += drag.delta.x * 0.01;
-        //     }
-        // }),
-        On::<Pointer<Drag>>::run(move |
-            event: Listener<Pointer<Drag>>,
-            mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
-            send_movement_vector(event.delta.x, v1, vector_sphere_movement_writer);
-        }),
-    )).id();
-    let standard_basis_vector_y = commands.spawn((
-        VectorSphereBasisVector,
-        PbrBundle {
-            mesh: cylinder_handle.clone(),
-            material: basis_vector_2.clone(),
-            transform: Transform::from_translation(v2),
-            ..default()
-        },
+        cylinder_handle.clone(),
+        basis_vector_1
+    );
+    let standard_basis_vector_y = make_vector(
+        commands,
+        v2,
         crew_render_layer,
-        subsection::SubsectionGameEntity,
-
-        //pickable stuff
-        PickableBundle {
-            ..default()
-        }, // <- Makes the mesh pickable.
-        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
-        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-        On::<Pointer<Drag>>::run(move |
-            event: Listener<Pointer<Drag>>,
-            mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
-            send_movement_vector(event.delta.x, v2, vector_sphere_movement_writer);
-        }),
-    )).id();
-    let standard_basis_vector_z = commands.spawn((
-        VectorSphereBasisVector,
-        PbrBundle {
-            mesh: cylinder_handle.clone(),
-            material: basis_vector_3.clone(),
-            transform: Transform::from_translation(v3),
-            ..default()
-        },
+        cylinder_handle.clone(),
+        basis_vector_2
+    );
+    let standard_basis_vector_z = make_vector(
+        commands,
+        v3,
         crew_render_layer,
-        subsection::SubsectionGameEntity,
+        cylinder_handle.clone(),
+        basis_vector_3
+    );
+    
+    // let standard_basis_vector_y = commands.spawn((
+    //     VectorSphereBasisVector,
+    //     PbrBundle {
+    //         mesh: cylinder_handle.clone(),
+    //         material: basis_vector_2.clone(),
+    //         transform: Transform::from_translation(v2),
+    //         ..default()
+    //     },
+    //     crew_render_layer,
+    //     subsection::SubsectionGameEntity,
 
-        //pickable stuff
-        PickableBundle {
-            ..default()
-        }, // <- Makes the mesh pickable.
-        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
-        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-        On::<Pointer<Drag>>::run(move |
-            event: Listener<Pointer<Drag>>,
-            mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
-            send_movement_vector(-event.delta.x, v3, vector_sphere_movement_writer);
-        }),
-    )).id();
+    //     //pickable stuff
+    //     PickableBundle {
+    //         ..default()
+    //     }, // <- Makes the mesh pickable.
+    //     On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+    //     On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
+    //     On::<Pointer<Drag>>::run(move |
+    //         event: Listener<Pointer<Drag>>,
+    //         mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
+    //         send_movement_vector(event.delta.x, v2, vector_sphere_movement_writer);
+    //     }),
+    // )).id();
+    // let standard_basis_vector_z = commands.spawn((
+    //     VectorSphereBasisVector,
+    //     PbrBundle {
+    //         mesh: cylinder_handle.clone(),
+    //         material: basis_vector_3.clone(),
+    //         transform: Transform::from_translation(v3),
+    //         ..default()
+    //     },
+    //     crew_render_layer,
+    //     subsection::SubsectionGameEntity,
+
+    //     //pickable stuff
+    //     PickableBundle {
+    //         ..default()
+    //     }, // <- Makes the mesh pickable.
+    //     On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+    //     On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
+    //     On::<Pointer<Drag>>::run(move |
+    //         event: Listener<Pointer<Drag>>,
+    //         mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
+    //         send_movement_vector(-event.delta.x, v3, vector_sphere_movement_writer);
+    //     }),
+    // )).id();
     
     // commands.entity(sphere).push_children(&[
     //     standard_basis_vector_x,
