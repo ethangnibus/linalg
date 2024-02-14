@@ -419,6 +419,7 @@ pub fn fullscreen_button(
     commands.entity(bottom).push_children(&[bottom_left, bottom_right]);
     commands.entity(background_banner).push_children(&[top, bottom]);
 
+    
     return background_banner;
 }
 
