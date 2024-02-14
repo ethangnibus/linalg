@@ -15,6 +15,7 @@ use ui::util::{style, theme};
 use ui::{fullscreen_camera, subsection_cameras};
 use ui::view::UiResizeEvent;
 use bevy_inspector_egui::quick::WorldInspectorPlugin; // FIXME: REMOVE IN PROD
+use std::f32::consts::TAU;
 
 
 
@@ -218,7 +219,8 @@ fn setup_cameras(
     commands.spawn((
         PointLightBundle {
             point_light: PointLight {
-                intensity: 1500.0,
+                intensity: 2000.0,
+                radius: 40.0,
                 // shadows_enabled: true,
                 ..default()
             },
@@ -228,8 +230,92 @@ fn setup_cameras(
         crew_render_layer,
     ));
 
+    // key light
+    commands.spawn((
+        PointLightBundle {
+            point_light: PointLight {
+                intensity: 5000.0,
+                radius: 40.0,
+                shadows_enabled: true,
+                ..default()
+            },
+            transform: Transform::from_xyz(8.0, 5.0, 10.0),
+            ..default()
+        },
+        crew_render_layer,
+    ));
+
+    // // ambient light
+    // commands.spawn(
+    //     AmbientLight {
+    //         color: Color::WHITE,
+    //         brightness: 0.1,
+
+    //     },
+    // );
+    commands.insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: 1.0,
+    });
+
+    // // fill light
+    // commands.spawn((
+    //     PointLightBundle {
+    //         point_light: PointLight {
+    //             intensity: 5000.0,
+    //             radius: 40.0,
+    //             // shadows_enabled: true,
+    //             ..default()
+    //         },
+    //         transform: Transform::from_xyz(-10.0, 5.0, 10.0),
+    //         ..default()
+    //     },
+    //     crew_render_layer,
+    // ));
+
+    // // back light
+    // commands.spawn((
+    //     PointLightBundle {
+    //         point_light: PointLight {
+    //             intensity: 2000.0,
+    //             // shadows_enabled: true,
+    //             ..default()
+    //         },
+    //         transform: Transform::from_xyz(-10.0, 5.0, 10.0),
+    //         ..default()
+    //     },
+    //     // crew_render_layer,
+    // ));
+
     let camera = commands.spawn((
-        PanOrbitCamera::default(),
+        PanOrbitCamera {
+            // Set focal point (what the camera should look at)
+            focus: Vec3::new(0.0, 0.0, 0.0),
+            // Set the starting position, relative to focus (overrides camera's transform).
+            alpha: Some(TAU / 8.0),
+            beta: Some(TAU / 8.0),
+            radius: Some(15.0),
+            // Set limits on rotation and zoom
+            // alpha_upper_limit: Some(TAU / 4.0),
+            // alpha_lower_limit: Some(-TAU / 4.0),
+            // beta_upper_limit: Some(TAU / 3.0),
+            // beta_lower_limit: Some(-TAU / 3.0),
+            zoom_upper_limit: Some(50.0),
+            zoom_lower_limit: Some(1.0),
+            // // Adjust sensitivity of controls
+            // orbit_sensitivity: 1.5,
+            // pan_sensitivity: 0.5,
+            // zoom_sensitivity: 0.5,
+            // Allow the camera to go upside down
+            allow_upside_down: false,
+            // // Change the controls (these match Blender)
+            // button_orbit: MouseButton::Middle,
+            // button_pan: MouseButton::Middle,
+            // modifier_pan: Some(KeyCode::ShiftLeft),
+            // // Reverse the zoom direction
+            // reversed_zoom: true,
+            ..default()
+        },
         TextbookCamera,
         Camera3dBundle {
             camera_3d: Camera3d {

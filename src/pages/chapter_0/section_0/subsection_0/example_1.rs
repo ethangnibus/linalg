@@ -36,33 +36,21 @@ pub fn setup_scene(
     let crew_render_layer = RenderLayers::layer(crew_id);
 
     let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 4.0 }));
-    let cube_material_handle = if crew_id == 1 {
-        materials.add(StandardMaterial {
-            base_color: theme::cube_base_color(theme).into(),
-            emissive: theme::cube_emissive_color(theme).into(),
-            // base_color: theme::sidebar_color(theme).into(),
-            metallic: 20.0,
-            reflectance: 0.02,
-            unlit: false,
-            ..default()
-        })
-    } else {
-        materials.add(StandardMaterial {
-            base_color: theme::cube_base_color(theme).into(),
-            emissive: theme::cube_emissive_color(theme).into(),
-            // base_color: theme::sidebar_collapsed_color(theme).into(),
-            metallic: 20.0,
-            reflectance: 0.02,
-            unlit: false,
-            ..default()
-        })
-    };
+    let cube_material_handle = materials.add(StandardMaterial {
+        base_color: theme::cube_base_color(theme).into(),
+        // emissive: theme::cube_emissive_color(theme).into(),
+        // base_color: theme::sidebar_color(theme).into(),
+        metallic: 1.0,
+        reflectance: 0.1,
+        perceptual_roughness: 1.0,
+        ..default()
+    });
 
     // The cube that will be rendered to the texture.
     let cube = commands.spawn((
         theme::ColorFunction {
             background: theme::cube_base_color,
-            border: theme::cube_emissive_color,
+            border: theme::cube_base_color,
         },
         PbrBundle {
             mesh: cube_handle,
@@ -82,7 +70,8 @@ pub fn setup_scene(
 /// Rotates the inner cube (first pass)
 fn rotator_system(time: Res<Time>, mut query: Query<&mut Transform, With<SpinnyCube>>) {
     for mut transform in &mut query {
-        transform.rotate_x(1.5 * time.delta_seconds());
-        transform.rotate_z(1.3 * time.delta_seconds());
+        transform.rotate_x(0.65 * time.delta_seconds());
+        transform.rotate_z(0.55 * time.delta_seconds());
+        transform.rotate_y(-0.5 * time.delta_seconds());
     }
 }

@@ -1,6 +1,7 @@
 
 use std::f32::consts::FRAC_PI_2;
 use std::f32::consts::PI;
+use bevy::ui::FocusPolicy;
 use bevy_mod_picking::prelude::*;
 
 use bevy::{
@@ -42,25 +43,14 @@ pub fn setup_scene(
     let crew_render_layer = RenderLayers::layer(crew_id);
 
     let cube_handle = meshes.add(Mesh::from(shape::Cube { size: 1.0 }));
-    let cube_material_handle = if crew_id == 1 {
-        materials.add(StandardMaterial {
-            // base_color: Color::rgb(1.0, 0.75, 0.90),
-            base_color: theme::cube_base_color(theme).into(),
-            metallic: 20.0,
-            reflectance: 0.02,
-            unlit: false,
-            ..default()
-        })
-    } else {
-        materials.add(StandardMaterial {
-            // base_color: Color::rgb(0.0, 0.1, 0.90),
-            base_color: theme::sidebar_collapsed_color(theme).into(),
-            metallic: 20.0,
-            reflectance: 0.02,
-            unlit: false,
-            ..default()
-        })
-    };
+    let cube_material_handle = materials.add(StandardMaterial {
+        // base_color: Color::rgb(1.0, 0.75, 0.90),
+        base_color: theme::cube_base_color(theme).into(),
+        metallic: 1.0,
+        reflectance: 0.1,
+        perceptual_roughness: 1.0,
+        ..default()
+    });
 
 
     spawn_axis(commands, theme, film_crew_entity, meshes, materials, crew_render_layer);
@@ -80,6 +70,7 @@ pub fn setup_scene(
                 transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
                 ..default()
             },
+            // FocusPolicy::Block,
             SpinnyCube,
             crew_render_layer,
             subsection::SubsectionGameEntity,
@@ -115,10 +106,10 @@ fn spawn_axis(
     let x_axis_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
         base_color: theme::axis_base_color(theme),
-        metallic: 20.0,
-        reflectance: 0.02,
-        unlit: false,
-        emissive: theme::axis_emissive_color(theme),
+        // metallic: 20.0,
+        // reflectance: 0.02,
+        unlit: true,
+        // emissive: theme::axis_emissive_color(theme),
         // alpha_mode: AlphaMode::Blend,
         
         ..default()
@@ -126,20 +117,20 @@ fn spawn_axis(
     let y_axis_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
         base_color: theme::axis_base_color(theme),
-        metallic: 20.0,
-        reflectance: 0.02,
-        unlit: false,
-        emissive: theme::axis_emissive_color(theme),
+        // metallic: 20.0,
+        // reflectance: 0.02,
+        unlit: true,
+        // emissive: theme::axis_emissive_color(theme),
         // alpha_mode: AlphaMode::Blend,
         ..default()
     });
     let z_axis_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
         base_color: theme::axis_base_color(theme),
-        metallic: 20.0,
-        reflectance: 0.02,
-        unlit: false,
-        emissive: theme::axis_emissive_color(theme),
+        // metallic: 20.0,
+        // reflectance: 0.02,
+        unlit: true,
+        // emissive: theme::axis_emissive_color(theme),
         // alpha_mode: AlphaMode::Blend,
         ..default()
     });
@@ -231,9 +222,9 @@ fn spawn_grid(
     // Materials
     let grid_material_handle = materials.add(StandardMaterial {
         base_color: theme::grid_base_color(theme),
-        metallic: 20.0,
-        reflectance: 0.01,
-        unlit: false,
+        // metallic: 20.0,
+        // reflectance: 0.01,
+        unlit: true,
         alpha_mode: AlphaMode::Blend,
         ..default()
     });

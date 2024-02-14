@@ -1,4 +1,5 @@
-use bevy::prelude::*;
+use bevy::{math::vec4, prelude::*};
+use bevy_mod_picking::prelude::*;
 
 // pub const BERKELEY_GOLD: Color = Color::rgb(1.0, 0.7, 0.1);
 pub const NOT_A_COLOR: Color = Color::rgba(1.0, 0.0, 0.0, 0.0);
@@ -53,6 +54,24 @@ pub struct ColorFunction {
     pub background: fn(&CurrentTheme) -> Color,
     pub border: fn(&CurrentTheme) -> Color,
 }
+
+
+pub const HIGHLIGHT_TINT: Highlight<StandardMaterial> = Highlight {
+    hovered: Some(HighlightKind::new_dynamic(|matl| StandardMaterial {
+        base_color: matl.base_color + vec4(-0.2, -0.2, 0.4, 0.0),
+        ..matl.to_owned()
+    })),
+    pressed: Some(HighlightKind::new_dynamic(|matl| StandardMaterial {
+        base_color: matl.base_color + vec4(-0.3, -0.3, 0.5, 0.0),
+        ..matl.to_owned()
+    })),
+    selected: Some(HighlightKind::new_dynamic(|matl| StandardMaterial {
+        base_color: matl.base_color + vec4(-0.3, 0.2, -0.3, 0.0),
+        ..matl.to_owned()
+    })),
+};
+
+
 
 pub fn not_a_color(theme: &CurrentTheme) -> Color {
     return NOT_A_COLOR;

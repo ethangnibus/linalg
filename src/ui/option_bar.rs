@@ -377,7 +377,7 @@ fn theme_change_mesh_color_change_system(
             let material = materials.get_mut(material_handle).unwrap(); // Fixme: Change in case of bugs
             
             material.base_color = (color_function.background)(&theme).into();
-            material.emissive = (color_function.border)(&theme).into();
+            // material.emissive = (color_function.border)(&theme).into();
         }
     }
 }
