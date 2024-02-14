@@ -3,6 +3,8 @@ use std::f32::consts::FRAC_PI_2;
 use std::f32::consts::PI;
 use bevy::pbr::ViewLightEntities;
 use bevy::render::mesh::shape::Cylinder;
+use bevy::render::render_resource::encase::vector;
+use bevy::render::view::visibility;
 use bevy::ui::FocusPolicy;
 use bevy_mod_picking::prelude::*;
 
@@ -22,21 +24,21 @@ pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         // Add the setup_ui system as a startup system
-        app.add_event::<MeshSelectionEvent>()
+        app.add_event::<VectorSphereSelectionEvent>()
             .add_event::<PanOrbitToggleEvent>()
             .add_systems(Update, (
-                mesh_selection_system,
+                vector_sphere_selection_system,
                 disable_pan_orbit_system,
             ));
     }
 }
 
 #[derive(Event)]
-pub struct MeshSelectionEvent;
+pub struct VectorSphereSelectionEvent;
 
-impl From<ListenerInput<Pointer<Click>>> for MeshSelectionEvent {
+impl From<ListenerInput<Pointer<Click>>> for VectorSphereSelectionEvent {
     fn from(event: ListenerInput<Pointer<Click>>) -> Self {
-        return MeshSelectionEvent;
+        return VectorSphereSelectionEvent;
     }
 }
 
@@ -68,7 +70,7 @@ impl From<ListenerInput<Pointer<DragEnd>>> for PanOrbitToggleEvent {
 pub struct VectorSphere;
 
 #[derive(Component)]
-pub struct StandardBasisVector;
+pub struct VectorSphereBasisVector;
 
 
 
@@ -85,10 +87,11 @@ pub fn setup_scene(
 
     let sphere_handle = meshes.add(Mesh::from(
         shape::UVSphere {
-            radius: 1.0,
+            radius: 0.5,
             ..default()
         }
     ));
+
     let sphere_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgb(1.0, 0.75, 0.90),
         base_color: theme::cube_base_color(theme).into(),
@@ -143,7 +146,15 @@ pub fn setup_scene(
             }, // <- Makes the mesh pickable.
             On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
             On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-            On::<Pointer<Click>>::send_event::<MeshSelectionEvent>(),
+            On::<Pointer<Click>>::send_event::<VectorSphereSelectionEvent>(),
+
+            // On::<Pointer<Click>>::run(|event: Listener<Pointer<Click>>, time: Res<Time>| {
+            //     info!(
+            //         "[{:?}]: The pointer left entity {:?}",
+            //         time.elapsed_seconds(),
+            //         event.target
+            //     );
+            // }),
             // On::<Pointer<DragStart>>::send_event::(),
             // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
             // On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
@@ -166,7 +177,7 @@ pub fn setup_scene(
         }
     ));
     let standard_basis_vector_x = commands.spawn((
-        StandardBasisVector,
+        VectorSphereBasisVector,
         PbrBundle {
             mesh: cylinder_handle.clone(),
             material: sphere_material_handle.clone(),
@@ -180,9 +191,11 @@ pub fn setup_scene(
         PickableBundle {
             ..default()
         }, // <- Makes the mesh pickable.
+        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
     )).id();
     let standard_basis_vector_y = commands.spawn((
-        StandardBasisVector,
+        VectorSphereBasisVector,
         PbrBundle {
             mesh: cylinder_handle.clone(),
             material: sphere_material_handle.clone(),
@@ -196,9 +209,11 @@ pub fn setup_scene(
         PickableBundle {
             ..default()
         }, // <- Makes the mesh pickable.
+        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
     )).id();
     let standard_basis_vector_z = commands.spawn((
-        StandardBasisVector,
+        VectorSphereBasisVector,
         PbrBundle {
             mesh: cylinder_handle.clone(),
             material: sphere_material_handle.clone(),
@@ -212,15 +227,17 @@ pub fn setup_scene(
         PickableBundle {
             ..default()
         }, // <- Makes the mesh pickable.
+        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
     )).id();
     
-    commands.entity(sphere).push_children(&[
-        standard_basis_vector_x,
-        standard_basis_vector_y,
-        standard_basis_vector_z,
-    ]);
+    // commands.entity(sphere).push_children(&[
+    //     standard_basis_vector_x,
+    //     standard_basis_vector_y,
+    //     standard_basis_vector_z,
+    // ]);
     
-    commands.entity(film_crew_entity).push_children(&[sphere]);
+    commands.entity(film_crew_entity).push_children(&[sphere, standard_basis_vector_x, standard_basis_vector_y, standard_basis_vector_z]);
 }
 
 pub fn disable_pan_orbit_system (
@@ -242,15 +259,14 @@ pub fn disable_pan_orbit_system (
 }
 
 
-pub fn mesh_selection_system(
-    mut mesh_selection_reader: EventReader<MeshSelectionEvent>,
-    q_parent: Query<&Children, With<VectorSphere>>,
-    mut q_child: Query<&mut Visibility, With<StandardBasisVector>>,
+pub fn vector_sphere_selection_system(
+    mut mesh_selection_reader: EventReader<VectorSphereSelectionEvent>,
+    vector_sphere_query: Query<&VectorSphere, With<VectorSphere>>,
+    mut basis_vector_query: Query<(&VectorSphereBasisVector, &mut Visibility), With<VectorSphereBasisVector>>,
 ) {
     for mesh_selection_event in mesh_selection_reader.read() {
-        for children in q_parent.iter() {
-            for &child in children.iter() {
-                let mut visibility = q_child.get_mut(child).unwrap();
+        for vector_sphere in vector_sphere_query.iter() {
+            for (basis_vector, mut visibility) in basis_vector_query.iter_mut() {
                 match *visibility {
                     Visibility::Hidden => {
                         *visibility = Visibility::Inherited;
@@ -262,7 +278,6 @@ pub fn mesh_selection_system(
                         *visibility = Visibility::Hidden;
                     }
                 }
-                
             }
         }
     }

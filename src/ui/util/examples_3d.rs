@@ -51,7 +51,7 @@ pub fn spawn_axis(
     // Meshes
     let axis_handle = meshes.add(
         shape::Capsule {
-            radius: 0.03,
+            radius: 0.01,
             depth: 20.0,
             latitudes: 32,
             longitudes: 64,
