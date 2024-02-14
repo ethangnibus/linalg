@@ -571,6 +571,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_easings"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d13de5afeee849a6f5a9f35eace1a41efe01fc005ad85671c54876909216f2e6"
+dependencies = [
+ "bevy",
+ "interpolation",
+]
+
+[[package]]
 name = "bevy_ecs"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -886,6 +896,16 @@ dependencies = [
  "bevy_utils",
  "bevy_window",
  "crossbeam-channel",
+]
+
+[[package]]
+name = "bevy_panorbit_camera"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71995c0170986369fe042a2674973eeb6581ff25421546fb3adb1f3a6756f503"
+dependencies = [
+ "bevy",
+ "bevy_easings",
 ]
 
 [[package]]
@@ -2381,6 +2401,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "interpolation"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e9c13ae9d91148fcb4aab6654c4c2a7d02a15395ea9e23f65170f175f8b269ce"
+
+[[package]]
 name = "io-kit-sys"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2567,6 +2593,7 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy_mod_picking",
+ "bevy_panorbit_camera",
  "rand",
 ]
 

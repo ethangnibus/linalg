@@ -89,7 +89,6 @@ pub fn setup_scene(
             On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
             On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
             On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
-                println!("CUBE SELECTED");
                 transform.translation.x += drag.delta.x; // Make the square follow the mouse
                 transform.translation.y -= drag.delta.y;
             }),

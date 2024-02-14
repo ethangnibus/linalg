@@ -9,6 +9,7 @@ use bevy::window::{WindowResized, WindowResolution};
 pub mod ui;
 pub mod pages;
 use bevy_mod_picking::picking_core::Pickable;
+use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use ui::util::{style, theme};
 
 use ui::{fullscreen_camera, subsection_cameras};
@@ -21,6 +22,7 @@ fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
         // .insert_resource(Msaa::Sample4)
+        .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(DefaultPlugins.set(
             WindowPlugin {
             primary_window: Some(Window {
@@ -211,27 +213,27 @@ fn setup_cameras(
     let translation = Vec3::new(12.0, 7.0, 12.0);
     let radius = translation.length();
 
+
     let crew_render_layer = RenderLayers::layer(1);
+    commands.spawn((
+        PointLightBundle {
+            point_light: PointLight {
+                intensity: 1500.0,
+                // shadows_enabled: true,
+                ..default()
+            },
+            transform: Transform::from_xyz(-10.0, 5.0, 10.0),
+            ..default()
+        },
+        crew_render_layer,
+    ));
+
     let camera = commands.spawn((
-        // subsection_cameras::PanOrbitCamera {
-        //     radius,
-        //     ..Default::default()
-        // },
+        PanOrbitCamera::default(),
         TextbookCamera,
         Camera3dBundle {
             camera_3d: Camera3d {
                 clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
-                ..default()
-            },
-            camera: Camera {
-                // viewport: Some(Viewport {
-                //     physical_position: UVec2::new(0, 0),
-                //     physical_size: UVec2::new(size.width.clone(), size.height.clone()),
-                //     ..default()
-                // }),
-                // render before the "main pass" camera
-                order: 0,
-                // target: RenderTarget::Image(image_handle),
                 ..default()
             },
             transform: Transform::from_translation(translation)

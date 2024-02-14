@@ -14,6 +14,7 @@ bevy = "0.12"
 # bevy_prototype_lyon = "0.10.0"
 bevy-inspector-egui = "0.22.1"
 bevy_mod_picking = "0.17.0"
+bevy_panorbit_camera = "0.13.1"
 rand = "0.8.5"
 
 [dev-dependencies]

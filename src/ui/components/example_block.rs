@@ -169,13 +169,6 @@ pub struct ExampleSkeletonBanner {
 
 pub fn fullscreen_event_system (
     mut fullscreen_reader: EventReader<subsection_cameras::FullscreenEvent>,
-    // mut fullscreen_node_query: Query<(Entity, &mut FocusPolicy), With<root::FullscreenNode>>,
-    // mut root_node_query: Query<&mut Visibility, With<root::Root>>,
-
-    // mut example_block_query: Query<(Entity, &ExampleBlock), With<ExampleBlock>>,
-    // mut example_header_query: Query<(Entity, &example_header::ExampleHeader), With<example_header::ExampleHeader>>,
-    // mut example_footer_query: Query<(Entity, &example_footer::ExampleFooter), With<example_footer::ExampleFooter>>,
-    // mut camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner, &mut Style), With<subsection_cameras::CameraBackgroundBanner>>,
     mut example_banner_query: Query<(Entity, &ExampleSkeletonBanner), With<ExampleSkeletonBanner>>,
     camera_banner_query: Query<(Entity, &subsection_cameras::CameraBackgroundBanner), With<subsection_cameras::CameraBackgroundBanner>>,
 
@@ -185,13 +178,8 @@ pub fn fullscreen_event_system (
 
 
     mut commands: Commands,
-    // mut meshes: ResMut<Assets<Mesh>>,
-    // mut materials: ResMut<Assets<StandardMaterial>>,
 
     mut textbook_camera: Query<(Entity), With<TextbookCamera>>,
-    // mut mini_camera_query: Query<(&subsection_cameras::MiniCamera, &subsection_cameras::PanOrbitCamera), With<subsection_cameras::MiniCamera>>,
-
-    // mut fullscreen_banner_query: Query<&mut Visibility, (Without<fullscreen_camera::FullscreenCameraBanner>, With<fullscreen_camera::TextbookCameraBanner>)>,
 ) {
     for fullscreen_event in fullscreen_reader.read() {
         let camera = textbook_camera.single();
