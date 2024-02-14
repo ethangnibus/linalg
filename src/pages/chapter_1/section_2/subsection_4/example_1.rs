@@ -143,7 +143,8 @@ pub fn setup_scene(
             }, // <- Makes the mesh pickable.
             On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
             On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-            On::<Pointer<Click>>::send_event::<MeshSelectionEvent>(), 
+            On::<Pointer<Click>>::send_event::<MeshSelectionEvent>(),
+            // On::<Pointer<DragStart>>::send_event::(),
             // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
             // On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
             // On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
@@ -247,8 +248,6 @@ pub fn mesh_selection_system(
     mut q_child: Query<&mut Visibility, With<StandardBasisVector>>,
 ) {
     for mesh_selection_event in mesh_selection_reader.read() {
-        
-
         for children in q_parent.iter() {
             for &child in children.iter() {
                 let mut visibility = q_child.get_mut(child).unwrap();
@@ -267,5 +266,4 @@ pub fn mesh_selection_system(
             }
         }
     }
-    
 }
