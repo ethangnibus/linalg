@@ -2,8 +2,12 @@
 use std::f32::consts::FRAC_PI_2;
 use std::f32::consts::PI;
 use bevy::pbr::ViewLightEntities;
+use bevy::render::mesh;
 use bevy::render::mesh::shape::Cylinder;
+use bevy::render::mesh::Indices;
+use bevy::render::mesh::VertexAttributeValues;
 use bevy::render::render_resource::encase::vector;
+use bevy::render::render_resource::PrimitiveTopology;
 use bevy::render::view::visibility;
 use bevy::ui::FocusPolicy;
 use bevy_mod_picking::prelude::*;
@@ -32,6 +36,7 @@ impl Plugin for SystemsPlugin {
                 vector_sphere_movement_system,
                 basis_vectors_movement_system,
                 disable_pan_orbit_system,
+                move_span_cube_vertices,
             ));
     }
 }
@@ -48,6 +53,11 @@ impl From<ListenerInput<Pointer<Click>>> for VectorSphereSelectionEvent {
 pub enum PanOrbitToggleState {
     DragStart,
     DragEnd,
+}
+
+#[derive(Component)]
+pub struct SpanCube {
+    quad_handle: Handle<Mesh>,
 }
 
 #[derive(Event)]
@@ -68,6 +78,215 @@ impl From<ListenerInput<Pointer<DragEnd>>> for PanOrbitToggleEvent {
         };
     }
 }
+
+
+
+
+
+
+
+
+
+
+fn create_custom_cube_mesh(
+    commands: &mut Commands,
+    theme: &theme::CurrentTheme,
+    mut meshes: &mut ResMut<Assets<Mesh>>,
+    mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    crew_render_layer: RenderLayers,
+) {
+    let mesh = Mesh::new(PrimitiveTopology::TriangleList)
+    .with_inserted_attribute(
+        Mesh::ATTRIBUTE_POSITION,
+        // Each array is an [x, y, z] coordinate in local space.
+        // Meshes always rotate around their local [0, 0, 0] when a rotation is applied to their Transform.
+        // By centering our mesh around the origin, rotating the mesh preserves its center of mass.
+        vec![
+            // top (facing towards +y)
+            [-0.5, 0.5, -0.5], // vertex with index 0
+            [0.5, 0.5, -0.5], // vertex with index 1
+            [0.5, 0.5, 0.5], // etc. until 23
+            [-0.5, 0.5, 0.5],
+            // bottom   (-y)
+            [-0.5, -0.5, -0.5],
+            [0.5, -0.5, -0.5],
+            [0.5, -0.5, 0.5],
+            [-0.5, -0.5, 0.5],
+            // right    (+x)
+            [0.5, -0.5, -0.5],
+            [0.5, -0.5, 0.5],
+            [0.5, 0.5, 0.5], // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
+            [0.5, 0.5, -0.5],
+            // left     (-x)
+            [-0.5, -0.5, -0.5],
+            [-0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [-0.5, 0.5, -0.5],
+            // back     (+z)
+            [-0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [0.5, 0.5, 0.5],
+            [0.5, -0.5, 0.5],
+            // forward  (-z)
+            [-0.5, -0.5, -0.5],
+            [-0.5, 0.5, -0.5],
+            [0.5, 0.5, -0.5],
+            [0.5, -0.5, -0.5],
+        ],
+    )
+    // Set-up UV coordinated to point to the upper (V < 0.5), "dirt+grass" part of the texture.
+    // Take a look at the custom image (assets/textures/array_texture.png)
+    // so the UV coords will make more sense
+    // Note: (0.0, 0.0) = Top-Left in UV mapping, (1.0, 1.0) = Bottom-Right in UV mapping
+    .with_inserted_attribute(
+        Mesh::ATTRIBUTE_UV_0,
+        vec![
+            // Assigning the UV coords for the top side.
+            [0.0, 0.2], [0.0, 0.0], [1.0, 0.0], [1.0, 0.25],
+            // Assigning the UV coords for the bottom side.
+            [0.0, 0.45], [0.0, 0.25], [1.0, 0.25], [1.0, 0.45],
+            // Assigning the UV coords for the right side.
+            [1.0, 0.45], [0.0, 0.45], [0.0, 0.2], [1.0, 0.2],
+            // Assigning the UV coords for the left side.
+            [1.0, 0.45], [0.0, 0.45], [0.0, 0.2], [1.0, 0.2],
+            // Assigning the UV coords for the back side.
+            [0.0, 0.45], [0.0, 0.2], [1.0, 0.2], [1.0, 0.45],
+            // Assigning the UV coords for the forward side.
+            [0.0, 0.45], [0.0, 0.2], [1.0, 0.2], [1.0, 0.45],
+        ],
+    )
+    // For meshes with flat shading, normals are orthogonal (pointing out) from the direction of
+    // the surface.
+    // Normals are required for correct lighting calculations.
+    // Each array represents a normalized vector, which length should be equal to 1.0.
+    .with_inserted_attribute(
+        Mesh::ATTRIBUTE_NORMAL,
+        vec![
+            // Normals for the top side (towards +y)
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 0.0],
+            // Normals for the bottom side (towards -y)
+            [0.0, -1.0, 0.0],
+            [0.0, -1.0, 0.0],
+            [0.0, -1.0, 0.0],
+            [0.0, -1.0, 0.0],
+            // Normals for the right side (towards +x)
+            [1.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            // Normals for the left side (towards -x)
+            [-1.0, 0.0, 0.0],
+            [-1.0, 0.0, 0.0],
+            [-1.0, 0.0, 0.0],
+            [-1.0, 0.0, 0.0],
+            // Normals for the back side (towards +z)
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+            // Normals for the forward side (towards -z)
+            [0.0, 0.0, -1.0],
+            [0.0, 0.0, -1.0],
+            [0.0, 0.0, -1.0],
+            [0.0, 0.0, -1.0],
+        ],
+    )
+    // Create the triangles out of the 24 vertices we created.
+    // To construct a square, we need 2 triangles, therefore 12 triangles in total.
+    // To construct a triangle, we need the indices of its 3 defined vertices, adding them one
+    // by one, in a counter-clockwise order (relative to the position of the viewer, the order
+    // should appear counter-clockwise from the front of the triangle, in this case from outside the cube).
+    // Read more about how to correctly build a mesh manually in the Bevy documentation of a Mesh,
+    // further examples and the implementation of the built-in shapes.
+    .with_indices(Some(Indices::U32(vec![
+        0,3,1 , 1,3,2, // triangles making up the top (+y) facing side.
+        4,5,7 , 5,6,7, // bottom (-y)
+        8,11,9 , 9,11,10, // right (+x)
+        12,13,15 , 13,14,15, // left (-x)
+        16,19,17 , 17,19,18, // back (+z)
+        20,21,23 , 21,22,23, // forward (-z)
+    ])));
+
+    let mesh_handle = meshes.add(mesh);
+    commands.spawn((
+        SpanCube {
+            quad_handle: mesh_handle.clone(),
+        },
+        PbrBundle {
+            mesh: mesh_handle.clone(),
+            material: materials.add(StandardMaterial {
+                base_color: theme::line_color_transparent(theme, 0.4).into(),
+                alpha_mode: AlphaMode::Blend,
+                unlit: true,
+                ..default()
+            }),
+            ..default()
+        },
+        Pickable::IGNORE,
+        crew_render_layer,
+    ));
+    // commands.insert_resource(SpanCubeResource{
+    //     quad_handle: mesh_handle,
+    // })
+    
+}
+
+#[derive(Component)]
+pub struct SpanCubeResource{
+    quad_handle: Handle<Mesh>,
+}
+
+fn move_span_cube_vertices(
+    mut movement_reader: EventReader<VectorSphereMovementEvent>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut span_cube_query: Query<&SpanCube, With<SpanCube>>,
+) {
+    for movement in movement_reader.read() {
+        for span_cube in span_cube_query.iter() {
+            println!("quad_handle: {:?}", span_cube.quad_handle);
+        
+            let quad_handle = span_cube.quad_handle.clone();
+            if let Some(mut mesh) = meshes.get_mut(&quad_handle) {
+                // Modify the vertices of the quad mesh
+                // if let Some(vertex_buffer) = mesh.attribute_mut::<Vec3>(Mesh::ATTRIBUTE_POSITION) {
+                //     // Update vertices based on your logic
+                //     // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
+                //     for (i, vertex) in new_vertices.iter().enumerate() {
+                //         vertex_buffer[i] = *vertex;
+                //     }
+                // }
+                let primitive_topology = mesh.primitive_topology();
+                println!("primitive_topology: {:?}", primitive_topology);
+                if let Some(vertex_buffer) = mesh.attribute_mut(Mesh::ATTRIBUTE_POSITION) {
+                // Update vertices based on your logic
+                    // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
+                    println!("vertex_buffer: {:?}", vertex_buffer);
+
+                    let VertexAttributeValues::Float32x3(vertex_buffer) = vertex_buffer else {
+                        panic!("Unexpected vertex format, expected Float32x2.");
+                    };
+                    println!("vertex attribute_values: {:?}", vertex_buffer);
+                
+                    
+                    // for mut x in vertex_buffer.iter() {
+
+                    // }
+                    // vertex_buffer[0] = vertex_buffer[0] + 1;
+                    vertex_buffer[0][0] = -10.0;
+                    vertex_buffer[0][1] = -10.0;
+                    vertex_buffer[0][2] = -10.0;
+                    // println!("vertex_buffer: {:?}", vertex_buffer);
+
+                }
+                // println!("got the mesh");
+            }
+        }
+    }
+}
+
 
 #[derive(Component)]
 pub struct VectorSphere;
@@ -113,6 +332,18 @@ fn make_vector(
     )).id();
 }
 
+pub enum AssociatedVector {
+    V1,
+    V2,
+    V3,
+}
+
+#[derive(Component)]
+pub struct SpanFace {
+    associated_vector: AssociatedVector,
+    start: bool,
+}
+
 
 pub fn setup_scene(
     commands: &mut Commands,
@@ -134,12 +365,28 @@ pub fn setup_scene(
         }
     ));
 
+    let quad_handle = meshes.add(Mesh::from(
+        shape::Quad {
+            size: Vec2 { x: 1.0, y: 2.0 },
+            flip: false,
+            ..default()
+        }
+    ));
+
     let sphere_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgb(1.0, 0.75, 0.90),
         base_color: theme::vector_color_3d(theme).into(),
         metallic: 1.0,
         reflectance: 0.1,
         perceptual_roughness: 1.0,
+        ..default()
+    });
+
+    let span_material_handle = materials.add(StandardMaterial {
+        base_color: theme::line_color(theme).into(),
+        // metallic: 1.0,
+        // reflectance: 0.1,
+        // perceptual_roughness: 1.0,
         ..default()
     });
 
@@ -212,25 +459,6 @@ pub fn setup_scene(
             On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
             On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
             On::<Pointer<Click>>::send_event::<VectorSphereSelectionEvent>(),
-
-            // On::<Pointer<Click>>::run(|event: Listener<Pointer<Click>>, time: Res<Time>| {
-            //     info!(
-            //         "[{:?}]: The pointer left entity {:?}",
-            //         time.elapsed_seconds(),
-            //         event.target
-            //     );
-            // }),
-            // On::<Pointer<DragStart>>::send_event::(),
-            // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
-            // On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
-            // On::<Pointer<Drag>>::target_component_mut::<Transform>(|drag, transform| {
-            //     transform.translation.x += drag.delta.x; // Make the square follow the mouse
-            //     transform.translation.y -= drag.delta.y;
-            // }),
-            // On::<Pointer<Drop>>::commands_mut(|event, commands| {
-            //     commands.entity(event.dropped).insert(Spin(FRAC_PI_2)); // Spin dropped entity
-            //     commands.entity(event.target).insert(Spin(-FRAC_PI_2)); // Spin dropped-on entity
-            // }),
         ))
         .id();
     let cylinder_handle = meshes.add(Mesh::from(
@@ -267,59 +495,22 @@ pub fn setup_scene(
         cylinder_handle.clone(),
         basis_vector_3
     );
-    
-    // let standard_basis_vector_y = commands.spawn((
-    //     VectorSphereBasisVector,
-    //     PbrBundle {
-    //         mesh: cylinder_handle.clone(),
-    //         material: basis_vector_2.clone(),
-    //         transform: Transform::from_translation(v2),
-    //         ..default()
-    //     },
-    //     crew_render_layer,
-    //     subsection::SubsectionGameEntity,
 
-    //     //pickable stuff
-    //     PickableBundle {
-    //         ..default()
-    //     }, // <- Makes the mesh pickable.
-    //     On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
-    //     On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-    //     On::<Pointer<Drag>>::run(move |
-    //         event: Listener<Pointer<Drag>>,
-    //         mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
-    //         send_movement_vector(event.delta.x, v2, vector_sphere_movement_writer);
-    //     }),
-    // )).id();
-    // let standard_basis_vector_z = commands.spawn((
-    //     VectorSphereBasisVector,
-    //     PbrBundle {
-    //         mesh: cylinder_handle.clone(),
-    //         material: basis_vector_3.clone(),
-    //         transform: Transform::from_translation(v3),
-    //         ..default()
-    //     },
-    //     crew_render_layer,
-    //     subsection::SubsectionGameEntity,
-
-    //     //pickable stuff
-    //     PickableBundle {
-    //         ..default()
-    //     }, // <- Makes the mesh pickable.
-    //     On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
-    //     On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-    //     On::<Pointer<Drag>>::run(move |
-    //         event: Listener<Pointer<Drag>>,
-    //         mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
-    //         send_movement_vector(-event.delta.x, v3, vector_sphere_movement_writer);
-    //     }),
-    // )).id();
     
-    // commands.entity(sphere).push_children(&[
-    //     standard_basis_vector_x,
-    //     standard_basis_vector_y,
-    //     standard_basis_vector_z,
-    // ]);
+    // commands.spawn((
+    //     PbrBundle {
+    //     mesh: quad_handle,
+    //     // This is the default color, but note that vertex colors are
+    //     // multiplied by the base color, so you'll likely want this to be
+    //     // white if using vertex colors.
+    //     material: span_material_handle,
+    //     transform: Transform::from_xyz(0.0, 0.5, 0.0),
+    //     ..default()
+    //     }, 
+    //     crew_render_layer,
+    // ));
+
+    create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer);
     
     commands.entity(film_crew_entity).push_children(&[sphere, standard_basis_vector_x, standard_basis_vector_y, standard_basis_vector_z]);
 }

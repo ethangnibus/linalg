@@ -103,6 +103,17 @@ pub fn line_color(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn line_color_transparent(theme: &CurrentTheme, transparency: f32) -> Color {
+    match theme {
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        _ => {
+            return Color::rgba(0.35686275, 0.85882354, 0.85882354, transparency);
+        }
+    }
+}
+
 pub fn line_alternate_color_1(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Matrix => {
