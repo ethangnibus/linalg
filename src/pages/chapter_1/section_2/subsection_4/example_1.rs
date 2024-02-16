@@ -94,7 +94,11 @@ fn create_custom_cube_mesh(
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_render_layer: RenderLayers,
+    v1: Vec3,
+    v2: Vec3,
+    v3: Vec3,
 ) {
+    
     let mesh = Mesh::new(PrimitiveTopology::TriangleList)
     .with_inserted_attribute(
         Mesh::ATTRIBUTE_POSITION,
@@ -102,36 +106,36 @@ fn create_custom_cube_mesh(
         // Meshes always rotate around their local [0, 0, 0] when a rotation is applied to their Transform.
         // By centering our mesh around the origin, rotating the mesh preserves its center of mass.
         vec![
-            // top (facing towards +y)
-            [-0.5, 0.5, -0.5], // vertex with index 0
-            [0.5, 0.5, -0.5], // vertex with index 1
-            [0.5, 0.5, 0.5], // etc. until 23
-            [-0.5, 0.5, 0.5],
+            // top (facing towards +y) 
+            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // [-0.5, 0.5, -0.5], // vertex with index 0 //// -v1 + v2 - v3
+            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], // [0.5, 0.5, -0.5], // vertex with index 1 //// v1 + v2 - v3
+            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], // [0.5, 0.5, 0.5], // etc. until 23 //// v1 + v2 + v3
+            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
             // bottom   (-y)
-            [-0.5, -0.5, -0.5],
-            [0.5, -0.5, -0.5],
-            [0.5, -0.5, 0.5],
-            [-0.5, -0.5, 0.5],
+            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //[0.5, -0.5, -0.5], //// v1 - v2 - v3
+            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //[0.5, -0.5, 0.5], //// v1 - v2 + v3
+            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], //[-0.5, -0.5, 0.5], //// -v1 - v2 + v3
             // right    (+x)
-            [0.5, -0.5, -0.5],
-            [0.5, -0.5, 0.5],
-            [0.5, 0.5, 0.5], // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
-            [0.5, 0.5, -0.5],
+            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], // [0.5, -0.5, -0.5], //// v1 - v2 - v3
+            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], // [0.5, -0.5, 0.5], //// v1 - v2 + v3
+            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //[0.5, 0.5, 0.5], //// v1 + v2 + v3           // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
+            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //[0.5, 0.5, -0.5], //// v1 + v2 - v3
             // left     (-x)
-            [-0.5, -0.5, -0.5],
-            [-0.5, -0.5, 0.5],
-            [-0.5, 0.5, 0.5],
-            [-0.5, 0.5, -0.5],
+            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z -v2.z + v3.z], // [-0.5, -0.5, 0.5], //// -v1 - v2 + v3
+            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // [-0.5, 0.5, 0.5], ////  -v1 + v2 + v3
+            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // [-0.5, 0.5, -0.5], ////  -v1 + v2 - v3
             // back     (+z)
-            [-0.5, -0.5, 0.5],
-            [-0.5, 0.5, 0.5],
-            [0.5, 0.5, 0.5],
-            [0.5, -0.5, 0.5],
+            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // [-0.5, -0.5, 0.5], ////  -v1 - v2 + v3
+            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
+            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], // [0.5, 0.5, 0.5], //// v1 + v2 + v3
+            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], // [0.5, -0.5, 0.5], //// v1 - v2 + v3
             // forward  (-z)
-            [-0.5, -0.5, -0.5],
-            [-0.5, 0.5, -0.5],
-            [0.5, 0.5, -0.5],
-            [0.5, -0.5, -0.5],
+            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // [-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // [-0.5, 0.5, -0.5], //// -v1 + v2 - v3
+            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], // [0.5, 0.5, -0.5], //// v1 + v2 - v3
+            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], // [0.5, -0.5, -0.5], //// v1 - v2 - v3
         ],
     )
     // Set-up UV coordinated to point to the upper (V < 0.5), "dirt+grass" part of the texture.
@@ -469,9 +473,9 @@ pub fn setup_scene(
     ));
 
     
-    let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 }.normalize();
-    let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 }.normalize();
-    let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 }.normalize();
+    let v1 = Vec3 { x: 1.0, y: 1.0, z: 0.0 }.normalize();
+    let v2 = Vec3 { x: 0.0, y: 0.3, z: 0.4 }.normalize();
+    let v3 = Vec3 { x: 0.7, y: 0.1, z: 0.6 }.normalize();
 
     
     let standard_basis_vector_x = make_vector(
@@ -510,7 +514,7 @@ pub fn setup_scene(
     //     crew_render_layer,
     // ));
 
-    create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer);
+    create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer, v1, v2, v3);
     
     commands.entity(film_crew_entity).push_children(&[sphere, standard_basis_vector_x, standard_basis_vector_y, standard_basis_vector_z]);
 }
