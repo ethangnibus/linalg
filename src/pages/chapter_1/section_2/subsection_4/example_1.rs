@@ -36,7 +36,7 @@ impl Plugin for SystemsPlugin {
                 vector_sphere_movement_system,
                 basis_vectors_movement_system,
                 disable_pan_orbit_system,
-                move_span_cube_vertices,
+                move_span_cube_vertices.after(vector_sphere_movement_system),
             ));
     }
 }
@@ -98,7 +98,10 @@ fn create_custom_cube_mesh(
     v2: Vec3,
     v3: Vec3,
 ) {
-    
+    let v1 = v1 * 0.1;
+    let v2 = v2 * 0.1;
+    let v3 = v3 * 0.1;
+
     let mesh = Mesh::new(PrimitiveTopology::TriangleList)
     .with_inserted_attribute(
         Mesh::ATTRIBUTE_POSITION,
@@ -262,6 +265,8 @@ fn move_span_cube_vertices(
     mut movement_reader: EventReader<VectorSphereMovementEvent>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut span_cube_query: Query<&SpanCube, With<SpanCube>>,
+    mut vector_sphere_query: Query<(&mut Transform), With<VectorSphere>>,
+    mut commands: Commands,
 ) {
     // leave if there's no movement event
     // let mut sum: u8 = 0;
@@ -270,107 +275,238 @@ fn move_span_cube_vertices(
     // }
     // if sum == 0 { return };
     // println!("here we react to a movement event");
-    
+
     for movement_event in movement_reader.read() {
-        for span_cube in span_cube_query.iter() {
-            // println!("quad_handle: {:?}", span_cube.quad_handle);
-        
-            let quad_handle = span_cube.quad_handle.clone();
-            if let Some(mut mesh) = meshes.get_mut(&quad_handle) {
-                // Modify the vertices of the quad mesh
-                // if let Some(vertex_buffer) = mesh.attribute_mut::<Vec3>(Mesh::ATTRIBUTE_POSITION) {
-                //     // Update vertices based on your logic
-                //     // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
-                //     for (i, vertex) in new_vertices.iter().enumerate() {
-                //         vertex_buffer[i] = *vertex;
-                //     }
-                // }
-                let primitive_topology = mesh.primitive_topology();
-                // println!("primitive_topology: {:?}", primitive_topology);
-                if let Some(vertex_buffer) = mesh.attribute_mut(Mesh::ATTRIBUTE_POSITION) {
-                // Update vertices based on your logic
-                    // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
-                    // println!("vertex_buffer: {:?}", vertex_buffer);
-
-                    let VertexAttributeValues::Float32x3(vertex_buffer) = vertex_buffer else {
-                        panic!("Unexpected vertex format, expected Float32x2.");
-                    };
-                    // println!("vertex attribute_values: {:?}", vertex_buffer);
-                
-                    
-                    // for mut x in vertex_buffer.iter() {
-
+        for vector_sphere_transform in vector_sphere_query.iter() {
+            for span_cube in span_cube_query.iter() {
+                // println!("quad_handle: {:?}", span_cube.quad_handle);
+            
+                let quad_handle = span_cube.quad_handle.clone();
+                if let Some(mut mesh) = meshes.get_mut(&quad_handle) {
+                    // Modify the vertices of the quad mesh
+                    // if let Some(vertex_buffer) = mesh.attribute_mut::<Vec3>(Mesh::ATTRIBUTE_POSITION) {
+                    //     // Update vertices based on your logic
+                    //     // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
+                    //     for (i, vertex) in new_vertices.iter().enumerate() {
+                    //         vertex_buffer[i] = *vertex;
+                    //     }
                     // }
-                    // vertex_buffer[0] = vertex_buffer[0] + 1;
+                    let primitive_topology = mesh.primitive_topology();
+                    // println!("primitive_topology: {:?}", primitive_topology);
+                    if let Some(vertex_buffer) = mesh.attribute_mut(Mesh::ATTRIBUTE_POSITION) {
+                    // Update vertices based on your logic
+                        // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
+                        // println!("vertex_buffer: {:?}", vertex_buffer);
 
-                    // Here's which elements correspond with each point:
-                    // lth = [0, 15, 21];
-                    // rth = [1, 11, 22];
-                    // lts = [3, 14, 17];
-                    // rts = [2, 10, 18];
-                    // lbh = [4, 12, 20];
-                    // rbh = [5, 8, 23];
-                    // lbs = [7, 13, 16];
-                    // rbs = [6, 9, 19];
-                    let lth = Vec3::from_array(vertex_buffer[0]);
-                    let rth = Vec3::from_array(vertex_buffer[1]);
-                    let lts = Vec3::from_array(vertex_buffer[3]);
-                    let rts = Vec3::from_array(vertex_buffer[2]);
-                    let lbh = Vec3::from_array(vertex_buffer[4]);
-                    let rbh = Vec3::from_array(vertex_buffer[5]);
-                    let lbs = Vec3::from_array(vertex_buffer[7]);
-                    let rbs = Vec3::from_array(vertex_buffer[6]);
+                        let VertexAttributeValues::Float32x3(vertex_buffer) = vertex_buffer else {
+                            panic!("Unexpected vertex format, expected Float32x2.");
+                        };
 
-                    let u = (lbs - rbs).cross(lbs - lts);
-                    let v = (lbs - lbh).cross(lbs - lts);
-                    let w = (lbs - lbh).cross(lbs - rbs);
+                        // Here's which elements correspond with each point:
+                        let lth_indices = [0, 15, 21]; // -x +y -z
+                        let rth_indices = [1, 11, 22]; // +x +y -z
+                        let lts_indices = [3, 14, 17]; // -x +y +z
+                        let rts_indices = [2, 10, 18]; // +x +y +z
+                        let lbh_indices = [4, 12, 20]; // -x -y -z
+                        let rbh_indices = [5, 8, 23];  // +x -y -z
+                        let lbs_indices = [7, 13, 16]; // -x -y +z
+                        let rbs_indices = [6, 9, 19];  // +x -y +z
+                        
+                        
+                        let x = vector_sphere_transform.translation;
 
-                    if between(u.dot(), start, end)
-                    && between()
-                    && between() {
-                        println!("point in cube");
-                    } else {
-                        println!("point not in cube");
+                        match movement_event.associated_vector {
+                            AssociatedVector::V1 => {
+                                if x.dot(movement_event.unit_vector) > 0.0 {
+                                    // +x
+                                    push_plane_to_sphere_vector(
+                                        x,
+                                        vertex_buffer,
+                                        &rth_indices,
+                                        &rts_indices,
+                                        &rbs_indices,
+                                        &rbh_indices,
+                                    );
+                                } else if x.dot(movement_event.unit_vector) < 0.0 {
+                                    // - x
+                                    push_plane_to_sphere_vector(
+                                        x,
+                                        vertex_buffer,
+                                        &lth_indices,
+                                        &lts_indices,
+                                        &lbs_indices,
+                                        &lbh_indices,
+                                    );
+                                }
+                            }
+                            AssociatedVector::V2 => {
+                                if x.dot(movement_event.unit_vector) > 0.0 {
+                                    // +y
+                                    push_plane_to_sphere_vector(
+                                        x,
+                                        vertex_buffer,
+                                        &lth_indices,
+                                        &rth_indices,
+                                        &lts_indices,
+                                        &rts_indices,
+                                    );
+                                } else if x.dot(movement_event.unit_vector) < 0.0 {
+                                    // -y
+                                    push_plane_to_sphere_vector(
+                                        x,
+                                        vertex_buffer,
+                                        &lbh_indices,
+                                        &rbh_indices,
+                                        &lbs_indices,
+                                        &rbs_indices,
+                                    );
+                                }
+
+                            }
+                            AssociatedVector::V3 => {
+                                if x.dot(movement_event.unit_vector) > 0.0 {
+                                    // +z
+                                    push_plane_to_sphere_vector(
+                                        x,
+                                        vertex_buffer,
+                                        &lts_indices,
+                                        &rts_indices,
+                                        &lbs_indices,
+                                        &rbs_indices,
+                                    );
+                                } else if x.dot(movement_event.unit_vector) < 0.0 {
+                                    // -z
+                                    push_plane_to_sphere_vector(
+                                        x,
+                                        vertex_buffer,
+                                        &lth_indices,
+                                        &rth_indices,
+                                        &lbh_indices,
+                                        &rbh_indices,
+                                    );
+                                }
+
+                            }
+                        }
+                        // if between(u.dot(x), u.dot(lbs), u.dot(lbh))
+                        // && between(v.dot(x), v.dot(lbs), v.dot(rbs))
+                        // && between(w.dot(x), w.dot(lbs), w.dot(lts)) {
+                        //     println!("point in cube");
+                        
+                        
+                        
+                        // } else {
+                        //     println!("point not in cube");
+                        //     println!("unit vector: {:?}", movement_event.unit_vector);
+                        //     println!("delta: {:?}", movement_event.delta);
+                        //     let delta_vector = movement_event.unit_vector.mul_add(
+                        //         Vec3 {x: movement_event.delta, y: movement_event.delta, z: movement_event.delta },
+                        //             Vec3::ZERO
+                        //     );
+                        //     match movement_event.associated_vector {
+                        //         AssociatedVector::V1 => {
+                        //             // if movement_event.delta > 0.0 {
+                        //             //     // move span towards +v1
+                        //             //     for index in [1, 11, 22] {
+                                            
+                        //             //     }
+
+                        //             // } else if movement_event.delta < 0.0 {
+                        //             //     // move span towards -v1
+
+                        //             // } else { // delta == 0
+                        //             //     // do nothing
+                                        
+                        //             // }
+                        //             for index in [1, 11, 22] {
+                        //                 vertex_buffer[index][0] += delta_vector.x;
+                        //                 vertex_buffer[index][0] += delta_vector.y;
+                        //                 vertex_buffer[index][0] += delta_vector.z;
+                        //             }
+                                    
+                        //         }
+                        //         AssociatedVector::V2 => {
+
+                        //         }
+                        //         AssociatedVector::V3 => {
+
+                        //         }
+                        //     }
+                        // }
+
+                        // vertex_buffer[0][0] = -10.0;
+                        // vertex_buffer[0][1] = -10.0;
+                        // vertex_buffer[0][2] = -10.0;
+                        // println!("vertex_buffer: {:?}", vertex_buffer);
+                       
                     }
-
-                    // vertex_buffer[0][0] = -10.0;
-                    // vertex_buffer[0][1] = -10.0;
-                    // vertex_buffer[0][2] = -10.0;
-                    // println!("vertex_buffer: {:?}", vertex_buffer);
-                    // let delta_vector = movement_event.unit_vector.mul_add(
-                    //     Vec3 {x: movement_event.delta, y: movement_event.delta, z: movement_event.delta },
-                    //         Vec3::ZERO
-                    // );
-                    // match movement_event.associated_vector {
-                    //     AssociatedVector::V1 => {
-                    //         if movement_event.delta > 0.0 {
-                    //             // move span towards +v1
-                    //             for index in [1, 11, 22] {
-                    //                 vertex_buffer[index][0] += delta_vector.x;
-                    //                 vertex_buffer[index][0] += delta_vector.y;
-                    //                 vertex_buffer[index][0] += delta_vector.z;
-                    //             }
-
-                    //         } else if movement_event.delta < 0.0 {
-                    //             // move span towards -v1
-
-                    //         } else { // delta == 0
-                    //             // do nothing
-                                
-                    //         }
-                    //     }
-                    //     AssociatedVector::V2 => {
-
-                    //     }
-                    //     AssociatedVector::V3 => {
-
-                    //     }
-                    // }
+                    // println!("got the mesh");
                 }
-                // println!("got the mesh");
             }
         }
     }
+}
+
+
+
+fn push_plane_to_sphere_vector(
+    x: Vec3,
+    vertex_buffer: &mut Vec<[f32; 3]>,
+    v00_indices: &[usize; 3],
+    v01_indices: &[usize; 3],
+    v10_indices: &[usize; 3],
+    v11_indices: &[usize; 3],
+) {
+    let v00 = Vec3::from(vertex_buffer[v00_indices[0]]);
+    let v01 = Vec3::from(vertex_buffer[v01_indices[0]]);
+    let v10 = Vec3::from(vertex_buffer[v10_indices[0]]);
+    let v11 = Vec3::from(vertex_buffer[v11_indices[0]]);
+
+    let plane_to_point = shortest_vector_from_plane_to_point(
+        x,
+        (v00 - v01).cross(v00 - v10).normalize(),
+        v11,
+    );
+    println!("\nPlane to point: {:?}", plane_to_point);
+
+    for index in v00_indices.iter() { //
+        vertex_buffer[*index][0] += plane_to_point.x;
+        vertex_buffer[*index][1] += plane_to_point.y;
+        vertex_buffer[*index][2] += plane_to_point.z;
+    }
+    for index in v01_indices.iter() { //
+        vertex_buffer[*index][0] += plane_to_point.x;
+        vertex_buffer[*index][1] += plane_to_point.y;
+        vertex_buffer[*index][2] += plane_to_point.z;
+    }
+    for index in v10_indices.iter() { //
+        vertex_buffer[*index][0] += plane_to_point.x;
+        vertex_buffer[*index][1] += plane_to_point.y;
+        vertex_buffer[*index][2] += plane_to_point.z;
+    }
+    for index in v11_indices.iter() { //
+        vertex_buffer[*index][0] += plane_to_point.x;
+        vertex_buffer[*index][1] += plane_to_point.y;
+        vertex_buffer[*index][2] += plane_to_point.z;
+    }
+}
+
+fn shortest_vector_from_plane_to_point(point: Vec3, plane_normal: Vec3, plane_point: Vec3) -> Vec3 {
+    // Project the point onto the plane
+    let projected_point = project_point_onto_plane(point, plane_normal, plane_point);
+
+    // Calculate the distance between the original point and the projected point
+    // let distance = (projected_point - point).length();
+
+    return point - projected_point;
+}
+
+fn project_point_onto_plane(point: Vec3, plane_normal: Vec3, plane_point: Vec3) -> Vec3 {
+    let v = point - plane_point;
+    let distance_to_plane = v.dot(plane_normal);
+    let projected_point = point - distance_to_plane * plane_normal;
+    // println!("projected point: {:?}", projected_point);
+    projected_point
 }
 
 
@@ -386,7 +522,6 @@ pub struct VectorSphereMovementEvent {
     pub associated_vector: AssociatedVector,
     pub unit_vector: Vec3,
     pub delta: f32,
-    
 }
 
 
@@ -561,9 +696,13 @@ pub fn setup_scene(
     ));
 
     
+    // let v1 = Vec3 { x: 1.0, y: 0.5, z: 0.0 }.normalize();
+    // let v2 = Vec3 { x: 0.0, y: 2.0, z: 0.3 }.normalize();
+    // let v3 = Vec3 { x: 0.3, y: 0.2, z: 1.0 }.normalize();
     let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 }.normalize();
     let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 }.normalize();
     let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 }.normalize();
+
 
     
     let standard_basis_vector_x = make_vector(
@@ -667,6 +806,7 @@ pub fn vector_sphere_selection_system(
 }
 
 
+
 pub fn vector_sphere_movement_system(
     mut movement_reader: EventReader<VectorSphereMovementEvent>,
     mut vector_sphere_query: Query<(&mut Transform), With<VectorSphere>>,
@@ -681,7 +821,7 @@ pub fn vector_sphere_movement_system(
         
         for mut vector_sphere_transform in vector_sphere_query.iter_mut() {
             let outcome = vector_sphere_transform.translation + delta_vector;
-
+            
             if in_bounds(&outcome, -10.0, 10.0) {
                 vector_sphere_transform.translation = outcome;
                 can_move = true;

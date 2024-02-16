@@ -98,17 +98,17 @@ pub fn get(
         2:"
     );
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        2,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     2,
+    // );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
 
@@ -168,17 +168,17 @@ pub fn get(
     );
 
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        3,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     3,
+    // );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
 
@@ -215,17 +215,17 @@ pub fn get(
     );
 
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        4,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     4,
+    // );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
 
@@ -244,17 +244,17 @@ pub fn get(
         extended our vectors out into infinity:"
     );
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        5,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     5,
+    // );
 
 
 
@@ -281,17 +281,17 @@ pub fn get(
     );
 
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        6,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     6,
+    // );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
 
@@ -321,17 +321,17 @@ pub fn get(
     );
 
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        7,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     7,
+    // );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
 
@@ -370,17 +370,17 @@ pub fn get(
         we can only span zero dimensional space. See Example 8:"
     );
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        8,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     8,
+    // );
 
 
 
@@ -393,17 +393,17 @@ pub fn get(
     );
 
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        9,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     9,
+    // );
 
 
     text_section::spawn(
@@ -415,17 +415,17 @@ pub fn get(
     );
 
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        10,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     10,
+    // );
 
 
     sub_header::spawn(commands, theme, view_list_entity, "Test Yourself:");
@@ -464,17 +464,17 @@ pub fn get(
     let next_item = definition_block::spawn(commands, theme, "Span of vectors", span_of_vectors_left, span_of_vectors_right);
     commands.entity(view_list_entity).push_children(&[next_item]);
 
-    example_block::spawn(
-        commands,
-        theme,
-        film_crew_entity,
-        Val::Px(500.0),
-        meshes,
-        materials,
-        images,
-        view_list_entity,
-        15,
-    );
+    // example_block::spawn(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     Val::Px(500.0),
+    //     meshes,
+    //     materials,
+    //     images,
+    //     view_list_entity,
+    //     15,
+    // );
 
 
 
