@@ -107,36 +107,46 @@ fn create_custom_cube_mesh(
         // By centering our mesh around the origin, rotating the mesh preserves its center of mass.
         vec![
             // top (facing towards +y) 
-            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // [-0.5, 0.5, -0.5], // vertex with index 0 //// -v1 + v2 - v3
-            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], // [0.5, 0.5, -0.5], // vertex with index 1 //// v1 + v2 - v3
-            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], // [0.5, 0.5, 0.5], // etc. until 23 //// v1 + v2 + v3
-            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
+            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[0] = lth // [-0.5, 0.5, -0.5], // vertex with index 0 //// -v1 + v2 - v3
+            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[1] = rth // [0.5, 0.5, -0.5], // vertex with index 1 //// v1 + v2 - v3
+            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[2] = rts             // [0.5, 0.5, 0.5], // etc. until 23 //// v1 + v2 + v3
+            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[3] = lts                // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
             // bottom   (-y)
-            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
-            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //[0.5, -0.5, -0.5], //// v1 - v2 - v3
-            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //[0.5, -0.5, 0.5], //// v1 - v2 + v3
-            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], //[-0.5, -0.5, 0.5], //// -v1 - v2 + v3
+            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[4] = lbh                //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[5] = rbh             //[0.5, -0.5, -0.5], //// v1 - v2 - v3
+            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[6] = rbs             //[0.5, -0.5, 0.5], //// v1 - v2 + v3
+            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // vertex_buffer[7] = lbs                //[-0.5, -0.5, 0.5], //// -v1 - v2 + v3
             // right    (+x)
-            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], // [0.5, -0.5, -0.5], //// v1 - v2 - v3
-            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], // [0.5, -0.5, 0.5], //// v1 - v2 + v3
-            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //[0.5, 0.5, 0.5], //// v1 + v2 + v3           // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
-            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //[0.5, 0.5, -0.5], //// v1 + v2 - v3
+            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[8] = rbh             // [0.5, -0.5, -0.5], //// v1 - v2 - v3
+            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[9] = rbs             // [0.5, -0.5, 0.5], //// v1 - v2 + v3
+            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[10] = rts             //[0.5, 0.5, 0.5], //// v1 + v2 + v3           // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
+            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[11] = rth             //[0.5, 0.5, -0.5], //// v1 + v2 - v3
             // left     (-x)
-            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
-            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z -v2.z + v3.z], // [-0.5, -0.5, 0.5], //// -v1 - v2 + v3
-            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // [-0.5, 0.5, 0.5], ////  -v1 + v2 + v3
-            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // [-0.5, 0.5, -0.5], ////  -v1 + v2 - v3
+            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[12] = lbh                //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z -v2.z + v3.z], //  vertex_buffer[13] = lbs               // [-0.5, -0.5, 0.5], //// -v1 - v2 + v3
+            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[14] = lts                // [-0.5, 0.5, 0.5], ////  -v1 + v2 + v3
+            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[15] = lth                // [-0.5, 0.5, -0.5], ////  -v1 + v2 - v3
             // back     (+z)
-            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // [-0.5, -0.5, 0.5], ////  -v1 - v2 + v3
-            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
-            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], // [0.5, 0.5, 0.5], //// v1 + v2 + v3
-            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], // [0.5, -0.5, 0.5], //// v1 - v2 + v3
+            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // vertex_buffer[16] = lbs                // [-0.5, -0.5, 0.5], ////  -v1 - v2 + v3
+            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[17] = lts                // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
+            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[18] = rts             // [0.5, 0.5, 0.5], //// v1 + v2 + v3
+            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[19] = rbs             // [0.5, -0.5, 0.5], //// v1 - v2 + v3
             // forward  (-z)
-            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // [-0.5, -0.5, -0.5], //// -v1 - v2 - v3
-            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // [-0.5, 0.5, -0.5], //// -v1 + v2 - v3
-            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], // [0.5, 0.5, -0.5], //// v1 + v2 - v3
-            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], // [0.5, -0.5, -0.5], //// v1 - v2 - v3
+            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[20] = lbh                // [-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[21] = lth                // [-0.5, 0.5, -0.5], //// -v1 + v2 - v3
+            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[22] = rth             // [0.5, 0.5, -0.5], //// v1 + v2 - v3
+            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[23] = rbh             // [0.5, -0.5, -0.5], //// v1 - v2 - v3
         ],
+
+        // Here's which elements correspond with each point:
+        // lth = [0, 15, 21];
+        // rth = [1, 11, 22];
+        // lts = [3, 14, 17];
+        // rts = [2, 10, 18];
+        // lbh = [4, 12, 20];
+        // rbh = [5, 8, 23];
+        // lbs = [7, 13, 16];
+        // rbs = [6, 9, 19];
     )
     // Set-up UV coordinated to point to the upper (V < 0.5), "dirt+grass" part of the texture.
     // Take a look at the custom image (assets/textures/array_texture.png)
@@ -243,14 +253,27 @@ pub struct SpanCubeResource{
     quad_handle: Handle<Mesh>,
 }
 
+pub fn between(num: f32, start: f32, end: f32) -> bool {
+    return (num >= start && num <= end)
+        || (num <= start && num >= end);
+
+}
 fn move_span_cube_vertices(
     mut movement_reader: EventReader<VectorSphereMovementEvent>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut span_cube_query: Query<&SpanCube, With<SpanCube>>,
 ) {
-    for movement in movement_reader.read() {
+    // leave if there's no movement event
+    // let mut sum: u8 = 0;
+    // for movement_event in movement_reader.read() {
+    //     sum += 1;
+    // }
+    // if sum == 0 { return };
+    // println!("here we react to a movement event");
+    
+    for movement_event in movement_reader.read() {
         for span_cube in span_cube_query.iter() {
-            println!("quad_handle: {:?}", span_cube.quad_handle);
+            // println!("quad_handle: {:?}", span_cube.quad_handle);
         
             let quad_handle = span_cube.quad_handle.clone();
             if let Some(mut mesh) = meshes.get_mut(&quad_handle) {
@@ -263,27 +286,86 @@ fn move_span_cube_vertices(
                 //     }
                 // }
                 let primitive_topology = mesh.primitive_topology();
-                println!("primitive_topology: {:?}", primitive_topology);
+                // println!("primitive_topology: {:?}", primitive_topology);
                 if let Some(vertex_buffer) = mesh.attribute_mut(Mesh::ATTRIBUTE_POSITION) {
                 // Update vertices based on your logic
                     // For example, let's say you have new vertices stored in a Vec<Vec3> called new_vertices
-                    println!("vertex_buffer: {:?}", vertex_buffer);
+                    // println!("vertex_buffer: {:?}", vertex_buffer);
 
                     let VertexAttributeValues::Float32x3(vertex_buffer) = vertex_buffer else {
                         panic!("Unexpected vertex format, expected Float32x2.");
                     };
-                    println!("vertex attribute_values: {:?}", vertex_buffer);
+                    // println!("vertex attribute_values: {:?}", vertex_buffer);
                 
                     
                     // for mut x in vertex_buffer.iter() {
 
                     // }
                     // vertex_buffer[0] = vertex_buffer[0] + 1;
-                    vertex_buffer[0][0] = -10.0;
-                    vertex_buffer[0][1] = -10.0;
-                    vertex_buffer[0][2] = -10.0;
-                    // println!("vertex_buffer: {:?}", vertex_buffer);
 
+                    // Here's which elements correspond with each point:
+                    // lth = [0, 15, 21];
+                    // rth = [1, 11, 22];
+                    // lts = [3, 14, 17];
+                    // rts = [2, 10, 18];
+                    // lbh = [4, 12, 20];
+                    // rbh = [5, 8, 23];
+                    // lbs = [7, 13, 16];
+                    // rbs = [6, 9, 19];
+                    let lth = Vec3::from_array(vertex_buffer[0]);
+                    let rth = Vec3::from_array(vertex_buffer[1]);
+                    let lts = Vec3::from_array(vertex_buffer[3]);
+                    let rts = Vec3::from_array(vertex_buffer[2]);
+                    let lbh = Vec3::from_array(vertex_buffer[4]);
+                    let rbh = Vec3::from_array(vertex_buffer[5]);
+                    let lbs = Vec3::from_array(vertex_buffer[7]);
+                    let rbs = Vec3::from_array(vertex_buffer[6]);
+
+                    let u = (lbs - rbs).cross(lbs - lts);
+                    let v = (lbs - lbh).cross(lbs - lts);
+                    let w = (lbs - lbh).cross(lbs - rbs);
+
+                    if between(u.dot(), start, end)
+                    && between()
+                    && between() {
+                        println!("point in cube");
+                    } else {
+                        println!("point not in cube");
+                    }
+
+                    // vertex_buffer[0][0] = -10.0;
+                    // vertex_buffer[0][1] = -10.0;
+                    // vertex_buffer[0][2] = -10.0;
+                    // println!("vertex_buffer: {:?}", vertex_buffer);
+                    // let delta_vector = movement_event.unit_vector.mul_add(
+                    //     Vec3 {x: movement_event.delta, y: movement_event.delta, z: movement_event.delta },
+                    //         Vec3::ZERO
+                    // );
+                    // match movement_event.associated_vector {
+                    //     AssociatedVector::V1 => {
+                    //         if movement_event.delta > 0.0 {
+                    //             // move span towards +v1
+                    //             for index in [1, 11, 22] {
+                    //                 vertex_buffer[index][0] += delta_vector.x;
+                    //                 vertex_buffer[index][0] += delta_vector.y;
+                    //                 vertex_buffer[index][0] += delta_vector.z;
+                    //             }
+
+                    //         } else if movement_event.delta < 0.0 {
+                    //             // move span towards -v1
+
+                    //         } else { // delta == 0
+                    //             // do nothing
+                                
+                    //         }
+                    //     }
+                    //     AssociatedVector::V2 => {
+
+                    //     }
+                    //     AssociatedVector::V3 => {
+
+                    //     }
+                    // }
                 }
                 // println!("got the mesh");
             }
@@ -298,15 +380,20 @@ pub struct VectorSphere;
 #[derive(Component)]
 pub struct VectorSphereBasisVector;
 
+
 #[derive(Event)]
 pub struct VectorSphereMovementEvent {
-    pub delta_vec3: Vec3,
+    pub associated_vector: AssociatedVector,
+    pub unit_vector: Vec3,
+    pub delta: f32,
+    
 }
 
 
 fn make_vector(
     commands: &mut Commands,
     vec: Vec3,
+    associated_vector: AssociatedVector,
     crew_render_layer: RenderLayers,
     mesh_handle: Handle<Mesh>,
     material_handle: Handle<StandardMaterial>
@@ -331,11 +418,12 @@ fn make_vector(
         On::<Pointer<Drag>>::run(move |
             event: Listener<Pointer<Drag>>,
             mut vector_sphere_movement_writer: EventWriter<VectorSphereMovementEvent> | {
-            send_movement_vector(event.delta.x, vec, vector_sphere_movement_writer);
+            send_movement_vector(event.delta.x, vec, associated_vector.clone(), vector_sphere_movement_writer);
         }),
     )).id();
 }
 
+#[derive(Clone)]
 pub enum AssociatedVector {
     V1,
     V2,
@@ -473,14 +561,15 @@ pub fn setup_scene(
     ));
 
     
-    let v1 = Vec3 { x: 1.0, y: 1.0, z: 0.0 }.normalize();
-    let v2 = Vec3 { x: 0.0, y: 0.3, z: 0.4 }.normalize();
-    let v3 = Vec3 { x: 0.7, y: 0.1, z: 0.6 }.normalize();
+    let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 }.normalize();
+    let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 }.normalize();
+    let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 }.normalize();
 
     
     let standard_basis_vector_x = make_vector(
         commands,
         v1,
+        AssociatedVector::V1,
         crew_render_layer,
         cylinder_handle.clone(),
         basis_vector_1
@@ -488,6 +577,7 @@ pub fn setup_scene(
     let standard_basis_vector_y = make_vector(
         commands,
         v2,
+        AssociatedVector::V2,
         crew_render_layer,
         cylinder_handle.clone(),
         basis_vector_2
@@ -495,6 +585,7 @@ pub fn setup_scene(
     let standard_basis_vector_z = make_vector(
         commands,
         v3,
+        AssociatedVector::V3,
         crew_render_layer,
         cylinder_handle.clone(),
         basis_vector_3
@@ -537,12 +628,15 @@ pub fn disable_pan_orbit_system (
     }
 }
 
-fn send_movement_vector(delta: f32, unit_vector: Vec3, mut writer: EventWriter<VectorSphereMovementEvent>) {
+fn send_movement_vector(delta: f32, unit_vector: Vec3, associated_vector: AssociatedVector, mut writer: EventWriter<VectorSphereMovementEvent>) {
     let delta = delta * 0.02;
-    let delta_vec = unit_vector.mul_add(Vec3 {x: delta, y: delta, z: delta }, Vec3::ZERO);
+    // let delta_vec = unit_vector.mul_add(Vec3 {x: delta, y: delta, z: delta }, Vec3::ZERO);
     writer.send( 
         VectorSphereMovementEvent {
-            delta_vec3: delta_vec,
+            associated_vector: associated_vector,
+            unit_vector: unit_vector,
+            delta: delta,
+            
         }
     );
 }
@@ -579,10 +673,14 @@ pub fn vector_sphere_movement_system(
     mut basis_vector_query: Query<(&mut Transform), (With<VectorSphereBasisVector>, Without<VectorSphere>)>,
 ) {
     for movement_event in movement_reader.read() {
+        let delta_vector = movement_event.unit_vector.mul_add(
+            Vec3 {x: movement_event.delta, y: movement_event.delta, z: movement_event.delta },
+             Vec3::ZERO
+        );
         let mut can_move = false;
         
         for mut vector_sphere_transform in vector_sphere_query.iter_mut() {
-            let outcome = vector_sphere_transform.translation + movement_event.delta_vec3;
+            let outcome = vector_sphere_transform.translation + delta_vector;
 
             if in_bounds(&outcome, -10.0, 10.0) {
                 vector_sphere_transform.translation = outcome;
@@ -593,7 +691,7 @@ pub fn vector_sphere_movement_system(
         for mut basis_vector_transform in basis_vector_query.iter_mut() {
             if can_move {
                 basis_vector_transform.translation =
-                    basis_vector_transform.translation + movement_event.delta_vec3;
+                    basis_vector_transform.translation + delta_vector;
             }
         }
     }
