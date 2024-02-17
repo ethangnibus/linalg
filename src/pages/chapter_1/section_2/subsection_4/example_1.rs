@@ -98,9 +98,9 @@ fn create_custom_cube_mesh(
     v2: Vec3,
     v3: Vec3,
 ) {
-    let v1 = v1 * 0.1;
-    let v2 = v2 * 0.1;
-    let v3 = v3 * 0.1;
+    // let v1 = v1 * 0.1;
+    // let v2 = v2 * 0.1;
+    // let v3 = v3 * 0.1;
 
     let mesh = Mesh::new(PrimitiveTopology::TriangleList)
     .with_inserted_attribute(
@@ -580,7 +580,6 @@ pub fn setup_scene(
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     crew_id: u8,
 ) {
-    
     let crew_render_layer = RenderLayers::layer(crew_id);
 
     let sphere_handle = meshes.add(Mesh::from(
@@ -657,7 +656,7 @@ pub fn setup_scene(
         materials,
         crew_render_layer
     );
-    
+
 
     // The cube that will be rendered to the texture.
     let sphere = commands
@@ -699,9 +698,9 @@ pub fn setup_scene(
     // let v1 = Vec3 { x: 1.0, y: 0.5, z: 0.0 }.normalize();
     // let v2 = Vec3 { x: 0.0, y: 2.0, z: 0.3 }.normalize();
     // let v3 = Vec3 { x: 0.3, y: 0.2, z: 1.0 }.normalize();
-    let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 }.normalize();
-    let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 }.normalize();
-    let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 }.normalize();
+    let v1 = Vec3 { x: 1.0, y: 1.0, z: 1.0 }; // .normalize();
+    let v2 = Vec3 { x: 1.0, y: -1.0, z: 1.0 }; // .normalize();
+    let v3 = Vec3 { x: 1.0, y: 1.0, z: -1.0 }; //.normalize();
 
 
     
