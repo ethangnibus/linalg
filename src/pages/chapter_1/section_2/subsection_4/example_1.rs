@@ -108,37 +108,69 @@ fn create_custom_cube_mesh(
         // Each array is an [x, y, z] coordinate in local space.
         // Meshes always rotate around their local [0, 0, 0] when a rotation is applied to their Transform.
         // By centering our mesh around the origin, rotating the mesh preserves its center of mass.
+        // vec![
+        //     // top (facing towards +y) 
+        //     [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[0] = lth // [-0.5, 0.5, -0.5], // vertex with index 0 //// -v1 + v2 - v3
+        //     [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[1] = rth // [0.5, 0.5, -0.5], // vertex with index 1 //// v1 + v2 - v3
+        //     [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[2] = rts             // [0.5, 0.5, 0.5], // etc. until 23 //// v1 + v2 + v3
+        //     [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[3] = lts                // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
+        //     // bottom   (-y)
+        //     [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[4] = lbh                //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+        //     [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[5] = rbh             //[0.5, -0.5, -0.5], //// v1 - v2 - v3
+        //     [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[6] = rbs             //[0.5, -0.5, 0.5], //// v1 - v2 + v3
+        //     [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // vertex_buffer[7] = lbs                //[-0.5, -0.5, 0.5], //// -v1 - v2 + v3
+        //     // right    (+x)
+        //     [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[8] = rbh             // [0.5, -0.5, -0.5], //// v1 - v2 - v3
+        //     [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[9] = rbs             // [0.5, -0.5, 0.5], //// v1 - v2 + v3
+        //     [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[10] = rts             //[0.5, 0.5, 0.5], //// v1 + v2 + v3           // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
+        //     [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[11] = rth             //[0.5, 0.5, -0.5], //// v1 + v2 - v3
+        //     // left     (-x)
+        //     [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[12] = lbh                //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+        //     [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z -v2.z + v3.z], //  vertex_buffer[13] = lbs               // [-0.5, -0.5, 0.5], //// -v1 - v2 + v3
+        //     [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[14] = lts                // [-0.5, 0.5, 0.5], ////  -v1 + v2 + v3
+        //     [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[15] = lth                // [-0.5, 0.5, -0.5], ////  -v1 + v2 - v3
+        //     // back     (+z)
+        //     [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // vertex_buffer[16] = lbs                // [-0.5, -0.5, 0.5], ////  -v1 - v2 + v3
+        //     [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[17] = lts                // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
+        //     [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[18] = rts             // [0.5, 0.5, 0.5], //// v1 + v2 + v3
+        //     [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[19] = rbs             // [0.5, -0.5, 0.5], //// v1 - v2 + v3
+        //     // forward  (-z)
+        //     [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[20] = lbh                // [-0.5, -0.5, -0.5], //// -v1 - v2 - v3
+        //     [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[21] = lth                // [-0.5, 0.5, -0.5], //// -v1 + v2 - v3
+        //     [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[22] = rth             // [0.5, 0.5, -0.5], //// v1 + v2 - v3
+        //     [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[23] = rbh             // [0.5, -0.5, -0.5], //// v1 - v2 - v3
+        // ],
         vec![
-            // top (facing towards +y) 
-            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[0] = lth // [-0.5, 0.5, -0.5], // vertex with index 0 //// -v1 + v2 - v3
-            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[1] = rth // [0.5, 0.5, -0.5], // vertex with index 1 //// v1 + v2 - v3
-            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[2] = rts             // [0.5, 0.5, 0.5], // etc. until 23 //// v1 + v2 + v3
-            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[3] = lts                // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
+            // top (facing towards +y)
+            [-0.5, 0.5, -0.5], // vertex with index 0
+            [0.5, 0.5, -0.5], // vertex with index 1
+            [0.5, 0.5, 0.5], // etc. until 23
+            [-0.5, 0.5, 0.5],
             // bottom   (-y)
-            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[4] = lbh                //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
-            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[5] = rbh             //[0.5, -0.5, -0.5], //// v1 - v2 - v3
-            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[6] = rbs             //[0.5, -0.5, 0.5], //// v1 - v2 + v3
-            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // vertex_buffer[7] = lbs                //[-0.5, -0.5, 0.5], //// -v1 - v2 + v3
+            [-0.5, -0.5, -0.5],
+            [0.5, -0.5, -0.5],
+            [0.5, -0.5, 0.5],
+            [-0.5, -0.5, 0.5],
             // right    (+x)
-            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[8] = rbh             // [0.5, -0.5, -0.5], //// v1 - v2 - v3
-            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[9] = rbs             // [0.5, -0.5, 0.5], //// v1 - v2 + v3
-            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[10] = rts             //[0.5, 0.5, 0.5], //// v1 + v2 + v3           // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
-            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[11] = rth             //[0.5, 0.5, -0.5], //// v1 + v2 - v3
+            [0.5, -0.5, -0.5],
+            [0.5, -0.5, 0.5],
+            [0.5, 0.5, 0.5], // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
+            [0.5, 0.5, -0.5],
             // left     (-x)
-            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[12] = lbh                //[-0.5, -0.5, -0.5], //// -v1 - v2 - v3
-            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z -v2.z + v3.z], //  vertex_buffer[13] = lbs               // [-0.5, -0.5, 0.5], //// -v1 - v2 + v3
-            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[14] = lts                // [-0.5, 0.5, 0.5], ////  -v1 + v2 + v3
-            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[15] = lth                // [-0.5, 0.5, -0.5], ////  -v1 + v2 - v3
+            [-0.5, -0.5, -0.5],
+            [-0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [-0.5, 0.5, -0.5],
             // back     (+z)
-            [-v1.x - v2.x + v3.x, -v1.y - v2.y + v3.y, -v1.z - v2.z + v3.z], // vertex_buffer[16] = lbs                // [-0.5, -0.5, 0.5], ////  -v1 - v2 + v3
-            [-v1.x + v2.x + v3.x, -v1.y + v2.y + v3.y, -v1.z + v2.z + v3.z], // vertex_buffer[17] = lts                // [-0.5, 0.5, 0.5], //// -v1 + v2 + v3
-            [v1.x + v2.x + v3.x, v1.y + v2.y + v3.y, v1.z + v2.z + v3.z], //    vertex_buffer[18] = rts             // [0.5, 0.5, 0.5], //// v1 + v2 + v3
-            [v1.x - v2.x + v3.x, v1.y - v2.y + v3.y, v1.z - v2.z + v3.z], //    vertex_buffer[19] = rbs             // [0.5, -0.5, 0.5], //// v1 - v2 + v3
+            [-0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [0.5, 0.5, 0.5],
+            [0.5, -0.5, 0.5],
             // forward  (-z)
-            [-v1.x - v2.x - v3.x, -v1.y - v2.y - v3.y, -v1.z - v2.z - v3.z], // vertex_buffer[20] = lbh                // [-0.5, -0.5, -0.5], //// -v1 - v2 - v3
-            [-v1.x + v2.x - v3.x, -v1.y + v2.y - v3.y, -v1.z + v2.z - v3.z], // vertex_buffer[21] = lth                // [-0.5, 0.5, -0.5], //// -v1 + v2 - v3
-            [v1.x + v2.x - v3.x, v1.y + v2.y - v3.y, v1.z + v2.z - v3.z], //    vertex_buffer[22] = rth             // [0.5, 0.5, -0.5], //// v1 + v2 - v3
-            [v1.x - v2.x - v3.x, v1.y - v2.y - v3.y, v1.z - v2.z - v3.z], //    vertex_buffer[23] = rbh             // [0.5, -0.5, -0.5], //// v1 - v2 - v3
+            [-0.5, -0.5, -0.5],
+            [-0.5, 0.5, -0.5],
+            [0.5, 0.5, -0.5],
+            [0.5, -0.5, -0.5],
         ],
 
         // Here's which elements correspond with each point:
