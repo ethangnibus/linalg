@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::render::view::RenderLayers;
 use super::util::subsection::SubsectionGameEntity;
 use super::util::theme;
 use super::view;
@@ -34,6 +35,8 @@ pub struct RoutingEvent {
 
 
 
+#[derive(Component)]
+pub struct Spaceship;
 
 pub fn routing_system(
     mut commands: Commands,
@@ -55,6 +58,37 @@ pub fn routing_system(
     mut images: ResMut<Assets<Image>>,
 ) {
     for event in routing_event_reader.read() {
+
+    //     commands.spawn(
+    //         (DirectionalLightBundle {
+    //             directional_light: DirectionalLight {
+    //                 shadows_enabled: true,
+    //                 illuminance: 50000.0,
+    //                 ..default()
+    //             },
+    //             transform: Transform {
+    //                 translation: Vec3 { x: 15.0, y: 8.0, z: 15.0 },
+    //                 ..default()
+    //             },
+    //             ..default()
+    //         },
+    //         RenderLayers::layer(1),
+    //     )
+    // );
+
+        let space_bundle = commands.spawn((
+            SceneBundle {
+                scene: asset_server.load("Airplane.glb#Scene0"),
+                transform: Transform {
+                    translation: Vec3 { x: 0.0, y: 0.0, z: 0.0},
+                    ..default()
+                },
+                visibility: Visibility::Visible,
+                ..default()
+            },
+            RenderLayers::layer(1),
+            Spaceship,
+        )).id();
         
 
         for (view_list, view_list_children, mut scrolling_list, mut style) in view_list_query.iter_mut() {

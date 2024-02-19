@@ -1,31 +1,32 @@
 #![allow(warnings)]
 use bevy::core_pipeline::clear_color::ClearColorConfig;
+use bevy::pbr::CascadeShadowConfigBuilder;
 use bevy::prelude::*;
 use bevy::render::camera::{RenderTarget, Viewport};
-use bevy::render::render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages};
+use bevy::render::render_resource::{
+    Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
+};
 use bevy::render::view::{visibility, RenderLayers};
 use bevy::ui::FocusPolicy;
 use bevy::window::{WindowResized, WindowResolution};
-pub mod ui;
 pub mod pages;
+pub mod ui;
 use bevy_mod_picking::picking_core::Pickable;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
+use std::f32::consts::PI;
 use ui::util::{style, theme};
 
-use ui::{fullscreen_camera, subsection_cameras};
-use ui::view::UiResizeEvent;
 use bevy_inspector_egui::quick::WorldInspectorPlugin; // FIXME: REMOVE IN PROD
 use std::f32::consts::TAU;
-
-
+use ui::view::UiResizeEvent;
+use ui::{fullscreen_camera, subsection_cameras};
 
 fn main() {
     App::new()
         .insert_resource(Msaa::Sample4)
         // .insert_resource(Msaa::Sample4)
         .add_plugins(PanOrbitCameraPlugin)
-        .add_plugins(DefaultPlugins.set(
-            WindowPlugin {
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 fit_canvas_to_parent: true,
                 title: "linalg".to_string(),
@@ -50,7 +51,6 @@ struct ResolutionText;
 
 #[derive(Component)]
 pub struct TextbookCamera;
-
 
 fn setup_3d_camera(
     commands: &mut Commands,
@@ -120,12 +120,10 @@ fn setup_3d_camera(
 
     // // let crew_render_layer = RenderLayers::layer(1);
 
-
     // // // let translation = Vec3::new(-2.0, 2.5, 5.0);
     // let translation = Vec3::new(12.0, 7.0, 12.0);
     // let radius = translation.length();
 
-    
     // let camera = commands.spawn((
     //     // subsection_cameras::PanOrbitCamera {
     //     //     radius,
@@ -161,8 +159,6 @@ fn setup_3d_camera(
     //     Pickable::IGNORE,
     // )).id();
 
-
-    
     // // commands.spawn((
     // //     Camera3dBundle {
     // //         transform: Transform::from_xyz(3.0, 3.0, 3.0).looking_at(Vec3::ZERO, Vec3::Y),
@@ -194,8 +190,7 @@ fn setup_cameras(
 
     let window = windows.single();
     println!("window res: {:?}", window.resolution);
-    
-    
+
     // setup_3d_camera(&mut commands, &window, &mut images, theme.as_ref());
     // setup_2d_camera(&mut commands, &window, &mut images, theme.as_ref());
 
@@ -214,7 +209,6 @@ fn setup_cameras(
     let translation = Vec3::new(12.0, 7.0, 12.0);
     let radius = translation.length();
 
-
     let crew_render_layer = RenderLayers::layer(1);
     // commands.spawn((
     //     PointLightBundle {
@@ -230,19 +224,61 @@ fn setup_cameras(
     //     crew_render_layer,
     // ));
 
-    // key light
+    // // key light
+    // commands.spawn((
+    //     PointLightBundle {
+    //         point_light: PointLight {
+    //             intensity: 5000.0,
+    //             radius: 40.0,
+    //             shadows_enabled: true,
+    //             ..default()
+    //         },
+    //         transform: Transform::from_xyz(8.0, 5.0, 10.0),
+    //         ..default()
+    //     },
+    //     crew_render_layer,
+    // ));
+    //     commands.spawn(
+    //         (DirectionalLightBundle {
+    //             directional_light: DirectionalLight {
+    //                 shadows_enabled: true,
+    //                 illuminance: 50000.0,
+    //                 ..default()
+    //             },
+    //             transform: Transform {
+    //                 translation: Vec3 { x: 15.0, y: 8.0, z: 15.0 },
+    //                 ..default()
+    //             },
+    //             ..default()
+    //         },
+    //         RenderLayers::layer(1),
+    //     )
+    // );
+    // directional 'sun' light
     commands.spawn((
-        PointLightBundle {
-            point_light: PointLight {
-                intensity: 5000.0,
-                radius: 40.0,
-                shadows_enabled: true,
+        DirectionalLightBundle {
+            directional_light: DirectionalLight {
+                illuminance: 20000.0,
+                shadows_enabled: false,
                 ..default()
             },
-            transform: Transform::from_xyz(8.0, 5.0, 10.0),
+            transform: Transform {
+                translation: Vec3::new(0.0, 2.0, 0.0),
+                rotation: Quat::from_rotation_z(-PI / 4.),
+                ..default()
+            },
+            // The default cascade config is designed to handle large scenes.
+            // As this example has a much smaller world, we can tighten the shadow
+            // bounds for better visual quality.
+            // cascade_shadow_config: CascadeShadowConfigBuilder {
+            //     first_cascade_far_bound: 4.0,
+            //     maximum_distance: 10.0,
+            //     ..default()
+            // }
+            // .into(),
             ..default()
         },
-        crew_render_layer,
+        RenderLayers::layer(1),
     ));
 
     // // ambient light
@@ -287,57 +323,56 @@ fn setup_cameras(
     //     // crew_render_layer,
     // ));
 
-    let camera = commands.spawn((
-        PanOrbitCamera {
-            // Set focal point (what the camera should look at)
-            focus: Vec3::new(0.0, 0.0, 0.0),
-            // Set the starting position, relative to focus (overrides camera's transform).
-            alpha: Some(TAU / 8.0),
-            beta: Some(TAU / 8.0),
-            radius: Some(15.0),
-            // Set limits on rotation and zoom
-            // alpha_upper_limit: Some(TAU / 4.0),
-            // alpha_lower_limit: Some(-TAU / 4.0),
-            // beta_upper_limit: Some(TAU / 3.0),
-            // beta_lower_limit: Some(-TAU / 3.0),
-            zoom_upper_limit: Some(50.0),
-            zoom_lower_limit: Some(1.0),
-            // // Adjust sensitivity of controls
-            // orbit_sensitivity: 1.5,
-            // pan_sensitivity: 0.5,
-            // zoom_sensitivity: 0.5,
-            // Allow the camera to go upside down
-            allow_upside_down: false,
-            // // Change the controls (these match Blender)
-            // button_orbit: MouseButton::Middle,
-            // button_pan: MouseButton::Middle,
-            // modifier_pan: Some(KeyCode::ShiftLeft),
-            // // Reverse the zoom direction
-            // reversed_zoom: true,
-            ..default()
-        },
-        TextbookCamera,
-        Camera3dBundle {
-            camera_3d: Camera3d {
-                clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
+    let camera = commands
+        .spawn((
+            PanOrbitCamera {
+                // Set focal point (what the camera should look at)
+                focus: Vec3::new(0.0, 0.0, 0.0),
+                // Set the starting position, relative to focus (overrides camera's transform).
+                alpha: Some(TAU / 8.0),
+                beta: Some(TAU / 8.0),
+                radius: Some(15.0),
+                // Set limits on rotation and zoom
+                // alpha_upper_limit: Some(TAU / 4.0),
+                // alpha_lower_limit: Some(-TAU / 4.0),
+                // beta_upper_limit: Some(TAU / 3.0),
+                // beta_lower_limit: Some(-TAU / 3.0),
+                zoom_upper_limit: Some(50.0),
+                zoom_lower_limit: Some(1.0),
+                // // Adjust sensitivity of controls
+                // orbit_sensitivity: 1.5,
+                // pan_sensitivity: 0.5,
+                // zoom_sensitivity: 0.5,
+                // Allow the camera to go upside down
+                allow_upside_down: false,
+                // // Change the controls (these match Blender)
+                // button_orbit: MouseButton::Middle,
+                // button_pan: MouseButton::Middle,
+                // modifier_pan: Some(KeyCode::ShiftLeft),
+                // // Reverse the zoom direction
+                // reversed_zoom: true,
                 ..default()
             },
-            transform: Transform::from_translation(translation)
-            .looking_at(Vec3::ZERO, Vec3::Y),
-            ..default()
-        },
-        // BloomSettings {
-        //     intensity: 1.0,
-        //     ..default()
-        // },
-        // UI config is a separate component
-        UiCameraConfig { show_ui: true },
-        // crew_render_layer,
-        Pickable::IGNORE,
-    )).id();
+            TextbookCamera,
+            Camera3dBundle {
+                camera_3d: Camera3d {
+                    clear_color: ClearColorConfig::Custom(theme::background_color(&theme)),
+                    ..default()
+                },
+                transform: Transform::from_translation(translation).looking_at(Vec3::ZERO, Vec3::Y),
+                ..default()
+            },
+            // BloomSettings {
+            //     intensity: 1.0,
+            //     ..default()
+            // },
+            // UI config is a separate component
+            UiCameraConfig { show_ui: true },
+            // crew_render_layer,
+            Pickable::IGNORE,
+        ))
+        .id();
 }
-
-
 
 // /// This system shows how to request the window to a new resolution
 // fn toggle_resolution(keys: Res<Input<KeyCode>>, mut windows: Query<&mut Window>) {
@@ -367,11 +402,10 @@ fn on_resize_system(
     for _event in resize_reader.read() {
         resize_event_writer.send(UiResizeEvent);
     }
-    
+
     // let mut text = q.single_mut();
     // for e in resize_reader.read() {
     //     // When resolution is being changed
     //     text.sections[0].value = format!("{:.1} x {:.1}", e.width, e.height);
     // }
 }
-

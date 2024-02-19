@@ -9,6 +9,7 @@ use bevy::render::mesh::VertexAttributeValues;
 use bevy::render::render_resource::encase::vector;
 use bevy::render::render_resource::PrimitiveTopology;
 use bevy::render::view::visibility;
+use bevy::render::Render;
 use bevy::ui::FocusPolicy;
 use bevy_mod_picking::prelude::*;
 
@@ -37,10 +38,29 @@ impl Plugin for SystemsPlugin {
                 basis_vectors_movement_system,
                 disable_pan_orbit_system,
                 move_span_cube_vertices.after(vector_sphere_movement_system),
-            ));
+            ))
+            .add_systems(Startup, spawn_spaceship);
     }
 }
 
+#[derive(Component)]
+pub struct Spaceship;
+
+pub fn spawn_spaceship(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    // let space_bundle = commands.spawn((
+    //     SceneBundle {
+    //         scene: asset_server.load("SPACESHIP.glb#Scene0"),
+    //         visibility: Visibility::Visible,
+    //         ..default()
+    //     },
+    //     RenderLayers::layer(1),
+    //     Spaceship,
+    // )).id();
+
+}
 #[derive(Event)]
 pub struct VectorSphereSelectionEvent;
 
@@ -267,7 +287,7 @@ fn create_custom_cube_mesh(
         PbrBundle {
             mesh: mesh_handle.clone(),
             material: materials.add(StandardMaterial {
-                base_color: theme::line_color_transparent(theme, 0.4).into(),
+                base_color: theme::line_color_transparent(theme, 0.5).into(),
                 alpha_mode: AlphaMode::Blend,
                 unlit: true,
                 ..default()
@@ -499,7 +519,7 @@ fn push_plane_to_sphere_vector(
         (v00 - v01).cross(v00 - v10).normalize(),
         v11,
     );
-    println!("\nPlane to point: {:?}", plane_to_point);
+    // println!("\nPlane to point: {:?}", plane_to_point);
 
     for index in v00_indices.iter() { //
         vertex_buffer[*index][0] += plane_to_point.x;

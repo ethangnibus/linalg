@@ -109,7 +109,7 @@ pub fn line_color_transparent(theme: &CurrentTheme, transparency: f32) -> Color 
             return MATRIX_LIGHT_GREEN;
         }
         _ => {
-            return Color::rgba(0.35686275, 0.85882354, 0.85882354, transparency);
+            return Color::rgba(0.35686275 * 1.2, 0.85882354 * 1.2, 0.85882354 * 1.2, transparency);
         }
     }
 }
