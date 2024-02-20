@@ -4,6 +4,7 @@ use bevy::{
     render::view::RenderLayers,
     prelude::*,
 };
+use bevy_mod_picking::picking_core::Pickable;
 
 use super::{subsection, theme};
 
@@ -74,6 +75,7 @@ pub fn spawn_axis(
             // SpinnyCube,
             crew_render_layer,
             subsection::SubsectionGameEntity,
+            Pickable::IGNORE,
         ))
         .id();
     let z_axis = commands
@@ -93,6 +95,7 @@ pub fn spawn_axis(
             // SpinnyCube,
             crew_render_layer,
             subsection::SubsectionGameEntity,
+            Pickable::IGNORE,
         ))
         .id();
     let x_axis = commands
@@ -112,6 +115,7 @@ pub fn spawn_axis(
             // SpinnyCube,
             crew_render_layer,
             subsection::SubsectionGameEntity,
+            Pickable::IGNORE,
         ))
         .id();
 
@@ -171,6 +175,7 @@ pub fn spawn_grid(
             // SpinnyCube,
             crew_render_layer,
             subsection::SubsectionGameEntity,
+            Pickable::IGNORE,
         ))
         .id();
 
@@ -193,6 +198,7 @@ pub fn spawn_grid(
                 // SpinnyCube,
                 crew_render_layer,
                 subsection::SubsectionGameEntity,
+                Pickable::IGNORE,
             ))
             .id();
 
