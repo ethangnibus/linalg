@@ -386,6 +386,14 @@ fn move_span_cube_vertices(
                                         &rbs_indices,
                                         &rbh_indices,
                                     );
+                                    push_plane_to_axis(
+                                        AssociatedVector::V1,
+                                        vertex_buffer,
+                                        &lth_indices,
+                                        &lts_indices,
+                                        &lbs_indices,
+                                        &lbh_indices,
+                                    );
                                 } else if x.dot(movement_event.unit_vector) < 0.0 {
                                     // - x
                                     push_plane_to_sphere_vector(
@@ -395,6 +403,14 @@ fn move_span_cube_vertices(
                                         &lts_indices,
                                         &lbs_indices,
                                         &lbh_indices,
+                                    );
+                                    push_plane_to_axis(
+                                        AssociatedVector::V1,
+                                        vertex_buffer,
+                                        &rth_indices,
+                                        &rts_indices,
+                                        &rbs_indices,
+                                        &rbh_indices,
                                     );
                                 }
                             }
@@ -409,6 +425,14 @@ fn move_span_cube_vertices(
                                         &lts_indices,
                                         &rts_indices,
                                     );
+                                    push_plane_to_axis(
+                                        AssociatedVector::V2,
+                                        vertex_buffer,
+                                        &lbh_indices,
+                                        &rbh_indices,
+                                        &lbs_indices,
+                                        &rbs_indices,
+                                    );
                                 } else if x.dot(movement_event.unit_vector) < 0.0 {
                                     // -y
                                     push_plane_to_sphere_vector(
@@ -418,6 +442,14 @@ fn move_span_cube_vertices(
                                         &rbh_indices,
                                         &lbs_indices,
                                         &rbs_indices,
+                                    );
+                                    push_plane_to_axis(
+                                        AssociatedVector::V2,
+                                        vertex_buffer,
+                                        &lth_indices,
+                                        &rth_indices,
+                                        &lts_indices,
+                                        &rts_indices,
                                     );
                                 }
 
@@ -433,6 +465,14 @@ fn move_span_cube_vertices(
                                         &lbs_indices,
                                         &rbs_indices,
                                     );
+                                    push_plane_to_axis(
+                                        AssociatedVector::V3,
+                                        vertex_buffer,
+                                        &lth_indices,
+                                        &rth_indices,
+                                        &lbh_indices,
+                                        &rbh_indices,
+                                    );
                                 } else if x.dot(movement_event.unit_vector) < 0.0 {
                                     // -z
                                     push_plane_to_sphere_vector(
@@ -442,6 +482,14 @@ fn move_span_cube_vertices(
                                         &rth_indices,
                                         &lbh_indices,
                                         &rbh_indices,
+                                    );
+                                    push_plane_to_axis(
+                                        AssociatedVector::V3,
+                                        vertex_buffer,
+                                        &lts_indices,
+                                        &rts_indices,
+                                        &lbs_indices,
+                                        &rbs_indices,
                                     );
                                 }
 
@@ -549,6 +597,68 @@ fn push_plane_to_sphere_vector(
         vertex_buffer[*index][2] += plane_to_point.z;
     }
 }
+
+fn push_plane_to_axis(
+    associated_vector: AssociatedVector,
+    vertex_buffer: &mut Vec<[f32; 3]>,
+    v00_indices: &[usize; 3],
+    v01_indices: &[usize; 3],
+    v10_indices: &[usize; 3],
+    v11_indices: &[usize; 3],
+) {
+    let v00 = Vec3::from(vertex_buffer[v00_indices[0]]);
+    let v01 = Vec3::from(vertex_buffer[v01_indices[0]]);
+    let v10 = Vec3::from(vertex_buffer[v10_indices[0]]);
+    let v11 = Vec3::from(vertex_buffer[v11_indices[0]]);
+
+    match associated_vector {
+        AssociatedVector::V1 => {
+            for index in v00_indices.iter() { //
+                vertex_buffer[*index][0] = 0.0;
+            }
+            for index in v01_indices.iter() { //
+                vertex_buffer[*index][0] = 0.0;
+            }
+            for index in v10_indices.iter() { //
+                vertex_buffer[*index][0] = 0.0;
+            }
+            for index in v11_indices.iter() { //
+                vertex_buffer[*index][0] = 0.0;
+            }
+        }
+        AssociatedVector::V2 => {
+            for index in v00_indices.iter() { //
+                vertex_buffer[*index][1] = 0.0;
+            }
+            for index in v01_indices.iter() { //
+                vertex_buffer[*index][1] = 0.0;
+            }
+            for index in v10_indices.iter() { //
+                vertex_buffer[*index][1] = 0.0;
+            }
+            for index in v11_indices.iter() { //
+                vertex_buffer[*index][1] = 0.0;
+            }
+
+        }
+        AssociatedVector::V3 => {
+            for index in v00_indices.iter() {
+                vertex_buffer[*index][2] = 0.0;
+            }
+            for index in v01_indices.iter() {
+                vertex_buffer[*index][2] = 0.0;
+            }
+            for index in v10_indices.iter() {
+                vertex_buffer[*index][2] = 0.0;
+            }
+            for index in v11_indices.iter() {
+                vertex_buffer[*index][2] = 0.0;
+            }
+        }
+    }
+}
+
+
 
 fn shortest_vector_from_plane_to_point(point: Vec3, plane_normal: Vec3, plane_point: Vec3) -> Vec3 {
     // Project the point onto the plane
@@ -851,8 +961,8 @@ pub fn setup_scene(
         vector_mesh_handle.clone(),
         basis_vector_1,
         theme::ColorFunction {
-            background: theme::line_alternate_color_3_transparent,
-            border: theme::line_alternate_color_3_transparent,
+            background: theme::line_alternate_color_1_transparent,
+            border: theme::line_alternate_color_1_transparent,
         },
     );
     let v1_arrow_entity = commands.spawn(SceneBundle {
