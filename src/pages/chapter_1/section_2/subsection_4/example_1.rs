@@ -926,7 +926,7 @@ pub fn setup_scene(
         On::<Pointer<Click>>::send_event::<VectorSphereSelectionEvent>(),
     )).id();
     let spaceship_entity = commands.spawn(SceneBundle {
-        scene: asset_server.load("spaceship2.gltf#Scene0"),
+        scene: asset_server.load("spaceship.glb#Scene0"),
         transform: Transform {
             scale: Vec3 {x: 0.15, y: 0.15, z: 0.15},
             ..default()

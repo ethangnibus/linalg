@@ -99,11 +99,11 @@ pub fn vector_color_3d_transparent(theme: &CurrentTheme) -> Color {
                 MATRIX_LIGHT_GREEN.r(),
                 MATRIX_LIGHT_GREEN.g(),
                 MATRIX_LIGHT_GREEN.b(),
-                0.1,
+                0.05,
             );
         }
         _ => {
-            return Color::rgba(0.0, 0.0, 1.0, 0.05);
+            return Color::rgba(0.0, 0.0, 1.0, 0.01);
         }
     }
 }
@@ -152,11 +152,11 @@ pub fn line_alternate_color_1_transparent(theme: &CurrentTheme) -> Color {
                 MATRIX_LIGHT_GREEN.r(),
                 MATRIX_LIGHT_GREEN.g(),
                 MATRIX_LIGHT_GREEN.b(),
-                0.1,
+                0.05,
             );
         }
         _ => {
-            return Color::rgba(0.95686275, 0.8, 0.38431373, 0.1);
+            return Color::rgba(0.95686275, 0.8, 0.38431373, 0.05);
         }
     }
 }
@@ -178,11 +178,11 @@ pub fn line_alternate_color_2_transparent(theme: &CurrentTheme) -> Color {
                 MATRIX_LIGHT_GREEN.r(),
                 MATRIX_LIGHT_GREEN.g(),
                 MATRIX_LIGHT_GREEN.b(),
-                0.1,
+                0.05,
             );
         }
         _ => {
-            return Color::rgba(0.67058825, 0.9372549,0.85882354, 0.1);
+            return Color::rgba(0.67058825, 0.9372549,0.85882354, 0.05);
         }
     }
 }
@@ -204,11 +204,11 @@ pub fn line_alternate_color_3_transparent(theme: &CurrentTheme) -> Color {
                 MATRIX_LIGHT_GREEN.r(),
                 MATRIX_LIGHT_GREEN.g(),
                 MATRIX_LIGHT_GREEN.b(),
-                0.1,
+                0.05,
             );
         }
         _ => {
-            return Color::rgba(0.827451, 0.18431373, 0.18431373, 0.1);
+            return Color::rgba(0.827451, 0.18431373, 0.18431373, 0.05);
         }
     }
 }
