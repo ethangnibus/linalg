@@ -18,6 +18,7 @@ pub fn get(
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
     mut images: &mut ResMut<Assets<Image>>,
+    mut asset_server: &mut Res<AssetServer>,
     view_list_entity: Entity,
 ) {
 

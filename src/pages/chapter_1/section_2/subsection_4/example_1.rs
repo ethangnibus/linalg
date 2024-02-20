@@ -12,6 +12,8 @@ use bevy::render::view::visibility;
 use bevy::render::Render;
 use bevy::ui::FocusPolicy;
 use bevy_mod_picking::prelude::*;
+// use bevy::render::render_resource::PrimitiveTopology::LineStrip;
+use bevy::render::render_resource::PrimitiveTopology::LineList;
 
 use bevy::{
     render::view::RenderLayers,
@@ -117,7 +119,7 @@ fn create_custom_cube_mesh(
     v1: Vec3,
     v2: Vec3,
     v3: Vec3,
-) {
+) -> Entity {
     let v1 = v1 * 0.1;
     let v2 = v2 * 0.1;
     let v3 = v3 * 0.1;
@@ -280,14 +282,18 @@ fn create_custom_cube_mesh(
     ])));
 
     let mesh_handle = meshes.add(mesh);
-    commands.spawn((
+    let span_entity = commands.spawn((
         SpanCube {
             quad_handle: mesh_handle.clone(),
+        },
+        theme::ColorFunction {
+            border: theme::line_color_transparent,
+            background: theme::line_color_transparent,
         },
         PbrBundle {
             mesh: mesh_handle.clone(),
             material: materials.add(StandardMaterial {
-                base_color: theme::line_color_transparent(theme, 0.5).into(),
+                base_color: theme::line_color_transparent(theme).into(),
                 alpha_mode: AlphaMode::Blend,
                 unlit: true,
                 ..default()
@@ -296,7 +302,8 @@ fn create_custom_cube_mesh(
         },
         Pickable::IGNORE,
         crew_render_layer,
-    ));
+    )).id();
+    return span_entity;
     // commands.insert_resource(SpanCubeResource{
     //     quad_handle: mesh_handle,
     // })
@@ -583,10 +590,12 @@ fn make_vector(
     associated_vector: AssociatedVector,
     crew_render_layer: RenderLayers,
     mesh_handle: Handle<Mesh>,
-    material_handle: Handle<StandardMaterial>
+    material_handle: Handle<StandardMaterial>,
+    color_function: theme::ColorFunction,
 ) -> Entity {
     return commands.spawn((
         VectorSphereBasisVector,
+        color_function,
         PbrBundle {
             mesh: mesh_handle.clone(),
             material: material_handle.clone(),
@@ -623,6 +632,65 @@ pub struct SpanFace {
     start: bool,
 }
 
+fn make_vector_mesh(mut meshes: &mut ResMut<Assets<Mesh>>) -> Handle<Mesh> {
+    // meshes.add()
+    let mesh = Mesh::new(PrimitiveTopology::TriangleList)
+    .with_inserted_attribute(
+        Mesh::ATTRIBUTE_POSITION,
+        // Each array is an [x, y, z] coordinate in local space.
+        // Meshes always rotate around their local [0, 0, 0] when a rotation is applied to their Transform.
+        // By centering our mesh around the origin, rotating the mesh preserves its center of mass.
+        vec![
+            // top (facing towards +y)
+            [-0.5, 0.5, -0.5], // vertex with index 0
+            [0.5, 0.5, -0.5], // vertex with index 1
+            [0.5, 0.5, 0.5], // etc. until 23
+            [-0.5, 0.5, 0.5],
+            // bottom   (-y)
+            [-0.5, -0.5, -0.5],
+            [0.5, -0.5, -0.5],
+            [0.5, -0.5, 0.5],
+            [-0.5, -0.5, 0.5],
+            // right    (+x)
+            [0.5, -0.5, -0.5],
+            [0.5, -0.5, 0.5],
+            [0.5, 0.5, 0.5], // This vertex is at the same position as vertex with index 2, but they'll have different UV and normal
+            [0.5, 0.5, -0.5],
+            // left     (-x)
+            [-0.5, -0.5, -0.5],
+            [-0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [-0.5, 0.5, -0.5],
+            // back     (+z)
+            [-0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [0.5, 0.5, 0.5],
+            [0.5, -0.5, 0.5],
+            // forward  (-z)
+            [-0.5, -0.5, -0.5],
+            [-0.5, 0.5, -0.5],
+            [0.5, 0.5, -0.5],
+            [0.5, -0.5, -0.5],
+        ],
+    )
+    // Create the triangles out of the 24 vertices we created.
+    // To construct a square, we need 2 triangles, therefore 12 triangles in total.
+    // To construct a triangle, we need the indices of its 3 defined vertices, adding them one
+    // by one, in a counter-clockwise order (relative to the position of the viewer, the order
+    // should appear counter-clockwise from the front of the triangle, in this case from outside the cube).
+    // Read more about how to correctly build a mesh manually in the Bevy documentation of a Mesh,
+    // further examples and the implementation of the built-in shapes.
+    .with_indices(Some(Indices::U32(vec![
+        0,3,1 , 1,3,2, // triangles making up the top (+y) facing side.
+        4,5,7 , 5,6,7, // bottom (-y)
+        8,11,9 , 9,11,10, // right (+x)
+        12,13,15 , 13,14,15, // left (-x)
+        16,19,17 , 17,19,18, // back (+z)
+        20,21,23 , 21,22,23, // forward (-z)
+    ])));
+
+    return meshes.add(mesh);
+}
 
 pub fn setup_scene(
     commands: &mut Commands,
@@ -630,9 +698,11 @@ pub fn setup_scene(
     film_crew_entity: Entity,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
+    mut asset_server: &mut Res<AssetServer>,
     crew_id: u8,
 ) {
     let crew_render_layer = RenderLayers::layer(crew_id);
+    
 
     let sphere_handle = meshes.add(Mesh::from(
         shape::UVSphere {
@@ -653,7 +723,8 @@ pub fn setup_scene(
 
     let sphere_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgb(1.0, 0.75, 0.90),
-        base_color: theme::vector_color_3d(theme).into(),
+        base_color: theme::vector_color_3d_transparent(theme).into(),
+        alpha_mode: AlphaMode::Blend,
         metallic: 1.0,
         reflectance: 0.1,
         perceptual_roughness: 1.0,
@@ -669,7 +740,8 @@ pub fn setup_scene(
     });
 
     let basis_vector_1 = materials.add(StandardMaterial {
-        base_color: theme::line_alternate_color_1(theme).into(),
+        base_color: theme::line_alternate_color_1_transparent(theme).into(),
+        alpha_mode: AlphaMode::Blend,
         // metallic: 1.0,
         // reflectance: 0.1,
         // perceptual_roughness: 1.0,
@@ -677,14 +749,16 @@ pub fn setup_scene(
     });
 
     let basis_vector_2 = materials.add(StandardMaterial {
-        base_color: theme::line_alternate_color_2(theme).into(),
+        base_color: theme::line_alternate_color_2_transparent(theme).into(),
+        alpha_mode: AlphaMode::Blend,
         // metallic: 1.0,
         // reflectance: 0.1,
         // perceptual_roughness: 1.0,
         ..default()
     });
     let basis_vector_3 = materials.add(StandardMaterial {
-        base_color: theme::line_alternate_color_3(theme).into(),
+        base_color: theme::line_alternate_color_3_transparent(theme).into(),
+        alpha_mode: AlphaMode::Blend,
         // metallic: 1.0,
         // reflectance: 0.1,
         // perceptual_roughness: 1.0,
@@ -711,42 +785,55 @@ pub fn setup_scene(
 
 
     // The cube that will be rendered to the texture.
-    let sphere = commands
-        .spawn((
-            VectorSphere,
-            theme::ColorFunction {
-                background: theme::vector_color_3d,
-                border: theme::vector_color_3d,
-            },
-            PbrBundle {
-                mesh: sphere_handle,
-                material: sphere_material_handle.clone(),
-                transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
+    let sphere = commands.spawn((
+        VectorSphere,
+        theme::ColorFunction {
+            background: theme::vector_color_3d_transparent,
+            border: theme::vector_color_3d_transparent,
+        },
+        PbrBundle {
+            mesh: sphere_handle,
+            material: sphere_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(0.0, 0.0, 0.0),
+                scale: Vec3::new(1.8, 1.8, 1.8),
                 ..default()
             },
-            // theme::HIGHLIGHT_TINT,
-            // FocusPolicy::Block,
-            // SpinnyCube,
-            crew_render_layer,
-            subsection::SubsectionGameEntity,
+            ..default()
+        },
+        // theme::HIGHLIGHT_TINT,
+        // FocusPolicy::Block,
+        // SpinnyCube,
+        crew_render_layer,
+        subsection::SubsectionGameEntity,
 
-            //pickable stuff
-            PickableBundle {
-                ..default()
-            }, // <- Makes the mesh pickable.
-            On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
-            On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
-            On::<Pointer<Click>>::send_event::<VectorSphereSelectionEvent>(),
-        ))
-        .id();
-    let cylinder_handle = meshes.add(Mesh::from(
+        //pickable stuff
+        PickableBundle {
+            ..default()
+        }, // <- Makes the mesh pickable.
+        On::<Pointer<DragStart>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
+        On::<Pointer<Click>>::send_event::<VectorSphereSelectionEvent>(),
+    )).id();
+    let spaceship_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("spaceship2.gltf#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.15, y: 0.15, z: 0.15},
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(sphere).push_children(&[spaceship_entity]);
+
+    let vector_mesh_handle = meshes.add(Mesh::from(
         shape::Cube {
             size: 0.5,
             ..default()
         }
     ));
+    // let vector_mesh_handle = make_vector_mesh(meshes);
 
-    
+
     // let v1 = Vec3 { x: 1.0, y: 0.5, z: 0.0 }.normalize();
     // let v2 = Vec3 { x: 0.0, y: 2.0, z: 0.3 }.normalize();
     // let v3 = Vec3 { x: 0.3, y: 0.2, z: 1.0 }.normalize();
@@ -761,27 +848,80 @@ pub fn setup_scene(
         v1,
         AssociatedVector::V1,
         crew_render_layer,
-        cylinder_handle.clone(),
-        basis_vector_1
+        vector_mesh_handle.clone(),
+        basis_vector_1,
+        theme::ColorFunction {
+            background: theme::line_alternate_color_3_transparent,
+            border: theme::line_alternate_color_3_transparent,
+        },
     );
+    let v1_arrow_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("v1.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.1, y: 0.1, z: 0.1},
+            rotation: Quat::from_rotation_z(-PI / 2.0),
+            translation: Vec3 { x: v1.x * 0.07, y: v1.y * 0.07, z: v1.z * 0.07 },
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(standard_basis_vector_x).push_children(&[v1_arrow_entity]);
+
+
+
     let standard_basis_vector_y = make_vector(
         commands,
         v2,
         AssociatedVector::V2,
         crew_render_layer,
-        cylinder_handle.clone(),
-        basis_vector_2
+        vector_mesh_handle.clone(),
+        basis_vector_2,
+        theme::ColorFunction {
+            background: theme::line_alternate_color_2_transparent,
+            border: theme::line_alternate_color_2_transparent,
+        },
     );
+    let v2_arrow_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("v2.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.1, y: 0.1, z: 0.1},
+            translation: Vec3 { x: v2.x * 0.07, y: v2.y * 0.07, z: v2.z * 0.07 },
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(standard_basis_vector_y).push_children(&[v2_arrow_entity]);
+
+
+
     let standard_basis_vector_z = make_vector(
         commands,
         v3,
         AssociatedVector::V3,
         crew_render_layer,
-        cylinder_handle.clone(),
-        basis_vector_3
+        vector_mesh_handle.clone(),
+        basis_vector_3,
+        theme::ColorFunction {
+            background: theme::line_alternate_color_3_transparent,
+            border: theme::line_alternate_color_3_transparent,
+        },
     );
+    let v3_arrow_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("v3.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.1, y: 0.1, z: 0.1},
+            rotation: Quat::from_rotation_x(PI / 2.0),
+            translation: Vec3 { x: v3.x * 0.07, y: v3.y * 0.07, z: v3.z * 0.07 },
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(standard_basis_vector_z).push_children(&[v3_arrow_entity]);
 
-    
+
+
+
+
     // commands.spawn((
     //     PbrBundle {
     //     mesh: quad_handle,
@@ -795,9 +935,15 @@ pub fn setup_scene(
     //     crew_render_layer,
     // ));
 
-    create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer, v1, v2, v3);
-    
-    commands.entity(film_crew_entity).push_children(&[sphere, standard_basis_vector_x, standard_basis_vector_y, standard_basis_vector_z]);
+    let span_cube = create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer, v1, v2, v3);
+
+    commands.entity(film_crew_entity).push_children(&[
+        sphere,
+        standard_basis_vector_x,
+        standard_basis_vector_y,
+        standard_basis_vector_z,
+        span_cube,
+    ]);
 }
 
 pub fn disable_pan_orbit_system (

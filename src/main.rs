@@ -179,15 +179,19 @@ fn setup_3d_camera(
     // // ));
 }
 
+#[derive(Component)]
+pub struct Spaceship;
 // Spawns the camera that draws UI
 fn setup_cameras(
     mut commands: Commands,
     mut windows: Query<&mut Window>,
     mut images: ResMut<Assets<Image>>,
     theme: Res<theme::CurrentTheme>,
+    // mut gizmos: Gizmos,
+    asset_server: Res<AssetServer>,
 ) {
     // let camera_render_layer = RenderLayers::layer(0);
-
+    
     let window = windows.single();
     println!("window res: {:?}", window.resolution);
 

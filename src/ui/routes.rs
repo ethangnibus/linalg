@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::render::view::RenderLayers;
+use bevy::render::Render;
 use super::util::subsection::SubsectionGameEntity;
 use super::util::theme;
 use super::view;
@@ -47,7 +48,7 @@ pub fn routing_system(
     mut camera_setup_writer: EventWriter<subsection_cameras::CameraSetupEvent>,
     mut routing_event_reader: EventReader<RoutingEvent>,
     mut ui_resize_writer: EventWriter<view::UiResizeEvent>,
-    asset_server: Res<AssetServer>,
+    mut asset_server: Res<AssetServer>,
     mut current_route: ResMut<CurrentRoute>,
     theme: Res<theme::CurrentTheme>,
     view_query: Query<&Node, With<view::View>>,
@@ -59,6 +60,19 @@ pub fn routing_system(
 ) {
     for event in routing_event_reader.read() {
 
+        // commands.spawn((
+        //     PbrBundle {
+        //         mesh: asset_server.load("SPACESHIP.obj"),
+        //         material: materials.add(StandardMaterial {
+        //             base_color: Color::RED.into(),
+        //             // alpha_mode: AlphaMode::Blend,
+        //             unlit: true,
+        //             ..default()
+        //         }),
+        //         ..default()
+        //     },
+        //     RenderLayers::layer(1),
+        // ));
     //     commands.spawn(
     //         (DirectionalLightBundle {
     //             directional_light: DirectionalLight {
@@ -76,19 +90,21 @@ pub fn routing_system(
     //     )
     // );
 
-        let space_bundle = commands.spawn((
-            SceneBundle {
-                scene: asset_server.load("Airplane.glb#Scene0"),
-                transform: Transform {
-                    translation: Vec3 { x: 0.0, y: 0.0, z: 0.0},
-                    ..default()
-                },
-                visibility: Visibility::Visible,
-                ..default()
-            },
-            RenderLayers::layer(1),
-            Spaceship,
-        )).id();
+        // let airplane_scene = asset_server.load("spaceship2.gltf#Scene0");
+        // let space_bundle = commands.spawn((
+        //     SceneBundle {
+        //         scene: airplane_scene,
+        //         transform: Transform {
+        //             translation: Vec3 { x: 0.0, y: 0.0, z: 0.0},
+        //             scale: Vec3 { x: 1.0, y: 1.0, z: 1.0},
+        //             ..default()
+        //         },
+        //         visibility: Visibility::Visible,
+        //         ..default()
+        //     },
+        //     RenderLayers::layer(1),
+        //     Spaceship,
+        // )).id();
         
 
         for (view_list, view_list_children, mut scrolling_list, mut style) in view_list_query.iter_mut() {
@@ -157,7 +173,7 @@ pub fn routing_system(
                     match event.section_number {
                         0 => { // Chapter 0, Section 0
                             match event.subsection_number {
-                                0 => {pages::chapter_0::section_0::subsection_0::partial::get(&mut commands, &theme, film_crew_entity, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
+                                0 => {pages::chapter_0::section_0::subsection_0::partial::get(&mut commands, &theme, film_crew_entity, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, &mut asset_server, view_list)}, // FIXME
                                 1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
@@ -258,7 +274,7 @@ pub fn routing_system(
                                 1 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 2 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 3 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
-                                4 => {pages::chapter_1::section_2::subsection_4::partial::get(&mut commands, &theme, film_crew_entity, &asset_server, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
+                                4 => {pages::chapter_1::section_2::subsection_4::partial::get(&mut commands, &theme, film_crew_entity, &mut asset_server, &mut camera_setup_writer, &mut meshes, &mut materials, &mut images, view_list)}, // FIXME
                                 5 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 6 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME
                                 7 => {pages::page_not_found::get(&mut commands, view_list )}, // FIXME

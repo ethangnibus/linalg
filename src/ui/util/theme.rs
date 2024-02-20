@@ -92,6 +92,17 @@ pub fn vector_color_3d(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn vector_color_3d_transparent(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        _ => {
+            return Color::rgba(0.0, 0.0, 1.0, 0.1);
+        }
+    }
+}
+
 pub fn line_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Matrix => {
@@ -103,13 +114,13 @@ pub fn line_color(theme: &CurrentTheme) -> Color {
     }
 }
 
-pub fn line_color_transparent(theme: &CurrentTheme, transparency: f32) -> Color {
+pub fn line_color_transparent(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Matrix => {
             return MATRIX_LIGHT_GREEN;
         }
         _ => {
-            return Color::rgba(0.35686275 * 1.2, 0.85882354 * 1.2, 0.85882354 * 1.2, transparency);
+            return Color::rgba(0.35686275 * 1.2, 0.85882354 * 1.2, 0.85882354 * 1.2, 0.5);
         }
     }
 }
@@ -124,6 +135,16 @@ pub fn line_alternate_color_1(theme: &CurrentTheme) -> Color {
         }
     }
 }
+pub fn line_alternate_color_1_transparent(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        _ => {
+            return Color::rgba(0.95686275, 0.8, 0.38431373, 0.1);
+        }
+    }
+}
 
 pub fn line_alternate_color_2(theme: &CurrentTheme) -> Color {
     match theme {
@@ -135,6 +156,16 @@ pub fn line_alternate_color_2(theme: &CurrentTheme) -> Color {
         }
     }
 }
+pub fn line_alternate_color_2_transparent(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        _ => {
+            return Color::rgba(0.67058825, 0.9372549,0.85882354, 0.1);
+        }
+    }
+}
 
 pub fn line_alternate_color_3(theme: &CurrentTheme) -> Color {
     match theme {
@@ -143,6 +174,16 @@ pub fn line_alternate_color_3(theme: &CurrentTheme) -> Color {
         }
         _ => {
             return Color::rgb(0.827451, 0.18431373, 0.18431373);
+        }
+    }
+}
+pub fn line_alternate_color_3_transparent(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Matrix => {
+            return MATRIX_LIGHT_GREEN;
+        }
+        _ => {
+            return Color::rgba(0.827451, 0.18431373, 0.18431373, 0.1);
         }
     }
 }

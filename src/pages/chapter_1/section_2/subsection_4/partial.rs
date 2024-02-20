@@ -27,7 +27,7 @@ pub fn get(
     commands: &mut Commands,
     theme: &theme::CurrentTheme,
     film_crew_entity: Entity,
-    asset_server: & Res<AssetServer>,
+    mut asset_server: &mut Res<AssetServer>,
     camera_setup_writer: &mut EventWriter<subsection_cameras::CameraSetupEvent>,
     mut meshes: &mut ResMut<Assets<Mesh>>,
     mut materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -69,8 +69,9 @@ pub fn get(
         meshes,
         materials,
         images,
+        asset_server,
         view_list_entity,
-        1,
+        0,
     );
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
@@ -510,88 +511,89 @@ pub fn get(
         film_crew_entity,
         meshes,
         materials,
-        1,
+        asset_server,
+        0,
     );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        2,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        3,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        4,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        5,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        6,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        7,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        8,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        9,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        10,
-    );
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        15,
-    );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     2,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     3,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     4,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     5,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     6,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     7,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     8,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     9,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     10,
+    // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     15,
+    // );
 
 }
 
