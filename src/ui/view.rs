@@ -1,3 +1,6 @@
+use super::routes;
+use super::scrollable_page;
+use super::subsection_cameras;
 use bevy::{
     a11y::{
         accesskit::{NodeBuilder, Role},
@@ -5,1224 +8,104 @@ use bevy::{
     },
     input::mouse::{MouseScrollUnit, MouseWheel},
     prelude::*,
+    render::{
+        camera::{ComputedCameraValues, RenderTarget, Viewport},
+        render_resource::{
+            Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
+        },
+        view::RenderLayers,
+    },
+
+    ui,
     // winit::WinitSettings,
 };
-use super::scrollable_page;
-use super::chapter1section1subsection1;
-use super::chapter1section1subsection2;
+// use bevy_prototype_lyon::prelude::*;
+// use bevy_svg::prelude::*;
+use super::theme;
+use crate::pages::splash_page;
+use bevy_mod_picking::prelude::*;
+
 
 // Marker for UI node
 #[derive(Component)]
 pub struct View;
 
 #[derive(Component, Default)]
-struct ViewList {
-    position: f32,
+pub struct ViewList {
+    pub position: f32,
 }
 
 #[derive(Event)]
-pub struct RoutingEvent {
-    pub chapter_number: u32,
-    pub section_number: u32,
-    pub subsection_number: u32,
-}
+pub struct UiResizeEvent;
+
+#[derive(Component)]
+pub struct SvgHolder;
 
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
-        app
-        .add_event::<RoutingEvent>()
-        .add_systems(Update, (mouse_scroll, routing_system));
+        app.add_plugins(routes::SystemsPlugin)
+            .add_plugins(subsection_cameras::SystemsPlugin)
+            .add_event::<UiResizeEvent>()
+            // .add_systems(Startup, spawn_svg)
+            // .add_plugins(ShapePlugin)
+            .add_systems(Update, (mouse_scroll));
     }
 }
 
-pub fn setup(commands: &mut Commands) -> Entity {
-    let view = new();
-    let view = commands.spawn(view).id();
-    
-    let page_items = page_items(commands);
-    let view_list = scrollable_page::get_page();
-    let view_list = commands.spawn((ViewList::default(), view_list)).id();
-    
-    commands.entity(view_list).push_children(&page_items);
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, view_entity: Entity) -> Entity {
+    let view = view_entity;
+
+    // let mut page_entities: Vec<Entity> = Vec::new();
+    let page_entities = page_items(commands);
+    // splash_page::get(commands, svg_load_writer, &mut page_entities);
+
+    let view_list = scrollable_page::get_page(theme);
+    let view_list = commands.spawn((
+        ViewList::default(),
+        view_list,
+        Pickable::IGNORE,
+    )).id();
+
+    for entity in page_entities {
+        commands.entity(view_list).push_children(&[entity]);
+    }
     commands.entity(view).push_children(&[view_list]);
 
     return view;
 }
 
-pub fn new() -> (View, ButtonBundle) {
-    return (View, ButtonBundle {
-        style: Style {
-            flex_direction: FlexDirection::Column,
-            align_self: AlignSelf::Stretch,
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            overflow: Overflow::clip_y(),
+pub fn new(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
+    return commands.spawn((
+        View,
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::navbar_swiper_color,
+        },
+        ButtonBundle {
+            style: Style {
+                flex_direction: FlexDirection::Column,
+                // align_self: AlignSelf::Stretch,
+                // flex_grow: 1.0,
+                width: Val::Percent(100.0),
+                flex_shrink: 2.0,
+                height: Val::Percent(100.0),
+                border: UiRect {
+                    top: Val::Px(1.0),
+                    bottom: Val::Px(0.0),
+                    left: Val::Px(1.0),
+                    right: Val::Px(1.0),
+                },
+                // flex_grow: 1.0,
+                overflow: Overflow::clip(),
+                ..default()
+            },
+            background_color: theme::background_color(theme).into(),
+            border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
-        background_color: Color::rgb(0.0, 1.0, 0.0).into(),
-        ..default()
-    });
-}
-
-fn routing_system(
-    mut commands: Commands,
-    view_list_query: Query<(Entity, &Children), With<ViewList>>,
-    mut routing_event_reader: EventReader<RoutingEvent>,
-) {
-    for event in routing_event_reader.read() {
-        for (view_list, view_list_children) in view_list_query.iter() {
-            // remove all current page stuff
-            for &child in view_list_children.iter() {
-                commands.entity(view_list).remove_children(&[child]);
-                commands.entity(child).despawn_recursive();
-            }
-
-            let mut page_item: Entity = Entity::PLACEHOLDER;
-            // Add new page stuff
-
-            match event.chapter_number {
-                0 => {
-                    match event.section_number {
-                        0 => { // Chapter 0, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 0, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 0, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 0, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 0, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                1 => {
-                    match event.section_number {
-                        0 => { // Chapter 1, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        1 => { // Chapter 1, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = chapter1section1subsection1::get_page(&mut commands);},
-                                2 => {page_item = chapter1section1subsection2::get_page(&mut commands);},
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 1, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 1, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 1, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                2 => {
-                    match event.section_number {
-                        0 => { // Chapter 2, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 2, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 2, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 2, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 2, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                3 => {
-                    match event.section_number {
-                        0 => { // Chapter 3, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 3, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 3, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 3, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 3, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                4 => {
-                    match event.section_number {
-                        0 => { // Chapter 4, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 4, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 4, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 4, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 4, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                5 => {
-                    match event.section_number {
-                        0 => { // Chapter 5, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 5, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 5, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 5, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 5, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                6 => {
-                    match event.section_number {
-                        0 => { // Chapter 6, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 6, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 6, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 6, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 6, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                7 => { // Chapter 7, Section 0
-                    match event.section_number {
-                        0 => {
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 7, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 7, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 7, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 7, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                8 => {
-                    match event.section_number {
-                        0 => { // Chapter 8, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 8, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 8, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 8, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 8, Section 4 
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                9 => {
-                    match event.section_number {
-                        0 => { // Chapter 9, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 9, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 9, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 9, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 9, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                10 => {
-                    match event.section_number {
-                        0 => { // Chapter 10, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 10, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 10, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 10, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 10, Section 4 
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                11 => {
-                    match event.section_number {
-                        0 => { // Chapter 11, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        1 => { // Chapter 11, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 11, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 11, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 11, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                12 => {
-                    match event.section_number {
-                        0 => { // Chapter 12, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 12, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 12, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 12, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 12, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                13 => {
-                    match event.section_number {
-                        0 => { // Chapter 13, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 13, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 13, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 13, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 13, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                14 => {
-                    match event.section_number {
-                        0 => { // Chapter 14, Section 0
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 14, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 14, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 14, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 14, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                15 => {
-                    match event.section_number {
-                        0 => { // Chapter 15, Section 0 Bibliography
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                    
-                        },
-                        1 => { // Chapter 15, Section 1
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        2 => { // Chapter 15, Section 2
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        3 => { // Chapter 15, Section 3
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        4 => { // Chapter 15, Section 4
-                            match event.subsection_number {
-                                0 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                1 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                2 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                3 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                4 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                5 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                6 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                7 => {page_item = page_not_found(&mut commands)}, // FIXME
-                                _ => {page_item = page_not_found(&mut commands)}, // FIXME
-                            }
-                        },
-                        _ => {}
-                    }
-                },
-                _ => {}
-            }
-
-            commands.entity(view_list).push_children(&[page_item]);
-        }
-    }
-    // add new page
+        Pickable::IGNORE,
+    )).id();
 }
 
 pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
@@ -1244,8 +127,8 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
                 width: Val::Percent(100.0),
                 height: Val::Px(200.0),
                 padding: UiRect {
-                    left: Val::Px(2.0),
-                    right: Val::Px(4.0),
+                    left: Val::Px(0.0),
+                    right: Val::Px(0.0),
                     top: Val::Px(0.0),
                     bottom: Val::Px(4.0),
                 },
@@ -1276,58 +159,16 @@ pub fn page_items(commands: &mut Commands) -> Vec<Entity> {
 
         page_items.push(page_item);
     }
+    // let svg_window = get_svg(commands);
+    // page_items.push(svg_window);
+
     return page_items;
 }
 
-fn page_not_found(commands: &mut Commands) -> Entity {
-    let text_item = (
-        TextBundle::from_section(
-            format!("TODO: Remember to implement this page!"),
-            TextStyle {
-                font_size: 20.,
-                ..default()
-            },
-        ),
-        Label,
-        AccessibilityNode(NodeBuilder::new(Role::ListItem)),
-    );
-    let page_item = NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Px(200.0),
-            padding: UiRect {
-                left: Val::Px(2.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
-            },
-            border: UiRect {
-                left: Val::Px(2.0),
-                right: Val::Px(0.0),
-                top: Val::Px(0.0),
-                bottom: Val::Px(4.0),
-            },
-            ..default()
-        },
-        background_color: Color::rgb(0.3, 0.1, 0.1).into(),
-        border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-
-        ..default()
-    };
-
-    let text_item = commands.spawn(text_item).id();
-    let page_item = commands.spawn(page_item).id();
-
-    commands.entity(page_item).push_children(&[text_item]);
-
-    return page_item;
-}
+use std::f32::consts::PI;
 
 fn mouse_scroll(
-    mut interaction_query: Query<
-        &Interaction,
-        With<View>
-    >,
+    mut interaction_query: Query<&Interaction, With<View>>,
     mut mouse_wheel_events: EventReader<MouseWheel>,
     mut query_list: Query<(&mut ViewList, &mut Style, &Parent, &Node)>,
     query_node: Query<&Node>,
@@ -1339,21 +180,29 @@ fn mouse_scroll(
                     for (mut scrolling_list, mut style, parent, list_node) in &mut query_list {
                         let items_height = list_node.size().y;
                         let container_height = query_node.get(parent.get()).unwrap().size().y;
-            
+
                         let max_scroll = (items_height - container_height).max(0.);
-            
+
+                        // println!("items_height {:?}", items_height);
+                        // println!("container_height {:?}", container_height);
+                        // println!("max_scroll {:?}\n", max_scroll);
+
                         let dy = match mouse_wheel_event.unit {
                             MouseScrollUnit::Line => mouse_wheel_event.y * 20.,
                             MouseScrollUnit::Pixel => mouse_wheel_event.y,
                         };
-            
-                        scrolling_list.position += dy;
+
+                        scrolling_list.position += dy * 0.5;
                         scrolling_list.position = scrolling_list.position.clamp(-max_scroll, 0.);
                         style.top = Val::Px(scrolling_list.position);
                     }
                 }
-            }
+            },
+            Interaction::Pressed => {
+                // println!("interacted");
+            },
             _ => {}
         }
     }
+    mouse_wheel_events.clear();
 }

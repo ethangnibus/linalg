@@ -1,12 +1,26 @@
-use super::view;
+
+use super::chapter_container::HeaderButton;
+use super::navbar;
 use super::sidebar;
 use super::sidebar_frame;
+use super::option_bar;
+use super::util::theme::background_color;
+use super::util::{
+    theme,
+    style,
+};
+use super::view;
+use super::subsection_cameras;
+use bevy::winit::WinitWindows;
 use bevy::{prelude::*, ui::FocusPolicy};
+use bevy_mod_picking::prelude::*;
 
-const SIDEBAR_WIDTH: f32 = 40.0; // in percentage 
-const SWIPERS_WIDTH: Val = Val::Px(12.0);
+
+// ending today
+// remember to do colors
+
+const SIDEBAR_WIDTH: f32 = 500.0; // in percentage golden ratio
 const SWIPERS_COLOR_DEFAULT: BackgroundColor = BackgroundColor(Color::rgb(0.1, 0.1, 0.1));
-
 
 // Marker for Node
 #[derive(Component)]
@@ -17,16 +31,15 @@ pub struct UnderNavbar;
 pub struct SidebarSwiper;
 
 // true iff the sidebar is shown and the swiper is to the right
-#[derive(Component)]
-pub struct ShowingSidebar(bool);
+#[derive(Resource)]
+pub struct ShowingSidebar(pub bool);
 
 // Events
 #[derive(Event, Debug)]
-pub struct SidebarSwiperColorEvent(pub Color);
+pub struct SidebarCollapseInteractionEvent(pub Color);
 
 #[derive(Event)]
 pub struct SidebarVisibilityEvent(pub Visibility);
-
 
 pub struct SystemsPlugin;
 
@@ -35,157 +48,185 @@ impl Plugin for SystemsPlugin {
         app.add_plugins(sidebar_frame::SystemsPlugin)
             .add_plugins(sidebar::SystemsPlugin)
             .add_plugins(view::SystemsPlugin)
-            .add_event::<SidebarSwiperColorEvent>()
+            .add_plugins(option_bar::SystemsPlugin)
+            .insert_resource(ShowingSidebar(true))
+            .add_event::<SidebarCollapseInteractionEvent>()
             .add_event::<SidebarVisibilityEvent>()
-            .add_systems(Update, (sidebar_swiper_interactions, sidebar_color_change_system, sidebar_visibility_system));
+            .add_systems(
+                Update,
+                (
+                    sidebar_swiper_interactions,
+                    sidebar_swiper_color_change_system,
+                    sidebar_visibility_system.after(subsection_cameras::resize_camera_system),
+                ),
+            );
     }
 }
 
 // Returns root node
-pub fn setup(commands: &mut Commands, width: f32, height: f32) -> Entity {
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme, under_navbar_entity: Entity) {
     // Make ECS for root and navbar
     // return entities
-    let under_navbar = sidebar_frame::setup(commands, width, height);
-    let sidebar = sidebar::setup(commands, SIDEBAR_WIDTH);
+    let under_navbar = under_navbar_entity;
 
-    let sidebar_swiper = sidebar_swiper(commands);
+    let sidebar = sidebar::new(commands, theme, SIDEBAR_WIDTH);
+    let sidebar_swiper = sidebar_swiper(commands, theme);
+    let view = view::new(commands, theme);
+    let option_bar_swiper = option_bar::option_bar_swiper(commands, theme);
+    let option_bar = option_bar::option_bar(commands, theme, SIDEBAR_WIDTH);
 
-    let right_border = right_swiper();
-    let right_border = commands.spawn(right_border).id();
-
-    let scrollable_page = view::setup(commands);
+    sidebar::setup(commands, theme, SIDEBAR_WIDTH, sidebar);
+    view::setup(commands, theme, view);
+    option_bar::setup(commands, theme, SIDEBAR_WIDTH, option_bar);
 
     // make under_navbar parent of sidebar and scrollable_page
-    commands
-        .entity(under_navbar)
-        .push_children(&[sidebar, sidebar_swiper, scrollable_page, right_border]);
+    commands.entity(under_navbar).push_children(&[
+        sidebar,
+        sidebar_swiper,
+        view,
+        option_bar_swiper,
+        option_bar,
+    ]);
 
-    return under_navbar;
+
+
+
 }
 
-pub fn sidebar_swiper(commands: &mut Commands) -> Entity {
-    let sidebar_swiper = (
+
+pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
+    return commands.spawn((
+        UnderNavbar,
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(width),
+                height: Val::Percent(100.0),
+                flex_grow: 1.0,
+                flex_direction: FlexDirection::Row,
+                ..default()
+            },
+            background_color: Color::rgb(0.0, 0.0, 1.0).into(),
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id()
+}
+
+pub fn sidebar_swiper(commands: &mut Commands, theme: &theme::CurrentTheme) -> Entity {
+    return commands.spawn((
         SidebarSwiper,
+        theme::ColorFunction {
+            background: theme::swiper_background_color,
+            border: theme::navbar_swiper_color,
+        },
         ButtonBundle {
             style: Style {
                 // width: Val::Percent(1.0),
-                width: SWIPERS_WIDTH,
+                width: style::SWIPERS_WIDTH,
+                // flex_grow: 1.0,
                 height: Val::Percent(100.0),
-                border: UiRect::all(Val::Px(0.0)),
+                border: UiRect {
+                    left: Val::Px(2.0),
+                    right: Val::Px(0.0),
+                    top: Val::Px(0.0),
+                    bottom: Val::Px(0.0),
+                },
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..default()
             },
             focus_policy: FocusPolicy::Block,
+            background_color: theme::swiper_background_color(theme).into(),
+            border_color: theme::navbar_swiper_color(theme).into(),
             ..default()
         },
-        ShowingSidebar(true)
-    );
-    let sidebar_swiper = commands.spawn(sidebar_swiper).id();
-
-    let right_line =
-        NodeBundle {
-            style: Style {
-                width: Val::Px(2.0),
-                height: Val::Percent(100.0),
-                ..default()
-            },
-            // background_color: Color::rgb(1.0, 0.7, 0.1).into(),
-            background_color: Color::rgb(1.0, 1.0, 1.0).into(),
-            // border_color: Color::rgb(0.1, 0.1, 0.1).into(),
-            ..default()
-        };
-    let right_line = commands.spawn(right_line).id();
-    
-    commands.entity(sidebar_swiper).push_children(&[right_line]);
-    return sidebar_swiper;
+    )).id();
 }
 
-pub fn right_swiper() -> (NodeBundle, ShowingSidebar) {
-    return (
-        NodeBundle {
-        style: Style {
-            // width: Val::Percent(1.0),
-            width: SWIPERS_WIDTH,
-            height: Val::Percent(100.0),
-            border: UiRect::all(Val::Px(0.0)),
-            ..default()
-        },
-        background_color: SWIPERS_COLOR_DEFAULT,
-        ..default()
-    },
-    ShowingSidebar(true)
-);
-}
 
 // In your sidebar_swiper_interactions function
 fn sidebar_swiper_interactions(
-    mut interaction_query: Query<(&Interaction, &mut BackgroundColor, &mut ShowingSidebar), (Changed<Interaction>, With<SidebarSwiper>)>,
+    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<SidebarSwiper>)>,
+    mut showing_sidebar: ResMut<ShowingSidebar>,
+    theme: Res<theme::CurrentTheme>,
     // mut sidebar_query: Query<&mut BackgroundColor, With<sidebar::Sidebar>>,
-    mut sidebar_swiper_color_writer: EventWriter<SidebarSwiperColorEvent>,
+    // mut header_button_query: Query<&BackgroundColor, With<HeaderButton>>,
+    mut sidebar_swiper_color_writer: EventWriter<SidebarCollapseInteractionEvent>,
     mut sidebar_visibility_writer: EventWriter<SidebarVisibilityEvent>,
 ) {
-    for (interaction, mut color, mut showing_sidebar) in &mut interaction_query {
+    let theme = theme.as_ref();
+    for interaction in interaction_query.iter() {
         match *interaction {
             Interaction::Pressed => {
-                // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::RED));
-                
                 match showing_sidebar.0 {
                     true => {
-                        println!("***** Making the sidebar hidden");
                         sidebar_visibility_writer.send(SidebarVisibilityEvent(Visibility::Hidden));
                     }
                     false => {
-                        println!("***** Making the sidebar visible (inherited)");
-                        sidebar_visibility_writer.send(SidebarVisibilityEvent(Visibility::Inherited));
+                        sidebar_visibility_writer
+                            .send(SidebarVisibilityEvent(Visibility::Inherited));
                     }
                 }
+                sidebar_swiper_color_writer.send(SidebarCollapseInteractionEvent(
+                    theme::NOT_A_COLOR,
+                ));
                 showing_sidebar.0 = !showing_sidebar.0;
             }
-            Interaction::Hovered => {
-                match showing_sidebar.0 {
-                    true => {
-                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.7, 0.45, 0.45)));
-                        *color = Color::rgb(0.7, 0.45, 0.45).into();
-                    }
-                    false => {
-                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.45, 0.45, 0.7)));
-                        *color = Color::rgb(0.45, 0.45, 0.7).into();
-                    }
+            Interaction::Hovered => match showing_sidebar.0 {
+                true => {
+                    sidebar_swiper_color_writer.send(SidebarCollapseInteractionEvent(
+                        theme::sidebar_collapsed_color(theme),
+                    ));
                 }
-            }
-            Interaction::None => {
-                match showing_sidebar.0 {
-                    true => {
-                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = SWIPERS_COLOR_DEFAULT;
-                    }
-                    false => {
-                        // sidebar_swiper_color_writer.send(SidebarSwiperColorEvent(Color::rgb(0.3, 0.3, 0.3)));
-                        *color = SWIPERS_COLOR_DEFAULT;
-                    }
+                false => {
+                    sidebar_swiper_color_writer
+                        .send(SidebarCollapseInteractionEvent(theme::navbar_swiper_color(theme)));
                 }
-            }
+            },
+            Interaction::None => match showing_sidebar.0 {
+                true => {
+                    sidebar_swiper_color_writer
+                        .send(SidebarCollapseInteractionEvent(theme::navbar_swiper_color(theme)));
+                }
+                false => {
+                    sidebar_swiper_color_writer.send(SidebarCollapseInteractionEvent(
+                        theme::sidebar_collapsed_color(theme),
+                    ));
+                }
+            },
         }
     }
 }
 
 // In another system that handles the event
-fn sidebar_color_change_system(
-    mut sidebar_swiper_query: Query<&mut BackgroundColor, With<SidebarSwiper>>,
-    mut color_event_reader: EventReader<SidebarSwiperColorEvent>,
+fn sidebar_swiper_color_change_system(
+    mut sidebar_swiper_query: Query<(&mut BorderColor, &mut theme::ColorFunction), With<SidebarSwiper>>,
+    // mut sidebar_button_query: Query<&mut BorderColor, With<navbar::SidebarButton>>,
+    mut sidebar_swiper_color_event_reader: EventReader<SidebarCollapseInteractionEvent>,
 ) {
-    for event in color_event_reader.read() {
-        for mut sidebar_swiper_color in &mut sidebar_swiper_query.iter_mut() {
-            *sidebar_swiper_color = event.0.into();
+    for event in sidebar_swiper_color_event_reader.read() {
+        for (mut sidebar_swiper_border_color, mut color_function) in &mut sidebar_swiper_query.iter_mut() {
+            let color = event.0;
+
+            if color != theme::NOT_A_COLOR {
+                *sidebar_swiper_border_color = event.0.into();
+            } else {
+                if color_function.border == theme::navbar_swiper_color {
+                    color_function.border = theme::sidebar_collapsed_color;
+                } else if color_function.border == theme::sidebar_collapsed_color {
+                    color_function.border = theme::navbar_swiper_color;
+                }
+            }
         }
     }
 }
 
-
-fn sidebar_visibility_system(
+pub fn sidebar_visibility_system(
     mut sidebar_query: Query<(&mut Visibility, &mut Style), With<sidebar::Sidebar>>,
     mut sidebar_visibility_event: EventReader<SidebarVisibilityEvent>,
+    mut ui_resize_writer: EventWriter<view::UiResizeEvent>,
+    // mut windows: NonSend<WinitWindows>,
+    // mut windows: NonSend<World>,
 ) {
     // println!("printing sidebar visibility query");
     // println!("{:?}", sidebar_query);
@@ -197,23 +238,19 @@ fn sidebar_visibility_system(
             let visibility_kind: Visibility = event.0.into();
             match visibility_kind {
                 Visibility::Hidden => {
-                    println!("setting width to 0 in Hidden");
                     *sidebar_visibility = Visibility::Hidden;
-                    sidebar_style.width = bevy::prelude::Val::Vw(0.0);
+                    sidebar_style.width = Val::Percent(0.0);
                 }
                 Visibility::Visible => {
-                    println!("setting width to 20 in Visible");
                     *sidebar_visibility = Visibility::Visible;
-                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
+                    sidebar_style.width = Val::Px(SIDEBAR_WIDTH);
                 }
                 Visibility::Inherited => {
-                    println!("setting width to 20 in Inherited");
                     *sidebar_visibility = Visibility::Inherited;
-                    sidebar_style.width = bevy::prelude::Val::Vw(SIDEBAR_WIDTH);
+                    sidebar_style.width = Val::Px(SIDEBAR_WIDTH);
                 }
             }
-            println!("Visiblity is now {:?}", *sidebar_visibility);
-            println!();
         }
+        ui_resize_writer.send(view::UiResizeEvent);
     }
 }

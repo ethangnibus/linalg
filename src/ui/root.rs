@@ -1,18 +1,32 @@
 use super::navbar;
-use super::navbar_frame;
 use super::under_navbar;
-use bevy::prelude::*;
+use super::util::theme;
+use bevy::{
+    ui::FocusPolicy,
+    prelude::*,
+};
+use bevy_mod_picking::prelude::*;
 
 // Marker for Root UI node
 #[derive(Component)]
 pub struct Root;
 
+#[derive(Component)]
+pub struct NavbarFrame;
+
+
+#[derive(Component)]
+pub struct FullscreenNode;
+
 pub struct SystemsPlugin;
 impl Plugin for SystemsPlugin {
     fn build(&self, app: &mut App) {
         // Add the setup_ui system as a startup system
-        app.add_plugins(navbar_frame::SystemsPlugin)
-            .add_plugins(navbar::SystemsPlugin)
+        app.add_plugins(navbar::SystemsPlugin)
+
+        .add_systems(Startup, picker_setup)
+
+
             .add_plugins(under_navbar::SystemsPlugin);
         // .add_systems(Startup, setup);
         // .add_systems(Update, (button_system, temporary));
@@ -22,18 +36,98 @@ impl Plugin for SystemsPlugin {
 // pub fn setup(mut commands: Commands) {
 //     println!("root.rs");
 // }
+fn picker_setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    // commands.spawn((
+    //     PbrBundle {
+    //         mesh: meshes.add(Mesh::from(shape::Plane::from_size(5.0))),
+    //         material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+    //         ..default()
+    //     },
+    //     PickableBundle::default(), // Optional: adds selection, highlighting, and helper components.
+    // ));
+    // commands.spawn((
+    //     PbrBundle {
+    //         mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+    //         material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+    //         transform: Transform::from_xyz(0.0, 0.5, 0.0),
+    //         ..default()
+    //     },
+    //     PickableBundle::default(), // Optional: adds selection, highlighting, and helper components.
+    // ));
+    // commands.spawn(PointLightBundle {
+    //     point_light: PointLight {
+    //         intensity: 1500.0,
+    //         shadows_enabled: true,
+    //         ..default()
+    //     },
+    //     transform: Transform::from_xyz(4.0, 8.0, -4.0),
+    //     ..default()
+    // });
+    // commands.spawn((Camera3dBundle {
+    //     transform: Transform::from_xyz(3.0, 3.0, 3.0).looking_at(Vec3::ZERO, Vec3::Y),
+    //     ..default()
+    // },));
+}
 
 // Returns root node
-pub fn setup(commands: &mut Commands) {
-    // Make ECS for root and navbar
-    // return entities
-    let navbar_frame = navbar_frame::setup(commands, 100.0, 100.0);
-    let navbar_height: f32 = 10.0; // in percentage
-    let navbar = navbar::setup(commands, navbar_height);
-    let under_navbar = under_navbar::setup(commands, 100.0, 100.0 - navbar_height);
+pub fn setup(commands: &mut Commands, theme: &theme::CurrentTheme) {
+    let fullscreen_node = fullscreen_node(commands);
+    let root = new(commands, 100.0, 100.0);
+
+    let navbar_height: f32 = 8.0; // in percentage
+    let navbar_holder = navbar::navbar_holder(commands, theme, navbar_height);
+    let under_navbar = under_navbar::new(commands, 100.0, 100.0 - navbar_height);
+
+    navbar::setup(commands, theme, navbar_height, navbar_holder); // setup navbar before undernavbar is made so view is scaled correctly
+    under_navbar::setup(commands, theme, under_navbar);
 
     // make root parent of navbar and under_navbar
     commands
-        .entity(navbar_frame)
-        .push_children(&[navbar, under_navbar]);
+        .entity(root)
+        .push_children(&[
+            navbar_holder,
+            under_navbar,
+        ]);
+}
+
+pub fn fullscreen_node(commands: &mut Commands) -> Entity {
+    return commands.spawn((
+        FullscreenNode,
+        NodeBundle {
+            style: Style {
+                width: Val::Vw(100.0),
+                height: Val::Vh(100.0),
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            // z_index: ZIndex::Global(1),
+            focus_policy: FocusPolicy::Pass,
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+}
+
+pub fn new(commands: &mut Commands, width: f32, height: f32) -> Entity {
+    return commands.spawn((
+        NavbarFrame,
+        Root,
+        NodeBundle {
+            style: Style {
+                width: Val::Percent(width),
+                height: Val::Percent(height),
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            
+            focus_policy: FocusPolicy::Block,
+            // background_color: Color::rgb(0.0, 1.0, 0.0).into(),
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
 }

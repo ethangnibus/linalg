@@ -8,6 +8,8 @@ use bevy::{
     // winit::WinitSettings,
 };
 
+use super::util::theme;
+
 // Marker for UI node
 #[derive(Component)]
 pub struct ScrollablePage;
@@ -33,7 +35,7 @@ impl Plugin for SystemsPlugin {
 //     return scrollable_page;
 // }
 
-pub fn get_page() -> (ScrollablePage, NodeBundle, AccessibilityNode) {
+pub fn get_page(theme: &theme::CurrentTheme) -> (ScrollablePage, NodeBundle, AccessibilityNode) {
     return (
         ScrollablePage,
         NodeBundle {
@@ -41,10 +43,11 @@ pub fn get_page() -> (ScrollablePage, NodeBundle, AccessibilityNode) {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
                 justify_items: JustifyItems::Center, // maybe remove
+                overflow: Overflow::clip(),
                 // row_gap: Val::Percent(0.01),
                 ..default()
             },
-            background_color: Color::rgb(0.5, 0.0, 0.0).into(),
+            // background_color: theme::background_color(theme).into(),
             ..default()
         },
         AccessibilityNode(NodeBuilder::new(Role::List)),

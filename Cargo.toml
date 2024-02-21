@@ -7,13 +7,25 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.12"
+# bevy_svg = "0.12.0"
+# lyon_tessellation = "1"
+# lyon_algorithms = "1"
+# svgtypes = "0.13.0"
+# bevy_prototype_lyon = "0.10.0"
+bevy-inspector-egui = "0.22.1"
+bevy_mod_picking = "0.17.0"
+bevy_panorbit_camera = "0.13.1"
+rand = "0.8.5"
+
+[dev-dependencies]
+bevy = { version = "0.12", default-features = false, features = ["x11", "bevy_asset"] }
 
 [workspace]
 resolver = "2" # Important! wgpu/Bevy needs this!
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
-opt-level = 1
+opt-level = 3
 
 # Enable high optimizations for dependencies (incl. Bevy),
 # but not for our code
