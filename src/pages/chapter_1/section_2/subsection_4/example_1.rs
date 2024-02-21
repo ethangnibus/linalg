@@ -11,6 +11,7 @@ use bevy::render::render_resource::PrimitiveTopology;
 use bevy::render::view::visibility;
 use bevy::render::Render;
 use bevy::ui::FocusPolicy;
+use bevy::window::PrimaryWindow;
 use bevy_mod_picking::prelude::*;
 // use bevy::render::render_resource::PrimitiveTopology::LineStrip;
 use bevy::render::render_resource::PrimitiveTopology::LineList;
@@ -40,6 +41,7 @@ impl Plugin for SystemsPlugin {
                 basis_vectors_movement_system,
                 disable_pan_orbit_system,
                 move_span_cube_vertices.after(vector_sphere_movement_system),
+                sphere_position_banner_interactions,
             ))
             .add_systems(Startup, spawn_spaceship);
     }
@@ -693,6 +695,8 @@ pub struct VectorSphereMovementEvent {
     pub delta: f32,
 }
 
+#[derive(Component)]
+pub struct SpherePositionBanner;
 
 fn make_vector(
     commands: &mut Commands,
@@ -1071,6 +1075,197 @@ pub fn disable_pan_orbit_system (
                 pan_orbit_camera.enabled = true;
             }
         }
+    }
+}
+
+pub fn sphere_position_banner_interactions (
+    mut pan_orbit_toggle_reader: EventReader<PanOrbitToggleEvent>,
+    mut sphere_position_banner_query: Query<Entity, With<SpherePositionBanner>>,
+    q_windows: Query<&Window, With<PrimaryWindow>>,
+
+    theme: Res<theme::CurrentTheme>,
+    mut commands: Commands,
+) {
+    
+    for pan_orbit_toggle in pan_orbit_toggle_reader.read() {
+        
+        for sphere_position_banner in sphere_position_banner_query.iter() {
+            commands.entity(sphere_position_banner).despawn_recursive();
+        }
+        if let Some(cursor_position) = q_windows.single().cursor_position() {
+            let theme = theme.as_ref();
+            match pan_orbit_toggle.state {
+                PanOrbitToggleState::DragStart => {
+                    let background_banner = commands.spawn((
+                        SpherePositionBanner,
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(300.0),
+                                height: Val::Px(200.0),
+                                position_type: PositionType::Absolute,
+                                left: Val::Px(cursor_position.x - 150.0),
+                                top: Val::Px(cursor_position.y + 100.0),
+                                flex_direction: FlexDirection::Column,
+                                justify_content: JustifyContent::SpaceBetween,
+                                ..default()
+                            },
+                            z_index: ZIndex::Global(10),
+                            background_color: theme::background_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+
+                    let top = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                height: Val::Auto,
+                                flex_direction: FlexDirection::Row,
+                                justify_content: JustifyContent::SpaceBetween,
+                                ..default()
+                            },
+                            ..default()
+                        }
+                    )).id();
+
+                    let bottom = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                height: Val::Auto,
+                                flex_direction: FlexDirection::Row,
+                                justify_content: JustifyContent::SpaceBetween,
+                                ..default()
+                            },
+                            ..default()
+                        }
+                    )).id();
+                    commands.entity(background_banner).push_children(&[top, bottom]);
+
+                    let tl = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                height: Val::Px(20.0),
+                                aspect_ratio: Some(1.0),
+                                border: UiRect {
+                                    top: Val::Px(4.0),
+                                    bottom: Val::Px(0.0),
+                                    left: Val::Px(4.0),
+                                    right: Val::Px(0.0),
+                                },
+                                ..default()
+                            },
+                            border_color: theme::sidebar_header_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+                    let tr = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                height: Val::Px(20.0),
+                                aspect_ratio: Some(1.0),
+                                border: UiRect {
+                                    top: Val::Px(4.0),
+                                    bottom: Val::Px(0.0),
+                                    left: Val::Px(0.0),
+                                    right: Val::Px(4.0),
+                                },
+                                ..default()
+                            },
+                            border_color: theme::sidebar_header_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+                    commands.entity(top).push_children(&[tl, tr]);
+
+
+                    let bl = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                height: Val::Px(20.0),
+                                aspect_ratio: Some(1.0),
+                                border: UiRect {
+                                    top: Val::Px(0.0),
+                                    bottom: Val::Px(4.0),
+                                    left: Val::Px(4.0),
+                                    right: Val::Px(0.0),
+                                },
+                                ..default()
+                            },
+                            border_color: theme::sidebar_header_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+                    let br = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                height: Val::Px(20.0),
+                                aspect_ratio: Some(1.0),
+                                border: UiRect {
+                                    top: Val::Px(0.0),
+                                    bottom: Val::Px(4.0),
+                                    left: Val::Px(0.0),
+                                    right: Val::Px(4.0),
+                                },
+                                ..default()
+                            },
+                            border_color: theme::sidebar_header_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+                    commands.entity(bottom).push_children(&[bl, br]);
+
+                    // let text_banner = commands.spawn((
+                    //     NodeBundle {
+                    //         style: Style {
+                    //             height: Val::Percent(100.0),
+                    //             width: Val::Percent(100.0),
+                    //             position_type: PositionType::Absolute,
+                    //             border: UiRect {
+                    //                 top: Val::Px(8.0),
+                    //                 bottom: Val::Px(8.0),
+                    //                 left: Val::Px(8.0),
+                    //                 right: Val::Px(8.0),
+                    //             },
+                    //             ..default()
+                    //         },
+                    //         z_index: ZIndex::Local(1),
+                    //         background_color: Color::BLUE.into(),
+                    //         ..default()
+                    //     }
+                    // )).id();
+
+                    let text = commands.spawn((
+                        // Create a TextBundle that has a Text with a single section.
+                        TextBundle::from_section(
+                            // Accepts a `String` or any type that converts into a `String`, such as `&str`
+                            "v1: [0, 0, 0]\nv2: [0, 0, 0]\nv3: [0, 0, 0]\n",
+                            TextStyle {
+                                // This font is loaded and will be used instead of the default font.
+                                font_size: 25.0,
+                                color: Color::WHITE.into(),
+                                ..default()
+                            },
+                        ) 
+                        // Set the style of the TextBundle itself.
+                        .with_style(Style {
+                            position_type: PositionType::Absolute,
+                            bottom: Val::Px(5.0),
+                            right: Val::Px(5.0),
+                            ..default()
+                        }),
+                        // ColorText,
+                    )).id();
+
+                    commands.entity(background_banner).push_children(&[text]);
+                }
+                PanOrbitToggleState::DragEnd => {
+                }
+    
+            }
+        } else {
+            println!("Cursor is not in the game window.");
+        }   
     }
 }
 
