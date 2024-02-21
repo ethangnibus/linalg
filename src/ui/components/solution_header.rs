@@ -70,7 +70,7 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
         },
         NodeBundle {
         style: Style {
-            width: Val::Percent(100.0),
+            width: Val::Percent(99.0),
             height: Val::Px(1.0),
             padding: UiRect {
                 left: Val::Px(0.0),

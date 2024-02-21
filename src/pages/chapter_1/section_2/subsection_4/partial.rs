@@ -19,7 +19,10 @@ use crate::ui::components::{
 };
 use crate::ui::subsection_cameras;
 use crate::ui::util::theme;
-use super::example_1;
+use super::{
+    example_0,
+    example_1,
+};
 
 
 
@@ -39,26 +42,44 @@ pub fn get(
 
     text_section::spawn(
         commands,
-        theme,
+        theme, 
         view_list_entity,
-        "   When we have a group of vectors, \
-        it's useful to figure out all the places \
-        we can go by following those vectors. We \
-        call this reachable space the \"span\" of \
+        "   When we have a set of vectors, \
+        it's useful to know every location we can \
+        visit by following those vectors. We \
+        call the set of locations we can visit the \"span\" of \
         our group of vectors. In this chapter, we \
         will walk through why finding where vectors \
-        could reach is important."
+        could reach is important.\n\n\
+        Let's begin with a motivated example. \
+        Say we have a spaceship in the following 3D solar system. \
+        The spaceship's engineers gave it a set of vectors that \
+        allows it to reach every location in the solar system. \
+        To find out how, we attached a device to our spaceship \
+        that allows us to see all the places that our spaceship \
+        could reach. Try visiting all the suns in the \
+        Example 0's solar system by translating the spaceship by it's vectors. \
+        As you do so, notice how the shape that trails behind \
+        our spaceship changes. This reveals the span \
+        of our set of vectors.
+        "
     );
+
+    solution_header::spawn(commands, theme, view_list_entity, "DIRECTIONS");
 
     text_section::spawn(
         commands,
         theme, 
         view_list_entity,
-        "   For example, if we have a spaceship in \
-        the following 2D world, which planets would we \
-        be able to visit? You could drag the vectors \
-        coming out of the spaceship to try for yourself \
-        in Example 1."
+        "- To enter the example, press the button on the bottom right of \
+        the viewport below.\n\n\
+        - You can zoom by scrolling, orbit the camera by clicking and \
+        dragging the background with left mouse, and pan by using the \
+        clicking and dragging with the right mouse.\n\n\
+        - You can click on the spaceship to toggle the visibility of it's \
+        vectors. Click and drag on a vector to translate the spaceship by \
+        the vector.
+        "
     );
 
     example_block::spawn(
@@ -73,6 +94,31 @@ pub fn get(
         view_list_entity,
         0,
     );
+    example_0::setup_scene(
+        commands,
+        theme,
+        film_crew_entity,
+        meshes,
+        materials,
+        asset_server,
+        0,
+    );
+    let space_under = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
+        NodeBundle {
+            style: Style {
+                height: Val::Px(20.0),
+                width: Val::Px(100.0),
+                ..default()
+            },
+            ..default()
+        }
+    )).id();
+
+    commands.entity(view_list_entity).push_children(&[space_under]);
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
     
@@ -81,22 +127,30 @@ pub fn get(
         commands,
         theme,
         view_list_entity,
-        "   Evidently, we are able to reach all planets! \
-        Notice that here we are using two vectors that point \
-        in different directions. Since these vectors point in \
-        different directions, they enable us to travel across \
-        all 2-dimensional space. Therefore, we can reach every \
-        planet in our 2-dimensional solar system."
+        "   In reality the span extends infinitely in the direction \
+        of each vector in our set. In this case it would cover all of 3D space. \
+        We chose to show a subset of the span so you could \
+        see how the span is constructed by every location our \
+        spaceship can reach as we translate its vectors to infinity.\n\n\
+        You might be asking why we can reach all of 3 dimensional space with the \
+        set of vectors that we chose. To investigate this further, let's \
+        see where we can reach when we restrict our set of vectors. \
+        Rather than using a spaceship as an example, let's use a sphere.
+        "
     );
+
+    sub_header::spawn(commands, theme, view_list_entity, "Case 1: Our set of vectors contains no vectors");
+    
     
     text_section::spawn(
         commands,
         theme,
         view_list_entity,
-        "   Would we still be able to travel across all \
-        all 2-dimensional space if our spaceship could only \
-        move in one direction? Try for yourself in Example \
-        2:"
+        "   With no vectors in our set, we have no vectors to \
+        translate our sphere by. Therefore, the sphere is stuck at \
+        its starting position. In our 3D world, this is given by \
+        [0.0, 0.0, 0.0]. Commonly we refer to this as a null vector. \
+        Try moving the sphere in Example 1:"
     );
 
     // example_block::spawn(
@@ -107,9 +161,33 @@ pub fn get(
     //     meshes,
     //     materials,
     //     images,
+    //     asset_server,
     //     view_list_entity,
-    //     2,
+    //     1,
     // );
+    // example_1::setup_scene(
+    //     commands,
+    //     theme,
+    //     film_crew_entity,
+    //     meshes,
+    //     materials,
+    //     asset_server,
+    //     1,
+    // );
+    let space_under = commands.spawn((
+        theme::ColorFunction {
+            background: theme::background_color,
+            border: theme::background_color,
+        },
+        NodeBundle {
+            style: Style {
+                height: Val::Px(20.0),
+                width: Val::Px(100.0),
+                ..default()
+            },
+            ..default()
+        }
+    )).id();
 
     solution_header::spawn(commands, theme, view_list_entity, "SOLUTION");
 
@@ -152,9 +230,6 @@ pub fn get(
         our set of vectors can appear and visualize it's span."
     );
 
-
-    sub_header::spawn(commands, theme, view_list_entity, "Case 1: Our set of vectors contains no vectors");
-    
 
     text_section::spawn(
         commands,
@@ -505,15 +580,6 @@ pub fn get(
     page_header::spawn(commands, theme, view_list_entity, "Filler just to test :)");
 
 
-    example_1::setup_scene(
-        commands,
-        theme,
-        film_crew_entity,
-        meshes,
-        materials,
-        asset_server,
-        0,
-    );
     // example_1::setup_scene(
     //     commands,
     //     theme,

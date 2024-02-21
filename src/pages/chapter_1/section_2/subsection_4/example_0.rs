@@ -841,7 +841,7 @@ pub fn setup_scene(
 
     let sphere_material_handle = materials.add(StandardMaterial {
         // base_color: Color::rgb(1.0, 0.75, 0.90),
-        base_color: theme::vector_color_3d(theme).into(),
+        base_color: theme::vector_color_3d_transparent(theme).into(),
         alpha_mode: AlphaMode::Blend,
         metallic: 1.0,
         reflectance: 0.1,
@@ -859,15 +859,16 @@ pub fn setup_scene(
     });
 
     let basis_vector_1 = materials.add(StandardMaterial {
-        base_color: theme::line_alternate_color_1(theme).into(),
+        base_color: theme::line_alternate_color_1_transparent(theme).into(),
         alpha_mode: AlphaMode::Blend,
         // metallic: 1.0,
         // reflectance: 0.1,
         // perceptual_roughness: 1.0,
         ..default()
     });
+
     let basis_vector_2 = materials.add(StandardMaterial {
-        base_color: theme::line_alternate_color_2(theme).into(),
+        base_color: theme::line_alternate_color_2_transparent(theme).into(),
         alpha_mode: AlphaMode::Blend,
         // metallic: 1.0,
         // reflectance: 0.1,
@@ -875,7 +876,7 @@ pub fn setup_scene(
         ..default()
     });
     let basis_vector_3 = materials.add(StandardMaterial {
-        base_color: theme::line_alternate_color_3(theme).into(),
+        base_color: theme::line_alternate_color_3_transparent(theme).into(),
         alpha_mode: AlphaMode::Blend,
         // metallic: 1.0,
         // reflectance: 0.1,
@@ -906,15 +907,15 @@ pub fn setup_scene(
     let sphere = commands.spawn((
         VectorSphere,
         theme::ColorFunction {
-            background: theme::vector_color_3d,
-            border: theme::vector_color_3d,
+            background: theme::vector_color_3d_transparent,
+            border: theme::vector_color_3d_transparent,
         },
         PbrBundle {
             mesh: sphere_handle.clone(),
             material: sphere_material_handle.clone(),
             transform: Transform {
                 translation: Vec3::new(0.0, 0.0, 0.0),
-                scale: Vec3::new(1.0, 1.0, 1.0),
+                scale: Vec3::new(1.8, 1.8, 1.8),
                 ..default()
             },
             ..default()
@@ -933,7 +934,15 @@ pub fn setup_scene(
         On::<Pointer<DragEnd>>::send_event::<PanOrbitToggleEvent>(),
         On::<Pointer<Click>>::send_event::<VectorSphereSelectionEvent>(),
     )).id();
-    
+    let spaceship_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("spaceship.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.15, y: 0.15, z: 0.15},
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(sphere).push_children(&[spaceship_entity]);
 
     let vector_mesh_handle = meshes.add(Mesh::from(
         shape::Cube {
@@ -943,7 +952,138 @@ pub fn setup_scene(
     ));
 
 
-    
+    let planet_material_handle = materials.add(StandardMaterial {
+        // base_color: Color::rgb(1.0, 0.75, 0.90),
+        base_color: theme::planet_color(theme).into(),
+        alpha_mode: AlphaMode::Blend,
+        metallic: 1.0,
+        reflectance: 0.1,
+        perceptual_roughness: 1.0,
+        ..default()
+    });
+    let sun1 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(8.0, 0.0, 0.0),
+                scale: Vec3::new(2.0, 2.0, 2.0),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+    let sun2 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(0.0, -7.0, 0.0),
+                scale: Vec3::new(0.9, 0.9, 0.9),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+    let sun3 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(0.0, 0.0, -5.0),
+                scale: Vec3::new(1.6, 1.6, 1.6),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+    let sun4 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(-5.0, -7.0, -9.0),
+                scale: Vec3::new(1.2, 1.2, 1.2),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+
+
+    let sun5 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(5.0, 5.0, -5.0),
+                scale: Vec3::new(2.1, 2.1, 2.1),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+
+    let sun6 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(2.0, 6.0, 8.0),
+                scale: Vec3::new(1.2, 1.2, 1.2),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+    let sun7 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(-5.0, 9.0, -9.0),
+                scale: Vec3::new(1.2, 1.2, 1.2),
+                ..default()
+            },
+            ..default()
+        },
+        Pickable::IGNORE,
+    )).id();
+    // let vector_mesh_handle = make_vector_mesh(meshes);
 
 
     // let v1 = Vec3 { x: 1.0, y: 0.5, z: 0.0 }.normalize();
@@ -963,10 +1103,23 @@ pub fn setup_scene(
         vector_mesh_handle.clone(),
         basis_vector_1,
         theme::ColorFunction {
-            background: theme::line_alternate_color_1,
-            border: theme::line_alternate_color_1,
+            background: theme::line_alternate_color_1_transparent,
+            border: theme::line_alternate_color_1_transparent,
         },
     );
+    let v1_arrow_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("v1.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.1, y: 0.1, z: 0.1},
+            rotation: Quat::from_rotation_z(-PI / 2.0),
+            translation: Vec3 { x: v1.x * 0.07, y: v1.y * 0.07, z: v1.z * 0.07 },
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(standard_basis_vector_x).push_children(&[v1_arrow_entity]);
+
+
 
     let standard_basis_vector_y = make_vector(
         commands,
@@ -976,11 +1129,21 @@ pub fn setup_scene(
         vector_mesh_handle.clone(),
         basis_vector_2,
         theme::ColorFunction {
-            background: theme::line_alternate_color_2,
-            border: theme::line_alternate_color_2,
+            background: theme::line_alternate_color_2_transparent,
+            border: theme::line_alternate_color_2_transparent,
         },
     );
-    
+    let v2_arrow_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("v2.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.1, y: 0.1, z: 0.1},
+            translation: Vec3 { x: v2.x * 0.07, y: v2.y * 0.07, z: v2.z * 0.07 },
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(standard_basis_vector_y).push_children(&[v2_arrow_entity]);
+
 
 
     let standard_basis_vector_z = make_vector(
@@ -995,9 +1158,34 @@ pub fn setup_scene(
             border: theme::line_alternate_color_3_transparent,
         },
     );
+    let v3_arrow_entity = commands.spawn(SceneBundle {
+        scene: asset_server.load("v3.glb#Scene0"),
+        transform: Transform {
+            scale: Vec3 {x: 0.1, y: 0.1, z: 0.1},
+            rotation: Quat::from_rotation_x(PI / 2.0),
+            translation: Vec3 { x: v3.x * 0.07, y: v3.y * 0.07, z: v3.z * 0.07 },
+            ..default()
+        },
+        ..default()
+    }).id();
+    commands.entity(standard_basis_vector_z).push_children(&[v3_arrow_entity]);
 
 
 
+
+
+    // commands.spawn((
+    //     PbrBundle {
+    //     mesh: quad_handle,
+    //     // This is the default color, but note that vertex colors are
+    //     // multiplied by the base color, so you'll likely want this to be
+    //     // white if using vertex colors.
+    //     material: span_material_handle,
+    //     transform: Transform::from_xyz(0.0, 0.5, 0.0),
+    //     ..default()
+    //     }, 
+    //     crew_render_layer,
+    // ));
 
     let span_cube = create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer, v1, v2, v3);
 
@@ -1007,6 +1195,13 @@ pub fn setup_scene(
         standard_basis_vector_y,
         standard_basis_vector_z,
         span_cube,
+        sun1,
+        sun2,
+        sun3,
+        sun4,
+        sun5,
+        sun6,
+        sun7,
     ]);
 }
 
@@ -1037,7 +1232,7 @@ pub fn update_sphere_position_text(
         for mut text in text_query.iter_mut() {
             for sphere_transform in sphere_transform_query.iter() {
                 text.sections[0].value = format!(
-                    "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPHERE:\n      {:?}\n      {:?}\n      {:?}",
+                    "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPACESHIP:\n      {:?}\n      {:?}\n      {:?}",
                     sphere_transform.translation.x,
                     sphere_transform.translation.y,
                     sphere_transform.translation.z,
@@ -1188,7 +1383,7 @@ pub fn sphere_position_banner_interactions (
                         // Create a TextBundle that has a Text with a single section.
                         TextBundle::from_section(
                             // Accepts a `String` or any type that converts into a `String`, such as `&str`
-                            "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPHERE:\n      0.0\n      0.0\n      0.0",
+                            "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPACESHIP:\n      0.0\n      0.0\n      0.0",
                             TextStyle {
                                 // This font is loaded and will be used instead of the default font.
                                 font_size: 25.0,

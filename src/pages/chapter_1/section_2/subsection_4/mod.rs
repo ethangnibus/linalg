@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 pub mod partial;
+pub mod example_0;
 pub mod example_1;
 
 pub struct SystemsPlugin;

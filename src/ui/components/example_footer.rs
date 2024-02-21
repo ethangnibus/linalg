@@ -187,8 +187,8 @@ pub fn spawn(commands: &mut Commands, theme: &theme::CurrentTheme, view_list_ent
     //         },
     //         ..default()
     //     }
-
     // )).id();
+
     commands.entity(view_list_entity).push_children(&[background_banner]);
 }
 
