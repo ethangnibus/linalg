@@ -42,6 +42,7 @@ impl Plugin for SystemsPlugin {
                 disable_pan_orbit_system,
                 move_span_cube_vertices.after(vector_sphere_movement_system),
                 sphere_position_banner_interactions,
+                update_sphere_position_text,
             ))
             .add_systems(Startup, spawn_spaceship);
     }
@@ -698,6 +699,9 @@ pub struct VectorSphereMovementEvent {
 #[derive(Component)]
 pub struct SpherePositionBanner;
 
+#[derive(Component)]
+pub struct SpaceshipPositionText;
+
 fn make_vector(
     commands: &mut Commands,
     vec: Vec3,
@@ -1078,6 +1082,25 @@ pub fn disable_pan_orbit_system (
     }
 }
 
+pub fn update_sphere_position_text(
+    mut text_query: Query<&mut Text, With<SpaceshipPositionText>>,
+    sphere_transform_query: Query<&Transform, With<VectorSphere>>,
+    mut movement_event_reader: EventReader<VectorSphereMovementEvent>,
+) {
+    for movement_event in movement_event_reader.read() {
+        for mut text in text_query.iter_mut() {
+            for sphere_transform in sphere_transform_query.iter() {
+                text.sections[0].value = format!(
+                    "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPACESHIP:\n      {:?}\n      {:?}\n      {:?}",
+                    sphere_transform.translation.x,
+                    sphere_transform.translation.y,
+                    sphere_transform.translation.z,
+                );
+            }
+        }
+    }
+    
+}
 pub fn sphere_position_banner_interactions (
     mut pan_orbit_toggle_reader: EventReader<PanOrbitToggleEvent>,
     mut sphere_position_banner_query: Query<Entity, With<SpherePositionBanner>>,
@@ -1101,7 +1124,7 @@ pub fn sphere_position_banner_interactions (
                         NodeBundle {
                             style: Style {
                                 width: Val::Px(300.0),
-                                height: Val::Px(200.0),
+                                height: Val::Px(230.0),
                                 position_type: PositionType::Absolute,
                                 left: Val::Px(cursor_position.x - 150.0),
                                 top: Val::Px(cursor_position.y + 100.0),
@@ -1110,7 +1133,7 @@ pub fn sphere_position_banner_interactions (
                                 ..default()
                             },
                             z_index: ZIndex::Global(10),
-                            background_color: theme::background_color(theme).into(),
+                            background_color: theme::transparent_maker(theme, theme::background_color).into(),
                             ..default()
                         }
                     )).id();
@@ -1215,49 +1238,86 @@ pub fn sphere_position_banner_interactions (
                     )).id();
                     commands.entity(bottom).push_children(&[bl, br]);
 
-                    // let text_banner = commands.spawn((
-                    //     NodeBundle {
-                    //         style: Style {
-                    //             height: Val::Percent(100.0),
-                    //             width: Val::Percent(100.0),
-                    //             position_type: PositionType::Absolute,
-                    //             border: UiRect {
-                    //                 top: Val::Px(8.0),
-                    //                 bottom: Val::Px(8.0),
-                    //                 left: Val::Px(8.0),
-                    //                 right: Val::Px(8.0),
-                    //             },
-                    //             ..default()
-                    //         },
-                    //         z_index: ZIndex::Local(1),
-                    //         background_color: Color::BLUE.into(),
-                    //         ..default()
-                    //     }
-                    // )).id();
-
                     let text = commands.spawn((
                         // Create a TextBundle that has a Text with a single section.
                         TextBundle::from_section(
                             // Accepts a `String` or any type that converts into a `String`, such as `&str`
-                            "v1: [0, 0, 0]\nv2: [0, 0, 0]\nv3: [0, 0, 0]\n",
+                            "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPACESHIP:\n      0.0\n      0.0\n      0.0",
                             TextStyle {
                                 // This font is loaded and will be used instead of the default font.
                                 font_size: 25.0,
-                                color: Color::WHITE.into(),
+                                color: theme::navbar_swiper_color(theme).into(),
                                 ..default()
                             },
                         ) 
                         // Set the style of the TextBundle itself.
                         .with_style(Style {
+                            left: Val::Px(16.0),
+                            top: Val::Px(8.0),
                             position_type: PositionType::Absolute,
-                            bottom: Val::Px(5.0),
-                            right: Val::Px(5.0),
+                            justify_self: JustifySelf::Center,
                             ..default()
                         }),
-                        // ColorText,
+                        SpaceshipPositionText,
                     )).id();
 
                     commands.entity(background_banner).push_children(&[text]);
+
+
+                    let vector_background = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(200.0),
+                                height: Val::Px(100.0),
+                                top: Val::Px(135.0),
+                                left: Val::Px(50.0),
+                                position_type: PositionType::Absolute,
+                                flex_direction: FlexDirection::Row,
+                                justify_content: JustifyContent::SpaceBetween,
+                                ..default()
+                            },
+                            // background_color: Color::RED.into(),
+                            ..default()
+                        }
+                    )).id();
+                    commands.entity(background_banner).push_children(&[vector_background]);
+
+                    let vector_bracket_left = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(20.0),
+                                height: Val::Percent(80.0),
+                                border: UiRect {
+                                    top: Val::Px(4.0),
+                                    bottom: Val::Px(4.0),
+                                    left: Val::Px(4.0),
+                                    right: Val::Px(0.0),
+                                },
+                                ..default()
+                            },
+                            border_color: theme::navbar_swiper_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+
+                    let vector_bracket_right = commands.spawn((
+                        NodeBundle {
+                            style: Style {
+                                width: Val::Px(20.0),
+                                height: Val::Percent(80.0),
+                                border: UiRect {
+                                    top: Val::Px(4.0),
+                                    bottom: Val::Px(4.0),
+                                    left: Val::Px(0.0),
+                                    right: Val::Px(4.0),
+                                },
+                                ..default()
+                            },
+                            border_color: theme::navbar_swiper_color(theme).into(),
+                            ..default()
+                        }
+                    )).id();
+                    commands.entity(vector_background).push_children(&[vector_bracket_left, vector_bracket_right]);
                 }
                 PanOrbitToggleState::DragEnd => {
                 }

@@ -81,6 +81,16 @@ pub fn transparent(theme: &CurrentTheme) -> Color {
     return TRANSPARENT;
 }
 
+pub fn transparent_maker(theme: &CurrentTheme, color: fn(&CurrentTheme) -> Color) -> Color {
+    let color = color(theme);
+    return Color::rgba(
+        color.r(),
+        color.g(),
+        color.b(),
+        0.5
+    );
+}
+
 pub fn vector_color_3d(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Matrix => {
