@@ -991,8 +991,8 @@ pub fn setup_scene(
         vector_mesh_handle.clone(),
         basis_vector_3,
         theme::ColorFunction {
-            background: theme::line_alternate_color_3_transparent,
-            border: theme::line_alternate_color_3_transparent,
+            background: theme::line_alternate_color_3,
+            border: theme::line_alternate_color_3,
         },
     );
 
