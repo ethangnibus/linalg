@@ -848,6 +848,7 @@ pub fn setup_scene(
         perceptual_roughness: 1.0,
         ..default()
     });
+    
 
     let span_material_handle = materials.add(StandardMaterial {
         base_color: theme::line_color(theme).into(),
@@ -910,7 +911,7 @@ pub fn setup_scene(
             border: theme::vector_color_3d_transparent,
         },
         PbrBundle {
-            mesh: sphere_handle,
+            mesh: sphere_handle.clone(),
             material: sphere_material_handle.clone(),
             transform: Transform {
                 translation: Vec3::new(0.0, 0.0, 0.0),
@@ -949,6 +950,132 @@ pub fn setup_scene(
             ..default()
         }
     ));
+
+
+    let planet_material_handle = materials.add(StandardMaterial {
+        // base_color: Color::rgb(1.0, 0.75, 0.90),
+        base_color: theme::planet_color(theme).into(),
+        alpha_mode: AlphaMode::Blend,
+        metallic: 1.0,
+        reflectance: 0.1,
+        perceptual_roughness: 1.0,
+        ..default()
+    });
+    let sun1 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(8.0, 0.0, 0.0),
+                scale: Vec3::new(2.0, 2.0, 2.0),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
+    let sun2 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(0.0, -7.0, 0.0),
+                scale: Vec3::new(0.9, 0.9, 0.9),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
+    let sun3 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(0.0, 0.0, -5.0),
+                scale: Vec3::new(1.6, 1.6, 1.6),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
+    let sun4 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(-5.0, -7.0, -9.0),
+                scale: Vec3::new(1.2, 1.2, 1.2),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
+
+
+    let sun5 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(5.0, 5.0, -5.0),
+                scale: Vec3::new(2.1, 2.1, 2.1),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
+
+    let sun6 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(2.0, 6.0, 8.0),
+                scale: Vec3::new(1.2, 1.2, 1.2),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
+    let sun7 = commands.spawn((
+        theme::ColorFunction {
+            background: theme::planet_color,
+            border: theme::planet_color,
+        },
+        PbrBundle {
+            mesh: sphere_handle.clone(),
+            material: planet_material_handle.clone(),
+            transform: Transform {
+                translation: Vec3::new(-5.0, 9.0, -9.0),
+                scale: Vec3::new(1.2, 1.2, 1.2),
+                ..default()
+            },
+            ..default()
+        },
+    )).id();
     // let vector_mesh_handle = make_vector_mesh(meshes);
 
 
@@ -1061,6 +1188,10 @@ pub fn setup_scene(
         standard_basis_vector_y,
         standard_basis_vector_z,
         span_cube,
+        sun1,
+        sun2,
+        sun3,
+        sun4,
     ]);
 }
 

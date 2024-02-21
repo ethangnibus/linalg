@@ -223,6 +223,17 @@ pub fn line_alternate_color_3_transparent(theme: &CurrentTheme) -> Color {
     }
 }
 
+pub fn planet_color(theme: &CurrentTheme) -> Color {
+    match theme {
+        CurrentTheme::Matrix => {
+            return MATRIX_GREEN;
+        }
+        _ => {
+            return BERKELEY_GOLD;
+        }
+    }
+}
+
 pub fn background_color(theme: &CurrentTheme) -> Color {
     match theme {
         CurrentTheme::Light => {
