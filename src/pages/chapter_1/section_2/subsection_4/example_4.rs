@@ -944,8 +944,69 @@ pub fn setup_scene(
 
 
     
+
+
+    // let v1 = Vec3 { x: 1.0, y: 0.5, z: 0.0 }.normalize();
+    // let v2 = Vec3 { x: 0.0, y: 2.0, z: 0.3 }.normalize();
+    // let v3 = Vec3 { x: 0.3, y: 0.2, z: 1.0 }.normalize();
+    let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 }; // .normalize();
+    let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 }; // .normalize();
+    let v3 = Vec3 { x: 0.0, y: 0.0, z: 1.0 }; //.normalize();
+
+
+    
+    let standard_basis_vector_x = make_vector(
+        commands,
+        v1,
+        AssociatedVector::V1,
+        crew_render_layer,
+        vector_mesh_handle.clone(),
+        basis_vector_1,
+        theme::ColorFunction {
+            background: theme::line_alternate_color_1,
+            border: theme::line_alternate_color_1,
+        },
+    );
+
+    let standard_basis_vector_y = make_vector(
+        commands,
+        v2,
+        AssociatedVector::V2,
+        crew_render_layer,
+        vector_mesh_handle.clone(),
+        basis_vector_2,
+        theme::ColorFunction {
+            background: theme::line_alternate_color_2,
+            border: theme::line_alternate_color_2,
+        },
+    );
+    
+
+
+    let standard_basis_vector_z = make_vector(
+        commands,
+        v3,
+        AssociatedVector::V3,
+        crew_render_layer,
+        vector_mesh_handle.clone(),
+        basis_vector_3,
+        theme::ColorFunction {
+            background: theme::line_alternate_color_3_transparent,
+            border: theme::line_alternate_color_3_transparent,
+        },
+    );
+
+
+
+
+    let span_cube = create_custom_cube_mesh(commands, theme, meshes, materials, crew_render_layer, v1, v2, v3);
+
     commands.entity(film_crew_entity).push_children(&[
         sphere,
+        standard_basis_vector_x,
+        standard_basis_vector_y,
+        standard_basis_vector_z,
+        span_cube,
     ]);
 }
 
@@ -976,7 +1037,7 @@ pub fn update_sphere_position_text(
         for mut text in text_query.iter_mut() {
             for sphere_transform in sphere_transform_query.iter() {
                 text.sections[0].value = format!(
-                    "No vectors\n\n\n\nSPHERE:\n      {:?}\n      {:?}\n      {:?}",
+                    "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPHERE:\n      {:?}\n      {:?}\n      {:?}",
                     sphere_transform.translation.x,
                     sphere_transform.translation.y,
                     sphere_transform.translation.z,
@@ -1127,7 +1188,7 @@ pub fn sphere_position_banner_interactions (
                         // Create a TextBundle that has a Text with a single section.
                         TextBundle::from_section(
                             // Accepts a `String` or any type that converts into a `String`, such as `&str`
-                            "No vectors\n\n\n\nSPHERE:\n      0.0\n      0.0\n      0.0",
+                            "v1: [1.0, 0.0, 0.0]\nv2: [0.0, 1.0, 0.0]\nv3: [0.0, 0.0, 1.0]\n\nSPHERE:\n      0.0\n      0.0\n      0.0",
                             TextStyle {
                                 // This font is loaded and will be used instead of the default font.
                                 font_size: 25.0,

@@ -976,7 +976,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
     let sun2 = commands.spawn((
         theme::ColorFunction {
@@ -993,7 +992,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
     let sun3 = commands.spawn((
         theme::ColorFunction {
@@ -1010,7 +1008,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
     let sun4 = commands.spawn((
         theme::ColorFunction {
@@ -1027,7 +1024,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
 
 
@@ -1046,7 +1042,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
 
     let sun6 = commands.spawn((
@@ -1064,7 +1059,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
     let sun7 = commands.spawn((
         theme::ColorFunction {
@@ -1081,7 +1075,6 @@ pub fn setup_scene(
             },
             ..default()
         },
-        Pickable::IGNORE,
     )).id();
     // let vector_mesh_handle = make_vector_mesh(meshes);
 
@@ -1199,9 +1192,6 @@ pub fn setup_scene(
         sun2,
         sun3,
         sun4,
-        sun5,
-        sun6,
-        sun7,
     ]);
 }
 
