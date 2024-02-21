@@ -36,7 +36,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(fullscreen_camera::SystemsPlugin)
-        .add_plugins(WorldInspectorPlugin::new()) // FIXME: REMOVE IN PROD
+        // .add_plugins(WorldInspectorPlugin::new()) // FIXME: REMOVE IN PROD
         // .add_plugins(bevy_svg::prelude::SvgPlugin)
         .add_plugins(ui::SetupUiPlugin)
         .add_systems(Startup, setup_cameras)
